@@ -1,6 +1,7 @@
 import Link from "next/link";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { BookOpen, Clock, ArrowRight } from "lucide-react";
+import EnrollButton from "@/components/EnrollButton";
 
 export const dynamic = "force-dynamic";
 
@@ -67,13 +68,7 @@ export default async function TracksPage() {
                             </div>
                         </div>
 
-                        <Link
-                            href={`/tracks/${track.id}`}
-                            className="btn btn-primary"
-                            style={{ textAlign: "center", justifyContent: "center" }}
-                        >
-                            Start Track <ArrowRight size={18} style={{ marginLeft: "0.5rem" }} />
-                        </Link>
+                        <EnrollButton trackId={track.id} />
                     </div>
                 ))}
 
