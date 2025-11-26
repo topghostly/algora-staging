@@ -3,103 +3,97 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ChevronLeft, Save, Loader2 } from "lucide-react";
 
 export default function NewTrackPage() {
     const router = useRouter();
-    const [formData, setFormData] = useState({
-        title: "",
-        description: "",
-        published: false,
-    });
-    const [loading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState("");
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        setLoading(true);
+        setIsLoading(true);
+        setError("");
+
+        const formData = new FormData(e.currentTarget);
+        const title = formData.get("title") as string;
+        const description = formData.get("description") as string;
 
         try {
             const res = await fetch("/api/tracks", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({ title, description }),
             });
 
-            if (res.ok) {
-                router.push("/admin/tracks");
+            if (!res.ok) {
+                throw new Error("Failed to create track");
             }
-        } catch (error) {
-            console.error("Failed to create track", error);
+
+            const track = await res.json();
+            router.push(`/admin/tracks/${track.id}`); // Redirect to edit page to add modules
+            router.refresh();
+        } catch (err) {
+            setError("Something went wrong. Please try again.");
         } finally {
-            setLoading(false);
+            setIsLoading(false);
         }
-    };
+    }
 
     return (
-        <div>
-            <Link
-                href="/admin/tracks"
-                style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", color: "var(--muted)", marginBottom: "1.5rem" }}
-            >
-                <ArrowLeft size={16} />
-                Back to Tracks
-            </Link>
+        <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+            <div style={{ marginBottom: "2rem" }}>
+                <Link href="/admin/tracks" style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--muted)", marginBottom: "1rem", fontSize: "0.9rem" }}>
+                    <ChevronLeft size={16} /> Back to Tracks
+                </Link>
+                <h1 style={{ fontSize: "2rem", fontWeight: 700 }}>Create New Track</h1>
+            </div>
 
-            <div className="card" style={{ maxWidth: "600px" }}>
-                <h1 style={{ marginBottom: "1.5rem" }}>Create New Track</h1>
-
+            <div className="card" style={{ padding: "2rem" }}>
                 <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+                    {error && (
+                        <div style={{ padding: "1rem", backgroundColor: "#fee2e2", color: "#ef4444", borderRadius: "var(--radius)", fontSize: "0.9rem" }}>
+                            {error}
+                        </div>
+                    )}
+
                     <div>
-                        <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Title</label>
+                        <label htmlFor="title" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Track Title</label>
                         <input
                             type="text"
+                            id="title"
+                            name="title"
                             required
-                            style={{
-                                width: "100%",
-                                padding: "0.75rem",
-                                borderRadius: "var(--radius)",
-                                border: "1px solid var(--border)",
-                            }}
-                            value={formData.title}
-                            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                            placeholder="e.g. Frontend Development Mastery"
+                            className="input"
+                            style={{ width: "100%" }}
                         />
                     </div>
 
                     <div>
-                        <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Description</label>
+                        <label htmlFor="description" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Description</label>
                         <textarea
+                            id="description"
+                            name="description"
                             required
-                            rows={4}
-                            style={{
-                                width: "100%",
-                                padding: "0.75rem",
-                                borderRadius: "var(--radius)",
-                                border: "1px solid var(--border)",
-                                fontFamily: "inherit",
-                            }}
-                            value={formData.description}
-                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                            placeholder="A brief overview of what students will learn..."
+                            className="input"
+                            style={{ width: "100%", minHeight: "120px", fontFamily: "inherit" }}
                         />
                     </div>
 
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                        <input
-                            type="checkbox"
-                            id="published"
-                            checked={formData.published}
-                            onChange={(e) => setFormData({ ...formData, published: e.target.checked })}
-                            style={{ width: "1.25rem", height: "1.25rem" }}
-                        />
-                        <label htmlFor="published" style={{ fontWeight: 500 }}>Publish immediately</label>
-                    </div>
-
-                    <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
-                        <button type="submit" className="btn btn-primary" disabled={loading}>
-                            {loading ? "Creating..." : "Create Track"}
-                        </button>
+                    <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem", marginTop: "1rem" }}>
                         <Link href="/admin/tracks" className="btn btn-outline">
                             Cancel
                         </Link>
+                        <button type="submit" className="btn btn-primary" disabled={isLoading} style={{ minWidth: "120px", display: "flex", justifyContent: "center" }}>
+                            {isLoading ? <Loader2 size={20} className="animate-spin" /> : (
+                                <>
+                                    <Save size={18} style={{ marginRight: "0.5rem" }} />
+                                    Create Track
+                                </>
+                            )}
+                        </button>
                     </div>
                 </form>
             </div>

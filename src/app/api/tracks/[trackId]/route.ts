@@ -5,11 +5,12 @@ import { authOptions } from "@/lib/auth";
 
 export async function GET(
     req: Request,
-    { params }: { params: { trackId: string } }
+    { params }: { params: Promise<{ trackId: string }> }
 ) {
     try {
+        const { trackId } = await params;
         const track = await prisma.track.findUnique({
-            where: { id: params.trackId },
+            where: { id: trackId },
             include: {
                 modules: {
                     orderBy: { order: "asc" },
@@ -37,7 +38,7 @@ export async function GET(
 
 export async function PUT(
     req: Request,
-    { params }: { params: { trackId: string } }
+    { params }: { params: Promise<{ trackId: string }> }
 ) {
     try {
         const session = await getServerSession(authOptions);
@@ -46,10 +47,11 @@ export async function PUT(
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
+        const { trackId } = await params;
         const { title, description, published } = await req.json();
 
         const track = await prisma.track.update({
-            where: { id: params.trackId },
+            where: { id: trackId },
             data: {
                 title,
                 description,
@@ -68,7 +70,7 @@ export async function PUT(
 
 export async function DELETE(
     req: Request,
-    { params }: { params: { trackId: string } }
+    { params }: { params: Promise<{ trackId: string }> }
 ) {
     try {
         const session = await getServerSession(authOptions);
@@ -77,8 +79,10 @@ export async function DELETE(
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
+        const { trackId } = await params;
+
         await prisma.track.delete({
-            where: { id: params.trackId },
+            where: { id: trackId },
         });
 
         return NextResponse.json({ message: "Track deleted" });

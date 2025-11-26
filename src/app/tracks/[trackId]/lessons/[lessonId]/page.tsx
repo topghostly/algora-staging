@@ -15,6 +15,24 @@ interface LessonPageProps {
     }>;
 }
 
+function getEmbedUrl(url: string) {
+    if (!url) return "";
+
+    // Handle standard YouTube links (youtube.com/watch?v=...)
+    if (url.includes("youtube.com/watch?v=")) {
+        const videoId = url.split("v=")[1].split("&")[0];
+        return `https://www.youtube.com/embed/${videoId}`;
+    }
+
+    // Handle short YouTube links (youtu.be/...)
+    if (url.includes("youtu.be/")) {
+        const videoId = url.split("youtu.be/")[1].split("?")[0];
+        return `https://www.youtube.com/embed/${videoId}`;
+    }
+
+    return url;
+}
+
 async function getLessonData(trackId: string, lessonId: string, userId: string) {
     const track = await prisma.track.findUnique({
         where: { id: trackId },
@@ -153,7 +171,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
                         {currentLesson.type === "VIDEO" && currentLesson.contentUrl && (
                             <div style={{ position: "relative", paddingBottom: "56.25%", height: 0, overflow: "hidden", borderRadius: "var(--radius)", backgroundColor: "#000" }}>
                                 <iframe
-                                    src={currentLesson.contentUrl}
+                                    src={getEmbedUrl(currentLesson.contentUrl)}
                                     style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: 0 }}
                                     allowFullScreen
                                     title={currentLesson.title}

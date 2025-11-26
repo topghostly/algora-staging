@@ -5,7 +5,7 @@ import { authOptions } from "@/lib/auth";
 
 export async function PUT(
     req: Request,
-    { params }: { params: { moduleId: string } }
+    { params }: { params: Promise<{ moduleId: string }> }
 ) {
     try {
         const session = await getServerSession(authOptions);
@@ -14,10 +14,11 @@ export async function PUT(
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
+        const { moduleId } = await params;
         const { title, order } = await req.json();
 
         const module = await prisma.module.update({
-            where: { id: params.moduleId },
+            where: { id: moduleId },
             data: {
                 title,
                 order,
@@ -35,7 +36,7 @@ export async function PUT(
 
 export async function DELETE(
     req: Request,
-    { params }: { params: { moduleId: string } }
+    { params }: { params: Promise<{ moduleId: string }> }
 ) {
     try {
         const session = await getServerSession(authOptions);
@@ -44,8 +45,10 @@ export async function DELETE(
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
+        const { moduleId } = await params;
+
         await prisma.module.delete({
-            where: { id: params.moduleId },
+            where: { id: moduleId },
         });
 
         return NextResponse.json({ message: "Module deleted" });

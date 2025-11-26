@@ -5,7 +5,7 @@ import { authOptions } from "@/lib/auth";
 
 export async function PUT(
     req: Request,
-    { params }: { params: { lessonId: string } }
+    { params }: { params: Promise<{ lessonId: string }> }
 ) {
     try {
         const session = await getServerSession(authOptions);
@@ -14,10 +14,11 @@ export async function PUT(
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
+        const { lessonId } = await params;
         const { title, type, contentUrl, textContent, order } = await req.json();
 
         const lesson = await prisma.lesson.update({
-            where: { id: params.lessonId },
+            where: { id: lessonId },
             data: {
                 title,
                 type,
@@ -38,7 +39,7 @@ export async function PUT(
 
 export async function DELETE(
     req: Request,
-    { params }: { params: { lessonId: string } }
+    { params }: { params: Promise<{ lessonId: string }> }
 ) {
     try {
         const session = await getServerSession(authOptions);
@@ -47,8 +48,10 @@ export async function DELETE(
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
+        const { lessonId } = await params;
+
         await prisma.lesson.delete({
-            where: { id: params.lessonId },
+            where: { id: lessonId },
         });
 
         return NextResponse.json({ message: "Lesson deleted" });

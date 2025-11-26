@@ -46,6 +46,11 @@ export default function Navbar() {
 
                     {session ? (
                         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                            {(session.user as any).role === "ADMIN" && (
+                                <Link href="/admin" style={{ fontWeight: 500, color: "var(--primary)" }}>
+                                    Admin
+                                </Link>
+                            )}
                             <Link href="/dashboard" className="btn btn-outline">Dashboard</Link>
                             <button
                                 onClick={() => signOut()}
@@ -87,6 +92,9 @@ export default function Navbar() {
                     <hr style={{ border: "none", borderTop: "1px solid var(--border)" }} />
                     {session ? (
                         <>
+                            {(session.user as any).role === "ADMIN" && (
+                                <Link href="/admin" onClick={() => setIsMenuOpen(false)} style={{ color: "var(--primary)", fontWeight: 600 }}>Admin</Link>
+                            )}
                             <Link href="/dashboard" onClick={() => setIsMenuOpen(false)}>Dashboard</Link>
                             <button onClick={() => signOut()} style={{ textAlign: "left", background: "none", border: "none", padding: 0 }}>Sign Out</button>
                         </>
