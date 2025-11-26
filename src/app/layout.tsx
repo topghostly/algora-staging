@@ -3,6 +3,7 @@ import { Outfit } from "next/font/google";
 import "./globals.css";
 
 import { Providers } from "@/components/Providers";
+import Navbar from "@/components/Navbar";
 
 const outfit = Outfit({ subsets: ["latin"] });
 
@@ -19,7 +20,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={outfit.className}>
-        <Providers>{children}</Providers>
+        <Providers>
+          <Navbar />
+          {children}
+        </Providers>
       </body>
     </html>
   );
