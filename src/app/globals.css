@@ -1,0 +1,118 @@
+:root {
+  /* Brand Colors */
+  --primary: #4F46E5; /* Indigo 600 */
+  --primary-hover: #4338CA; /* Indigo 700 */
+  --primary-light: #E0E7FF; /* Indigo 100 */
+  
+  --secondary: #10B981; /* Emerald 500 */
+  --secondary-hover: #059669; /* Emerald 600 */
+  
+  --accent: #F59E0B; /* Amber 500 */
+
+  /* Neutral Colors */
+  --background: #FFFFFF;
+  --foreground: #0F172A; /* Slate 900 */
+  --muted: #64748B; /* Slate 500 */
+  --muted-light: #F1F5F9; /* Slate 100 */
+  --border: #E2E8F0; /* Slate 200 */
+  
+  /* Status Colors */
+  --success: #10B981;
+  --error: #EF4444;
+  --warning: #F59E0B;
+  --info: #3B82F6;
+
+  /* Typography */
+  --font-sans: 'Outfit', sans-serif;
+  
+  /* Spacing & Layout */
+  --radius: 8px;
+  --radius-lg: 12px;
+  --radius-sm: 4px;
+  
+  --container-width: 1200px;
+  --header-height: 64px;
+}
+
+[data-theme='dark'] {
+  --background: #0F172A; /* Slate 900 */
+  --foreground: #F8FAFC; /* Slate 50 */
+  --muted: #94A3B8; /* Slate 400 */
+  --muted-light: #1E293B; /* Slate 800 */
+  --border: #334155; /* Slate 700 */
+  
+  --primary-light: #312E81; /* Indigo 900 */
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: var(--font-sans);
+  background-color: var(--background);
+  color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* Utility Classes */
+.container {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: none;
+  font-size: 0.95rem;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid var(--border);
+  color: var(--foreground);
+}
+
+.btn-outline:hover {
+  background-color: var(--muted-light);
+  border-color: var(--muted);
+}
+
+.card {
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}

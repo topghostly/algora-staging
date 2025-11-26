@@ -1,0 +1,141 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  LEARNER
+  TUTOR
+  ADMIN
+}
+
+enum SubscriptionTier {
+  FREE
+  BASIC
+  PRO_LITE
+  PRO_PLUS
+}
+
+enum LessonType {
+  VIDEO
+  TEXT
+  QUIZ
+}
+
+enum SessionType {
+  GROUP
+  ONE_ON_ONE
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  name          String?
+  role          Role      @default(LEARNER)
+  
+  // Subscription
+  subscriptionTier SubscriptionTier @default(FREE)
+  subscriptionId   String?          // Paystack subscription code
+  credits1on1      Int              @default(0)
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  progress      Progress[]
+  bookings      Booking[]
+  sessions      Session[] // Sessions taught by this user (if Tutor)
+}
+
+model Track {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  published   Boolean  @default(false)
+  
+  modules     Module[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Module {
+  id        String   @id @default(cuid())
+  title     String
+  order     Int
+  
+  trackId   String
+  track     Track    @relation(fields: [trackId], references: [id])
+  
+  lessons   Lesson[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Lesson {
+  id          String     @id @default(cuid())
+  title       String
+  type        LessonType
+  contentUrl  String?    // Video URL or PDF URL
+  textContent String?    // Markdown content
+  order       Int
+  
+  moduleId    String
+  module      Module     @relation(fields: [moduleId], references: [id])
+  
+  progress    Progress[]
+  
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Progress {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  
+  lessonId    String
+  lesson      Lesson   @relation(fields: [lessonId], references: [id])
+  
+  completedAt DateTime @default(now())
+
+  @@unique([userId, lessonId])
+}
+
+model Session {
+  id          String      @id @default(cuid())
+  title       String
+  type        SessionType
+  startTime   DateTime
+  endTime     DateTime
+  meetingLink String?
+  
+  tutorId     String
+  tutor       User        @relation(fields: [tutorId], references: [id])
+  
+  bookings    Booking[]
+  
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Booking {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  
+  sessionId String
+  session   Session  @relation(fields: [sessionId], references: [id])
+  
+  attended  Boolean  @default(false)
+  
+  createdAt DateTime @default(now())
+
+  @@unique([userId, sessionId])
+}
