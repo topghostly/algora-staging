@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Save, Plus, Trash2, GripVertical, ChevronDown, ChevronRight, Video, FileText, MoreVertical, X, Check, Edit2 } from "lucide-react";
+import { Save, Plus, Trash2, GripVertical, Video, FileText, X, Check, Edit2, HelpCircle } from "lucide-react";
+import QuizEditor from "./QuizEditor";
 
 interface Lesson {
     id: string;
@@ -62,6 +63,7 @@ export default function TrackEditor({ track }: { track: Track }) {
 
             router.refresh();
         } catch (error) {
+            console.error(error);
             alert("Error updating track");
         } finally {
             setIsLoading(false);
@@ -88,6 +90,7 @@ export default function TrackEditor({ track }: { track: Track }) {
             setIsAddingModule(false);
             router.refresh();
         } catch (error) {
+            console.error(error);
             alert("Error creating module");
         }
     }
@@ -103,6 +106,7 @@ export default function TrackEditor({ track }: { track: Track }) {
             if (!res.ok) throw new Error("Failed to delete module");
             router.refresh();
         } catch (error) {
+            console.error(error);
             alert("Error deleting module");
         }
     }
@@ -130,6 +134,7 @@ export default function TrackEditor({ track }: { track: Track }) {
             setAddingLessonToModuleId(null);
             router.refresh();
         } catch (error) {
+            console.error(error);
             alert("Error creating lesson");
         }
     }
@@ -145,13 +150,14 @@ export default function TrackEditor({ track }: { track: Track }) {
             if (!res.ok) throw new Error("Failed to delete lesson");
             router.refresh();
         } catch (error) {
+            console.error(error);
             alert("Error deleting lesson");
         }
     }
 
     async function handleSaveLessonContent(lesson: Lesson) {
         try {
-            const body: any = {
+            const body: Partial<Lesson> = {
                 title: lesson.title,
                 type: lesson.type,
                 order: lesson.order,
@@ -159,7 +165,7 @@ export default function TrackEditor({ track }: { track: Track }) {
 
             if (lesson.type === "VIDEO") {
                 body.contentUrl = editLessonContent;
-            } else {
+            } else if (lesson.type === "TEXT") {
                 body.textContent = editLessonContent;
             }
 
@@ -174,6 +180,7 @@ export default function TrackEditor({ track }: { track: Track }) {
             setEditingLessonId(null);
             router.refresh();
         } catch (error) {
+            console.error(error);
             alert("Error updating lesson content");
         }
     }
@@ -315,6 +322,8 @@ export default function TrackEditor({ track }: { track: Track }) {
                                         <GripVertical size={16} color="var(--muted)" style={{ cursor: "grab" }} />
                                         {lesson.type === "VIDEO" ? (
                                             <Video size={16} color="var(--primary)" />
+                                        ) : lesson.type === "QUIZ" ? (
+                                            <HelpCircle size={16} color="var(--primary)" />
                                         ) : (
                                             <FileText size={16} color="var(--muted)" />
                                         )}
@@ -345,9 +354,11 @@ export default function TrackEditor({ track }: { track: Track }) {
                                         <div style={{ padding: "1rem 1.5rem", borderBottom: "1px solid var(--border-light)", backgroundColor: "var(--background)" }}>
                                             <div style={{ marginBottom: "1rem" }}>
                                                 <label className="label" style={{ fontSize: "0.85rem" }}>
-                                                    {lesson.type === "VIDEO" ? "Video URL (YouTube/Vimeo)" : "Lesson Content (Markdown)"}
+                                                    {lesson.type === "VIDEO" ? "Video URL (YouTube/Vimeo)" : lesson.type === "TEXT" ? "Lesson Content (Markdown)" : "Quiz Settings"}
                                                 </label>
-                                                {lesson.type === "VIDEO" ? (
+                                                {lesson.type === "QUIZ" ? (
+                                                    <QuizEditor lessonId={lesson.id} />
+                                                ) : lesson.type === "VIDEO" ? (
                                                     <input
                                                         className="input"
                                                         style={{ width: "100%" }}
@@ -381,10 +392,11 @@ export default function TrackEditor({ track }: { track: Track }) {
                                         className="input"
                                         style={{ width: "auto" }}
                                         value={newLessonType}
-                                        onChange={(e) => setNewLessonType(e.target.value as any)}
+                                        onChange={(e) => setNewLessonType(e.target.value as "VIDEO" | "TEXT")}
                                     >
                                         <option value="VIDEO">Video</option>
                                         <option value="TEXT">Text</option>
+                                        <option value="QUIZ">Quiz</option>
                                     </select>
                                     <input
                                         autoFocus

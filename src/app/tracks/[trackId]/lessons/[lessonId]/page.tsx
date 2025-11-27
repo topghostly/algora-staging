@@ -5,6 +5,9 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { CheckCircle, Circle, ChevronLeft, ChevronRight, PlayCircle, FileText } from "lucide-react";
 import LessonCompleteButton from "@/components/LessonCompleteButton";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import QuizViewer from "@/components/QuizViewer";
 
 export const dynamic = "force-dynamic";
 
@@ -160,10 +163,12 @@ export default async function LessonPage({ params }: LessonPageProps) {
                 <div style={{ maxWidth: "800px", margin: "0 auto" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
                         <h1 style={{ fontSize: "2rem", fontWeight: 700 }}>{currentLesson.title}</h1>
-                        <LessonCompleteButton
-                            lessonId={currentLesson.id}
-                            isCompleted={currentLesson.progress.length > 0}
-                        />
+                        {currentLesson.type !== "QUIZ" && (
+                            <LessonCompleteButton
+                                lessonId={currentLesson.id}
+                                initialCompleted={currentLesson.progress.length > 0}
+                            />
+                        )}
                     </div>
 
                     {/* Content Viewer */}
@@ -180,10 +185,18 @@ export default async function LessonPage({ params }: LessonPageProps) {
                         )}
 
                         {currentLesson.type === "TEXT" && currentLesson.textContent && (
-                            <div className="prose" style={{ lineHeight: 1.8, fontSize: "1.1rem" }}>
-                                {/* We'll need a markdown renderer later, for now just displaying text */}
-                                <pre style={{ whiteSpace: "pre-wrap", fontFamily: "inherit" }}>{currentLesson.textContent}</pre>
+                            <div className="prose" style={{ lineHeight: 1.8, fontSize: "1.1rem", maxWidth: "none" }}>
+                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                    {currentLesson.textContent}
+                                </ReactMarkdown>
                             </div>
+                        )}
+
+                        {currentLesson.type === "QUIZ" && (
+                            <QuizViewer
+                                lessonId={currentLesson.id}
+                                initialCompleted={currentLesson.progress.length > 0}
+                            />
                         )}
                     </div>
 

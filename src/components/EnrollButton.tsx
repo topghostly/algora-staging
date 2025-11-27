@@ -28,7 +28,9 @@ export default function EnrollButton({ trackId }: { trackId: string }) {
                 router.push("/dashboard");
                 router.refresh();
             } else {
-                console.error("Enrollment failed");
+                const errorData = await res.text();
+                console.error("Enrollment failed. Status:", res.status, "Body:", errorData);
+                alert(`Enrollment failed: ${res.status} ${res.statusText}`);
             }
         } catch (error) {
             console.error("Error enrolling:", error);
