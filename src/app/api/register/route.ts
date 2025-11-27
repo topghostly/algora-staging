@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { sendEmail } from "@/lib/email";
+import { WelcomeEmail } from "@/components/emails/WelcomeEmail";
 
 export async function POST(req: Request) {
     try {
@@ -37,6 +39,13 @@ export async function POST(req: Request) {
 
         // Remove password from response
         const { passwordHash, ...userWithoutPassword } = user;
+
+        // Send Welcome Email
+        await sendEmail({
+            to: email,
+            subject: "Welcome to Livermore Duckwald!",
+            react: WelcomeEmail({ name: name || "Learner" }) as any
+        });
 
         return NextResponse.json(userWithoutPassword);
     } catch (error) {

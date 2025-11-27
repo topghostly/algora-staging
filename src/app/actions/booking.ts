@@ -5,6 +5,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { sendEmail } from "@/lib/email";
+import { BookingConfirmationEmail } from "@/components/emails/BookingConfirmationEmail";
 
 export async function bookSession(sessionId: string) {
     const session = await getServerSession(authOptions);
@@ -71,12 +73,35 @@ export async function bookSession(sessionId: string) {
     }
 
     // 5. Create booking
-    await prisma.booking.create({
+    const booking = await prisma.booking.create({
         data: {
             userId,
             sessionId
+        },
+        include: {
+            session: {
+                include: {
+                    tutor: { select: { name: true } }
+                }
+            },
+            user: { select: { name: true, email: true } }
         }
     });
+
+    // Send Booking Confirmation Email
+    if (booking.user.email) {
+        await sendEmail({
+            to: booking.user.email,
+            subject: "Booking Confirmed: " + booking.session.title,
+            react: BookingConfirmationEmail({
+                userName: booking.user.name || "Learner",
+                sessionTitle: booking.session.title,
+                tutorName: booking.session.tutor.name || "Tutor",
+                startTime: booking.session.startTime,
+                meetingLink: booking.session.meetingLink
+            }) as any
+        });
+    }
 
     revalidatePath("/dashboard/sessions");
     revalidatePath("/tutor/sessions");

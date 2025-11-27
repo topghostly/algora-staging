@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyPaystackSignature } from "@/lib/paystack";
+import { sendEmail } from "@/lib/email";
+import { SubscriptionSuccessEmail } from "@/components/emails/SubscriptionSuccessEmail";
 
 export async function POST(req: Request) {
     const body = await req.json();
@@ -32,6 +34,8 @@ export async function POST(req: Request) {
         }
 
         if (tier !== "FREE") {
+            const user = await prisma.user.findUnique({ where: { email } });
+
             await prisma.user.update({
                 where: { email },
                 data: {
@@ -42,6 +46,16 @@ export async function POST(req: Request) {
                     // Ideally, we should handle rollovers or resets more carefully, 
                     // but setting it is safe for the initial payment.
                 }
+            });
+
+            // Send Subscription Success Email
+            await sendEmail({
+                to: email,
+                subject: "Subscription Upgraded to " + tier,
+                react: SubscriptionSuccessEmail({
+                    userName: user?.name || "Learner",
+                    planName: tier
+                }) as any
             });
         }
     }
