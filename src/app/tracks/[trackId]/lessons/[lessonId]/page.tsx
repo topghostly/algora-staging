@@ -63,8 +63,8 @@ async function getLessonData(trackId: string, lessonId: string, userId: string) 
     let nextLesson = null;
     let prevLesson = null;
 
-    const allLessons = track.modules.flatMap(m => m.lessons);
-    const currentIndex = allLessons.findIndex(l => l.id === lessonId);
+    const allLessons = track.modules.flatMap((m: any) => m.lessons);
+    const currentIndex = allLessons.findIndex((l: any) => l.id === lessonId);
 
     if (currentIndex !== -1) {
         currentLesson = allLessons[currentIndex];
@@ -74,6 +74,10 @@ async function getLessonData(trackId: string, lessonId: string, userId: string) 
 
     return { track, currentLesson, nextLesson, prevLesson };
 }
+
+import { canAccessLesson } from "@/lib/access-control";
+
+// ... existing imports
 
 export default async function LessonPage({ params }: LessonPageProps) {
     const session = await getServerSession(authOptions);
@@ -90,6 +94,14 @@ export default async function LessonPage({ params }: LessonPageProps) {
     }
 
     const { track, currentLesson, nextLesson, prevLesson } = data;
+    const isCompleted = currentLesson.progress.length > 0;
+
+    // Access Control Check
+    const hasAccess = isCompleted || await canAccessLesson(
+        session.user.id,
+        currentLesson.type as "VIDEO" | "TEXT" | "QUIZ",
+        session.user.subscriptionTier as "FREE" | "BASIC" | "PRO_LITE" | "PRO_PLUS"
+    );
 
     return (
         <div style={{ display: "flex", height: "calc(100vh - 64px)" }}>
@@ -110,7 +122,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
                 </div>
 
                 <div style={{ flex: 1, overflowY: "auto" }}>
-                    {track.modules.map((module) => (
+                    {track.modules.map((module: any) => (
                         <div key={module.id} style={{ borderBottom: "1px solid var(--border)" }}>
                             <div style={{
                                 padding: "1rem 1.5rem",
@@ -122,9 +134,9 @@ export default async function LessonPage({ params }: LessonPageProps) {
                                 {module.title}
                             </div>
                             <div>
-                                {module.lessons.map((lesson) => {
+                                {module.lessons.map((lesson: any) => {
                                     const isActive = lesson.id === currentLesson.id;
-                                    const isCompleted = lesson.progress.length > 0;
+                                    const isLessonCompleted = lesson.progress.length > 0;
 
                                     return (
                                         <Link
@@ -142,7 +154,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
                                                 fontSize: "0.9rem"
                                             }}
                                         >
-                                            {isCompleted ? (
+                                            {isLessonCompleted ? (
                                                 <CheckCircle size={16} color="var(--primary)" />
                                             ) : (
                                                 <Circle size={16} color="var(--muted)" />
@@ -163,40 +175,63 @@ export default async function LessonPage({ params }: LessonPageProps) {
                 <div style={{ maxWidth: "800px", margin: "0 auto" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
                         <h1 style={{ fontSize: "2rem", fontWeight: 700 }}>{currentLesson.title}</h1>
-                        {currentLesson.type !== "QUIZ" && (
+                        {hasAccess && currentLesson.type !== "QUIZ" && (
                             <LessonCompleteButton
                                 lessonId={currentLesson.id}
-                                initialCompleted={currentLesson.progress.length > 0}
+                                initialCompleted={isCompleted}
                             />
                         )}
                     </div>
 
                     {/* Content Viewer */}
                     <div style={{ marginBottom: "3rem" }}>
-                        {currentLesson.type === "VIDEO" && currentLesson.contentUrl && (
-                            <div style={{ position: "relative", paddingBottom: "56.25%", height: 0, overflow: "hidden", borderRadius: "var(--radius)", backgroundColor: "#000" }}>
-                                <iframe
-                                    src={getEmbedUrl(currentLesson.contentUrl)}
-                                    style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: 0 }}
-                                    allowFullScreen
-                                    title={currentLesson.title}
-                                />
+                        {!hasAccess ? (
+                            <div style={{
+                                padding: "3rem",
+                                border: "1px solid var(--border)",
+                                borderRadius: "var(--radius)",
+                                textAlign: "center",
+                                backgroundColor: "var(--muted-light)"
+                            }}>
+                                <div style={{ marginBottom: "1.5rem" }}>
+                                    <PlayCircle size={48} color="var(--muted)" style={{ margin: "0 auto" }} />
+                                </div>
+                                <h2 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "1rem" }}>Monthly Limit Reached</h2>
+                                <p style={{ color: "var(--muted)", marginBottom: "2rem", maxWidth: "400px", margin: "0 auto 2rem" }}>
+                                    You have reached your limit of 3 free videos this month. Upgrade to Basic for unlimited access to all content.
+                                </p>
+                                <Link href="/pricing" className="btn btn-primary">
+                                    Upgrade to Basic
+                                </Link>
                             </div>
-                        )}
+                        ) : (
+                            <>
+                                {currentLesson.type === "VIDEO" && currentLesson.contentUrl && (
+                                    <div style={{ position: "relative", paddingBottom: "56.25%", height: 0, overflow: "hidden", borderRadius: "var(--radius)", backgroundColor: "#000" }}>
+                                        <iframe
+                                            src={getEmbedUrl(currentLesson.contentUrl)}
+                                            style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: 0 }}
+                                            allowFullScreen
+                                            title={currentLesson.title}
+                                        />
+                                    </div>
+                                )}
 
-                        {currentLesson.type === "TEXT" && currentLesson.textContent && (
-                            <div className="prose" style={{ lineHeight: 1.8, fontSize: "1.1rem", maxWidth: "none" }}>
-                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                    {currentLesson.textContent}
-                                </ReactMarkdown>
-                            </div>
-                        )}
+                                {currentLesson.type === "TEXT" && currentLesson.textContent && (
+                                    <div className="prose" style={{ lineHeight: 1.8, fontSize: "1.1rem", maxWidth: "none" }}>
+                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                            {currentLesson.textContent}
+                                        </ReactMarkdown>
+                                    </div>
+                                )}
 
-                        {currentLesson.type === "QUIZ" && (
-                            <QuizViewer
-                                lessonId={currentLesson.id}
-                                initialCompleted={currentLesson.progress.length > 0}
-                            />
+                                {currentLesson.type === "QUIZ" && (
+                                    <QuizViewer
+                                        lessonId={currentLesson.id}
+                                        initialCompleted={isCompleted}
+                                    />
+                                )}
+                            </>
                         )}
                     </div>
 

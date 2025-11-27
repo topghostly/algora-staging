@@ -1,7 +1,36 @@
+"use client";
+
 import Link from "next/link";
-import { Check } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
+
+const PricingCard = dynamic(() => import("@/components/PricingCard"), { ssr: false });
 
 export default function PricingPage() {
+    const { data: session } = useSession();
+    const router = useRouter();
+
+    const handleSubscribe = (planCode: string, amount: number) => {
+        if (!session?.user?.email) {
+            router.push(`/auth/signup?plan=${planCode}`); // Redirect to signup if not logged in
+            return;
+        }
+
+        const config = {
+            reference: (new Date()).getTime().toString(),
+            email: session.user.email,
+            amount: amount * 100, // Paystack expects amount in kobo
+            publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
+            plan: planCode,
+        };
+
+        // We can't use the hook directly in the callback, so we need a component or a different approach.
+        // Actually, usePaystackPayment returns a function 'initializePayment'.
+        // But we need to call the hook at the top level.
+        // Let's make PricingCard handle the hook.
+    };
+
     return (
         <main className="container" style={{ padding: "6rem 0" }}>
             <div style={{ textAlign: "center", marginBottom: "5rem" }}>
@@ -35,7 +64,7 @@ export default function PricingPage() {
                 {/* Basic Tier */}
                 <PricingCard
                     title="Basic"
-                    price="₦9,000"
+                    price="₦2,000"
                     period="/month"
                     description="Full access to all course content and community events."
                     features={[
@@ -45,14 +74,15 @@ export default function PricingPage() {
                         "Certificate of completion"
                     ]}
                     buttonText="Join Basic"
-                    buttonLink="/auth/signup?plan=basic"
+                    planCode={process.env.NEXT_PUBLIC_PAYSTACK_PLAN_BASIC}
+                    amount={2000}
                     variant="outline"
                 />
 
                 {/* Pro Lite Tier */}
                 <PricingCard
                     title="Pro Lite"
-                    price="₦12,000"
+                    price="₦5,999"
                     period="/month"
                     description="Add personal mentorship to accelerate your growth."
                     features={[
@@ -62,7 +92,8 @@ export default function PricingPage() {
                         "Career guidance"
                     ]}
                     buttonText="Join Pro Lite"
-                    buttonLink="/auth/signup?plan=pro_lite"
+                    planCode={process.env.NEXT_PUBLIC_PAYSTACK_PLAN_PRO_LITE}
+                    amount={5999}
                     variant="primary"
                     popular={true}
                 />
@@ -70,7 +101,7 @@ export default function PricingPage() {
                 {/* Pro Plus Tier */}
                 <PricingCard
                     title="Pro Plus"
-                    price="₦18,000"
+                    price="₦8,999"
                     period="/month"
                     description="Maximum mentorship for serious career switchers."
                     features={[
@@ -81,95 +112,11 @@ export default function PricingPage() {
                         "Direct mentor access"
                     ]}
                     buttonText="Join Pro Plus"
-                    buttonLink="/auth/signup?plan=pro_plus"
+                    planCode={process.env.NEXT_PUBLIC_PAYSTACK_PLAN_PRO_PLUS}
+                    amount={8999}
                     variant="outline"
                 />
             </div>
         </main>
-    );
-}
-
-function PricingCard({
-    title,
-    price,
-    period,
-    description,
-    features,
-    buttonText,
-    buttonLink,
-    variant = "outline",
-    popular = false
-}: {
-    title: string,
-    price: string,
-    period?: string,
-    description: string,
-    features: string[],
-    buttonText: string,
-    buttonLink: string,
-    variant?: "primary" | "outline",
-    popular?: boolean
-}) {
-    return (
-        <div className="card" style={{
-            padding: "2rem",
-            position: "relative",
-            border: popular ? "2px solid var(--primary)" : "1px solid var(--border)",
-            transform: popular ? "scale(1.05)" : "none",
-            zIndex: popular ? 10 : 1,
-            boxShadow: popular ? "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" : "none",
-            height: "100%",
-            display: "flex",
-            flexDirection: "column"
-        }}>
-            {popular && (
-                <div style={{
-                    position: "absolute",
-                    top: "-12px",
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    backgroundColor: "var(--primary)",
-                    color: "white",
-                    padding: "0.25rem 1rem",
-                    borderRadius: "99px",
-                    fontSize: "0.85rem",
-                    fontWeight: 600
-                }}>
-                    MOST POPULAR
-                </div>
-            )}
-
-            <h3 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "0.5rem" }}>{title}</h3>
-            <div style={{ display: "flex", alignItems: "baseline", marginBottom: "1rem" }}>
-                <span style={{ fontSize: "2rem", fontWeight: 800 }}>{price}</span>
-                {period && <span style={{ color: "var(--muted)", marginLeft: "0.25rem", fontSize: "0.9rem" }}>{period}</span>}
-            </div>
-            <p style={{ color: "var(--muted)", marginBottom: "2rem", lineHeight: 1.5, fontSize: "0.95rem" }}>{description}</p>
-
-            <ul style={{ listStyle: "none", padding: 0, margin: "0 0 2rem 0", display: "flex", flexDirection: "column", gap: "0.75rem", flex: 1 }}>
-                {features.map((feature, i) => (
-                    <li key={i} style={{ display: "flex", alignItems: "start", gap: "0.75rem" }}>
-                        <div style={{
-                            backgroundColor: popular ? "var(--primary-light)" : "var(--muted-light)",
-                            borderRadius: "50%",
-                            padding: "0.25rem",
-                            display: "flex",
-                            marginTop: "0.1rem"
-                        }}>
-                            <Check size={12} color={popular ? "var(--primary)" : "var(--muted)"} />
-                        </div>
-                        <span style={{ fontSize: "0.9rem" }}>{feature}</span>
-                    </li>
-                ))}
-            </ul>
-
-            <Link
-                href={buttonLink}
-                className={`btn ${variant === "primary" ? "btn-primary" : "btn-outline"}`}
-                style={{ width: "100%", textAlign: "center", justifyContent: "center", padding: "0.75rem", marginTop: "auto" }}
-            >
-                {buttonText}
-            </Link>
-        </div>
     );
 }

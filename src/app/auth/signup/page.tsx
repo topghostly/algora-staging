@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-export default function SignUp() {
+function SignUpForm() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const plan = searchParams.get("plan");
+
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -27,7 +30,14 @@ export default function SignUp() {
             });
 
             if (res.ok) {
-                router.push("/auth/signin?registered=true");
+                // If a plan was selected, redirect to login with callback to pricing
+                // Otherwise just go to login
+                const callbackUrl = plan ? encodeURIComponent("/pricing") : "";
+                const redirectUrl = plan
+                    ? `/auth/signin?callbackUrl=${callbackUrl}&registered=true`
+                    : `/auth/signin?registered=true`;
+
+                router.push(redirectUrl);
             } else {
                 const data = await res.json();
                 setError(data.error || "Registration failed");
@@ -125,5 +135,13 @@ export default function SignUp() {
                 </p>
             </div>
         </div>
+    );
+}
+
+export default function SignUp() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <SignUpForm />
+        </Suspense>
     );
 }

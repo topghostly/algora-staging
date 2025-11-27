@@ -29,6 +29,10 @@ export default withAuth(
         if (req.nextUrl.pathname.startsWith("/admin") && token?.role !== "ADMIN") {
             return NextResponse.redirect(new URL("/dashboard", req.url));
         }
+
+        if (req.nextUrl.pathname.startsWith("/tutor") && token?.role !== "TUTOR" && token?.role !== "ADMIN") {
+            return NextResponse.redirect(new URL("/dashboard", req.url));
+        }
     },
     {
         callbacks: {
@@ -44,5 +48,5 @@ export default withAuth(
 );
 
 export const config = {
-    matcher: ["/dashboard/:path*", "/admin/:path*", "/auth/:path*"],
+    matcher: ["/dashboard/:path*", "/admin/:path*", "/auth/:path*", "/tutor/:path*"],
 };

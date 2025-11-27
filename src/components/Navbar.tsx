@@ -43,12 +43,18 @@ export default function Navbar() {
                 <div className="desktop-nav" style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
                     <Link href="/tracks" style={{ fontWeight: 500, color: "var(--muted)" }}>Tracks</Link>
                     <Link href="/pricing" style={{ fontWeight: 500, color: "var(--muted)" }}>Pricing</Link>
+                    <Link href="/dashboard/sessions" style={{ fontWeight: 500, color: "var(--muted)" }}>Sessions</Link>
 
                     {session ? (
                         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
                             {(session.user as any).role === "ADMIN" && (
                                 <Link href="/admin" style={{ fontWeight: 500, color: "var(--primary)" }}>
                                     Admin
+                                </Link>
+                            )}
+                            {((session.user as any).role === "TUTOR" || (session.user as any).role === "ADMIN") && (
+                                <Link href="/tutor" style={{ fontWeight: 500, color: "var(--primary)" }}>
+                                    Tutor
                                 </Link>
                             )}
                             <Link href="/dashboard" className="btn btn-outline">Dashboard</Link>
@@ -89,11 +95,15 @@ export default function Navbar() {
                 }}>
                     <Link href="/tracks" onClick={() => setIsMenuOpen(false)}>Tracks</Link>
                     <Link href="/pricing" onClick={() => setIsMenuOpen(false)}>Pricing</Link>
+                    <Link href="/dashboard/sessions" onClick={() => setIsMenuOpen(false)}>Sessions</Link>
                     <hr style={{ border: "none", borderTop: "1px solid var(--border)" }} />
                     {session ? (
                         <>
                             {(session.user as any).role === "ADMIN" && (
                                 <Link href="/admin" onClick={() => setIsMenuOpen(false)} style={{ color: "var(--primary)", fontWeight: 600 }}>Admin</Link>
+                            )}
+                            {((session.user as any).role === "TUTOR" || (session.user as any).role === "ADMIN") && (
+                                <Link href="/tutor" onClick={() => setIsMenuOpen(false)} style={{ color: "var(--primary)", fontWeight: 600 }}>Tutor</Link>
                             )}
                             <Link href="/dashboard" onClick={() => setIsMenuOpen(false)}>Dashboard</Link>
                             <button onClick={() => signOut()} style={{ textAlign: "left", background: "none", border: "none", padding: 0 }}>Sign Out</button>
