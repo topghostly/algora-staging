@@ -82,7 +82,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section style={{ padding: "5rem 0", backgroundColor: "var(--secondary)", color: "white" }}>
+      <section style={{ padding: "5rem 0 10rem 0", backgroundColor: "var(--secondary)", color: "white" }}>
         <div className="container" style={{ textAlign: "center" }}>
           <h2 style={{ fontSize: "2.5rem", fontWeight: 700, marginBottom: "1.5rem" }}>Ready to start your journey?</h2>
           <p style={{ fontSize: "1.2rem", opacity: 0.9, maxWidth: "600px", margin: "0 auto 2.5rem" }}>

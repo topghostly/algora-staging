@@ -51,7 +51,7 @@ export async function POST(req: Request) {
             // Send Subscription Success Email
             await sendEmail({
                 to: email,
-                subject: "Subscription Upgraded to " + tier,
+                subject: "Your Algora Subscription (" + tier + ")",
                 react: SubscriptionSuccessEmail({
                     userName: user?.name || "Learner",
                     planName: tier

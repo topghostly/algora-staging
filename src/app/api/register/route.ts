@@ -43,7 +43,7 @@ export async function POST(req: Request) {
         // Send Welcome Email
         await sendEmail({
             to: email,
-            subject: "Welcome to Livermore Duckwald!",
+            subject: "Welcome to Algora",
             react: WelcomeEmail({ name: name || "Learner" }) as any
         });
 

@@ -32,11 +32,14 @@ export default function PricingPage() {
     };
 
     return (
-        <main className="container" style={{ padding: "6rem 0" }}>
+        <main className="container" style={{ padding: "6rem 0 10rem 0" }}>
             <div style={{ textAlign: "center", marginBottom: "5rem" }}>
                 <h1 style={{ fontSize: "3rem", fontWeight: 700, marginBottom: "1rem" }}>Simple, Transparent Pricing</h1>
-                <p style={{ fontSize: "1.2rem", color: "var(--muted)", maxWidth: "600px", margin: "0 auto" }}>
+                <p style={{ fontSize: "1.2rem", color: "var(--muted)", maxWidth: "600px", margin: "0 auto 1rem" }}>
                     Invest in your future for less than the cost of a daily coffee.
+                </p>
+                <p style={{ fontSize: "0.9rem", color: "var(--muted)", backgroundColor: "var(--muted-light)", display: "inline-block", padding: "0.5rem 1rem", borderRadius: "2rem" }}>
+                    ℹ️ <strong>Note:</strong> "Session Credits" are used to book 1-on-1 mentorship sessions.
                 </p>
             </div>
 
@@ -87,7 +90,7 @@ export default function PricingPage() {
                     description="Add personal mentorship to accelerate your growth."
                     features={[
                         "Everything in Basic",
-                        "1 One-on-One session/month",
+                        "1 One-on-One Session Credit/month",
                         "Priority code reviews",
                         "Career guidance"
                     ]}
@@ -106,7 +109,7 @@ export default function PricingPage() {
                     description="Maximum mentorship for serious career switchers."
                     features={[
                         "Everything in Basic",
-                        "4 One-on-One sessions/month",
+                        "4 One-on-One Session Credits/month",
                         "Weekly 1:1 check-ins",
                         "Mock interviews",
                         "Direct mentor access"

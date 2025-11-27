@@ -4,7 +4,7 @@ const resend = process.env.RESEND_API_KEY
     ? new Resend(process.env.RESEND_API_KEY)
     : null;
 
-const FROM_EMAIL = 'onboarding@resend.dev'; // Default Resend testing domain
+const FROM_EMAIL = 'hello@notifications.joinalgora.com';
 
 export async function sendEmail({ to, subject, react }: { to: string, subject: string, react: React.ReactElement }) {
     if (!resend) {
