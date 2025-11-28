@@ -62,12 +62,13 @@ export default function PricingPage() {
                     buttonText="Start Free"
                     buttonLink="/auth/signup"
                     variant="outline"
+                    isCurrentPlan={!!session?.user && (session.user.subscriptionTier === "FREE" || !session.user.subscriptionTier)}
                 />
 
                 {/* Basic Tier */}
                 <PricingCard
                     title="Basic"
-                    price="₦2,000"
+                    price="₦4,999"
                     period="/month"
                     description="Full access to all course content and community events."
                     features={[
@@ -78,14 +79,15 @@ export default function PricingPage() {
                     ]}
                     buttonText="Join Basic"
                     planCode={process.env.NEXT_PUBLIC_PAYSTACK_PLAN_BASIC}
-                    amount={2000}
+                    amount={4999}
                     variant="outline"
+                    isCurrentPlan={session?.user?.subscriptionTier === "BASIC"}
                 />
 
                 {/* Pro Lite Tier */}
                 <PricingCard
                     title="Pro Lite"
-                    price="₦5,999"
+                    price="₦9,499"
                     period="/month"
                     description="Add personal mentorship to accelerate your growth."
                     features={[
@@ -96,15 +98,16 @@ export default function PricingPage() {
                     ]}
                     buttonText="Join Pro Lite"
                     planCode={process.env.NEXT_PUBLIC_PAYSTACK_PLAN_PRO_LITE}
-                    amount={5999}
+                    amount={9499}
                     variant="primary"
                     popular={true}
+                    isCurrentPlan={session?.user?.subscriptionTier === "PRO_LITE"}
                 />
 
                 {/* Pro Plus Tier */}
                 <PricingCard
                     title="Pro Plus"
-                    price="₦8,999"
+                    price="₦14,999"
                     period="/month"
                     description="Maximum mentorship for serious career switchers."
                     features={[
@@ -116,8 +119,9 @@ export default function PricingPage() {
                     ]}
                     buttonText="Join Pro Plus"
                     planCode={process.env.NEXT_PUBLIC_PAYSTACK_PLAN_PRO_PLUS}
-                    amount={8999}
+                    amount={14999}
                     variant="outline"
+                    isCurrentPlan={session?.user?.subscriptionTier === "PRO_PLUS"}
                 />
             </div>
         </main>

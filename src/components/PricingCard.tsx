@@ -17,7 +17,8 @@ export default function PricingCard({
     planCode,
     amount,
     variant = "outline",
-    popular = false
+    popular = false,
+    isCurrentPlan = false
 }: {
     title: string,
     price: string,
@@ -29,7 +30,8 @@ export default function PricingCard({
     planCode?: string,
     amount?: number,
     variant?: "primary" | "outline",
-    popular?: boolean
+    popular?: boolean,
+    isCurrentPlan?: boolean
 }) {
     const { data: session } = useSession();
     const router = useRouter();
@@ -54,6 +56,8 @@ export default function PricingCard({
     };
 
     const handleClick = () => {
+        if (isCurrentPlan) return;
+
         console.log("PricingCard clicked", { planCode, buttonLink, session: !!session });
 
 
@@ -72,19 +76,43 @@ export default function PricingCard({
         }
     };
 
+    const borderColor = isCurrentPlan ? "var(--success)" : (popular ? "var(--primary)" : "var(--border)");
+    const shadow = isCurrentPlan || popular ? "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" : "none";
+    const scale = isCurrentPlan || popular ? "scale(1.02)" : "none"; // Reduced scale slightly
+    const zIndex = isCurrentPlan ? 20 : (popular ? 10 : 1);
+
     return (
         <div className="card" style={{
             padding: "2rem",
             position: "relative",
-            border: popular ? "2px solid var(--primary)" : "1px solid var(--border)",
-            transform: popular ? "scale(1.05)" : "none",
-            zIndex: popular ? 10 : 1,
-            boxShadow: popular ? "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" : "none",
+            border: `2px solid ${borderColor}`,
+            transform: scale,
+            zIndex: zIndex,
+            boxShadow: shadow,
             height: "100%",
             display: "flex",
-            flexDirection: "column"
+            flexDirection: "column",
+            backgroundColor: isCurrentPlan ? "var(--bg-green-500/10)" : "var(--background)"
         }}>
-            {popular && (
+            {isCurrentPlan && (
+                <div style={{
+                    position: "absolute",
+                    top: "-12px",
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    backgroundColor: "var(--success)",
+                    color: "white",
+                    padding: "0.25rem 1rem",
+                    borderRadius: "99px",
+                    fontSize: "0.85rem",
+                    fontWeight: 600,
+                    whiteSpace: "nowrap"
+                }}>
+                    CURRENT PLAN
+                </div>
+            )}
+
+            {!isCurrentPlan && popular && (
                 <div style={{
                     position: "absolute",
                     top: "-12px",
@@ -112,13 +140,13 @@ export default function PricingCard({
                 {features.map((feature, i) => (
                     <li key={i} style={{ display: "flex", alignItems: "start", gap: "0.75rem" }}>
                         <div style={{
-                            backgroundColor: popular ? "var(--primary-light)" : "var(--muted-light)",
+                            backgroundColor: isCurrentPlan ? "var(--green-100)" : (popular ? "var(--primary-light)" : "var(--muted-light)"),
                             borderRadius: "50%",
                             padding: "0.25rem",
                             display: "flex",
                             marginTop: "0.1rem"
                         }}>
-                            <Check size={12} color={popular ? "var(--primary)" : "var(--muted)"} />
+                            <Check size={12} color={isCurrentPlan ? "var(--success)" : (popular ? "var(--primary)" : "var(--muted)")} />
                         </div>
                         <span style={{ fontSize: "0.9rem" }}>{feature}</span>
                     </li>
@@ -127,10 +155,22 @@ export default function PricingCard({
 
             <button
                 onClick={handleClick}
+                disabled={isCurrentPlan}
                 className={`btn ${variant === "primary" ? "btn-primary" : "btn-outline"}`}
-                style={{ width: "100%", textAlign: "center", justifyContent: "center", padding: "0.75rem", marginTop: "auto" }}
+                style={{
+                    width: "100%",
+                    textAlign: "center",
+                    justifyContent: "center",
+                    padding: "0.75rem",
+                    marginTop: "auto",
+                    opacity: isCurrentPlan ? 0.7 : 1,
+                    cursor: isCurrentPlan ? "default" : "pointer",
+                    backgroundColor: isCurrentPlan ? "var(--muted-light)" : undefined,
+                    color: isCurrentPlan ? "var(--muted)" : undefined,
+                    borderColor: isCurrentPlan ? "transparent" : undefined
+                }}
             >
-                {buttonText}
+                {isCurrentPlan ? "Current Plan" : buttonText}
             </button>
         </div>
     );

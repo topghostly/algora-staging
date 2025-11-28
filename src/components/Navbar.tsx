@@ -57,6 +57,7 @@ export default function Navbar() {
                                     Tutor
                                 </Link>
                             )}
+                            <Link href="/dashboard/profile" style={{ fontWeight: 500, color: "var(--muted)" }}>Profile</Link>
                             <Link href="/dashboard" className="btn btn-outline">Dashboard</Link>
                             <button
                                 onClick={() => signOut()}
@@ -105,6 +106,7 @@ export default function Navbar() {
                             {((session.user as any).role === "TUTOR" || (session.user as any).role === "ADMIN") && (
                                 <Link href="/tutor" onClick={() => setIsMenuOpen(false)} style={{ color: "var(--primary)", fontWeight: 600 }}>Tutor</Link>
                             )}
+                            <Link href="/dashboard/profile" onClick={() => setIsMenuOpen(false)}>Profile</Link>
                             <Link href="/dashboard" onClick={() => setIsMenuOpen(false)}>Dashboard</Link>
                             <button onClick={() => signOut()} style={{ textAlign: "left", background: "none", border: "none", padding: 0 }}>Sign Out</button>
                         </>
