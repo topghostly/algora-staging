@@ -5,13 +5,14 @@ import { sendEmail } from "@/lib/email";
 import { SubscriptionSuccessEmail } from "@/components/emails/SubscriptionSuccessEmail";
 
 export async function POST(req: Request) {
-    const body = await req.json();
+    const bodyText = await req.text();
     const signature = req.headers.get("x-paystack-signature");
 
-    if (!signature || !verifyPaystackSignature(body, signature)) {
+    if (!signature || !verifyPaystackSignature(bodyText, signature)) {
         return NextResponse.json({ message: "Invalid signature" }, { status: 400 });
     }
 
+    const body = JSON.parse(bodyText);
     const event = body.event;
     const data = body.data;
 
