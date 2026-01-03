@@ -3,12 +3,21 @@ import { prisma } from "@/lib/prisma";
 import { BookOpen, Clock, ArrowRight } from "lucide-react";
 import EnrollButton from "@/components/EnrollButton";
 import Image from "next/image";
+import TrackSearch from "@/components/TrackSearch";
 
 export const dynamic = "force-dynamic";
 
-async function getTracks() {
+async function getTracks(search?: string) {
   const tracks = await prisma.track.findMany({
-    where: { published: true },
+    where: {
+      published: true,
+      OR: search
+        ? [
+            { title: { contains: search, mode: "insensitive" } },
+            { description: { contains: search, mode: "insensitive" } },
+          ]
+        : undefined,
+    },
     include: {
       _count: {
         select: { modules: true },
@@ -19,8 +28,13 @@ async function getTracks() {
   return tracks;
 }
 
-export default async function TracksPage() {
-  const tracks = await getTracks();
+export default async function TracksPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ search?: string }>;
+}) {
+  const { search } = await searchParams;
+  const tracks = await getTracks(search);
 
   //   [
   //     {
@@ -39,7 +53,7 @@ export default async function TracksPage() {
   //       id: "cmih9h7bv0002qcvnrmex9fr7",
   //       title: "Data Analytics Roadmap",
   //       description:
-  //         "Unlock the skills that power today’s most data-driven teams.\nThe Data Analytics Track is your complete, end-to-end pathway into the world of analytics—designed for absolute beginners and ambitious career-switchers ready to build real expertise.\n\nAcross four practical modules—Microsoft Excel, SQL for Analytics, Power BI, and Looker Studio—you’ll learn how to clean, analyze, visualize, and tell compelling stories with data. Each module stacks on the next, giving you both the technical skills and the confidence to solve real business problems from day one.\n\nBy the end of this track, you’ll be able to\n✔️ Make sense of raw datasets using Excel\n✔️ Write clean, efficient SQL queries to answer business questions\n✔️ Build interactive dashboards in Power BI\n✔️ Create sleek, shareable reports using Looker Studio\n✔️ Understand how analysts think, work, and deliver value\n✔️ Translate data into insights that get attention\n\nWhether you’re aiming for your first analyst role or looking to stand out at work, this track gives you the skills (and the bragging rights) to call yourself a Data Analyst with confidence.\n\nLet’s turn “I’m curious about data” into “I’m ready for the job.”",
+  //         "Unlock the skills that power today’s most data-driven teams.\nThe Data Analytics Track is your complete, end-to-end pathway into the world of analytics—designed for absolute beginners and ambitious career-switchers ready to build real expertise.\n\nAcross four practical modules—Microsoft Excel, SQL for Analytics, Power BI, and Looker Studio—you’ll learn how to clean, analyze, visualize, and tell compelling stories with data. Each module stacks on the next, giving you both the technical skills and the confidence to solve real business problems from day one.\n\nBy the end of this track, you’ll be able\n✔️ Make sense of raw datasets using Excel\n✔️ Write clean, efficient SQL queries to answer business questions\n✔️ Build interactive dashboards in Power BI\n✔️ Create sleek, shareable reports using Looker Studio\n✔️ Understand how analysts think, work, and deliver value\n✔️ Translate data into insights that get attention\n\nWhether you’re aiming for your first analyst role or looking to stand out at work, this track gives you the skills (and the bragging rights) to call yourself a Data Analyst with confidence.\n\nLet’s turn “I’m curious about data” into “I’m ready for the job.”",
   //       published: true,
   //       createdAt: "2025-11-27T09:58:54.418Z",
   //       updatedAt: "2025-11-27T10:10:10.963Z",
@@ -72,7 +86,7 @@ export default async function TracksPage() {
         >
           Launching the next generation of African Tech Talent
         </div>
-        <div style={{ textAlign: "center", marginBottom: "4rem" }}>
+        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
           <h1
             style={{ fontSize: "3rem", fontWeight: 700, marginBottom: "1rem" }}
           >
@@ -90,6 +104,11 @@ export default async function TracksPage() {
             developer.
           </p>
         </div>
+
+        <div className="container">
+          <TrackSearch />
+        </div>
+
         <div className="container">
           <Image
             src="/images/man_holding_binoculars_with_plants.svg"
@@ -117,25 +136,28 @@ export default async function TracksPage() {
               marginBottom: "2rem",
               display: "flex",
               justifyContent: "space-between",
+              alignItems: "center",
             }}
           >
             <h3 style={{ fontSize: "2rem", fontWeight: 700 }}>
-              Recommended Tracks
+              {search ? `Search results for "${search}"` : "Recommended Tracks"}
             </h3>
 
-            <Link
-              href="/tracks"
-              className="btn btn-outline"
-              style={{
-                padding: "0.75rem 2rem",
-                fontSize: "0.9rem",
-                display: "flex",
-                alignItems: "center",
-                gap: "0.5rem",
-              }}
-            >
-              Explore All Tracks
-            </Link>
+            {!search && (
+              <Link
+                href="/tracks"
+                className="btn btn-outline"
+                style={{
+                  padding: "0.75rem 2rem",
+                  fontSize: "0.9rem",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                }}
+              >
+                Explore All Tracks
+              </Link>
+            )}
           </div>
           <div
             style={{
@@ -243,15 +265,28 @@ export default async function TracksPage() {
                   padding: "4rem",
                   backgroundColor: "var(--muted-light)",
                   borderRadius: "var(--radius)",
+                  border: "1px dashed var(--border)",
                 }}
               >
                 <h3 style={{ marginBottom: "1rem" }}>
-                  No tracks available yet
+                  {search
+                    ? `No tracks found matching "${search}"`
+                    : "No tracks available yet"}
                 </h3>
                 <p style={{ color: "var(--muted)" }}>
-                  Check back soon! We are working hard to create amazing content
-                  for you.
+                  {search
+                    ? "Try searching for something else or browse all tracks."
+                    : "Check back soon! We are working hard to create amazing content for you."}
                 </p>
+                {search && (
+                  <Link
+                    href="/tracks"
+                    className="btn btn-primary"
+                    style={{ marginTop: "1.5rem" }}
+                  >
+                    Clear Search
+                  </Link>
+                )}
               </div>
             )}
           </div>
