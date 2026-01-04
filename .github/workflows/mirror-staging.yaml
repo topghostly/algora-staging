@@ -1,4 +1,4 @@
-name: Mirror staging branch to personal repo
+name: Mirror staging to personal repo
 
 on:
   push:
@@ -14,15 +14,20 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: staging
-          fetch-depth: 0
+          fetch-depth: 0 # important for mirroring
 
-      - name: Push staging to personal repo
-        env:
-          PERSONAL_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
+      - name: Configure git identity
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
 
+      - name: Add personal repo as remote
+        env:
+          PERSONAL_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+        run: |
+          git remote remove personal || true
           git remote add personal https://x-access-token:${PERSONAL_TOKEN}@github.com/topghostly/algora-staging.git
 
-          git push personal staging:staging --force
+      - name: Push staging to personal repo
+        run: |
+          git push personal staging:staging
