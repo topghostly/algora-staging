@@ -23,6 +23,6 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
-          git remote add personal https://x-access-token:${PERSONAL_TOKEN}@https://github.com/topghostly/algora-staging.git
+          git remote add personal https://x-access-token:${PERSONAL_TOKEN}@github.com/topghostly/algora-staging.git
 
           git push personal staging:staging --force
