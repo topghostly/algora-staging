@@ -5,29 +5,32 @@ on:
     branches:
       - staging
 
+permissions:
+  contents: read # IMPORTANT: disable implicit write token
+
 jobs:
   mirror:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout staging branch
+      - name: Checkout staging
         uses: actions/checkout@v4
         with:
           ref: staging
-          fetch-depth: 0 # important for mirroring
+          fetch-depth: 0
+          persist-credentials: false # 🔥 disables GITHUB_TOKEN
 
-      - name: Configure git identity
+      - name: Configure git
         run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
+          git config --global user.name "topghostly"
+          git config --global user.email "topghostly@users.noreply.github.com"
 
-      - name: Add personal repo as remote
+      - name: Add personal remote
         env:
           PERSONAL_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
         run: |
-          git remote remove personal || true
           git remote add personal https://x-access-token:${PERSONAL_TOKEN}@github.com/topghostly/algora-staging.git
 
-      - name: Push staging to personal repo
+      - name: Push staging
         run: |
           git push personal staging:staging
