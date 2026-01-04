@@ -16,12 +16,6 @@ jobs:
           ref: staging
           fetch-depth: 0
 
-      - name: Debug token access
-        env:
-          PERSONAL_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
-        run: |
-          git ls-remote https://x-access-token:${PERSONAL_TOKEN}@github.com/topghostly/algora-staging.git
-
       - name: Push staging to personal repo
         env:
           PERSONAL_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
