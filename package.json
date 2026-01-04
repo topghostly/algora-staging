@@ -8,6 +8,9 @@
     "start": "next start",
     "lint": "eslint"
   },
+  "engines": {
+    "npm": ">=8.0.0"
+  },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.940.0",
     "@next-auth/prisma-adapter": "^1.0.7",
