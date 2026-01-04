@@ -3,7 +3,7 @@ const http = require("http");
 
 // Configuration
 const SECRET_KEY =
-  process.env.PAYSTACK_SECRET_KEY || process.env.PAYSTACK_SECRET_TEST_KEY; // Use env var or fallback for testing
+  process.env.PAYSTACK_SECRET_KEY || process.env.PAYSTACK_SECRET_TEST_KEY;
 const PLAN_CODE_BASIC =
   process.env.NEXT_PUBLIC_PAYSTACK_PLAN_BASIC ||
   process.env.NEXT_PUBLIC_PAYSTACK_PLAN_BASIC_TEST;
