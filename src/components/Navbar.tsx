@@ -45,7 +45,7 @@ export default function Navbar() {
             />
           </div>
           {/* <span
-            style={{
+            style={{``
               fontSize: "1.5rem",
               fontWeight: 700,
               color: "var(--foreground)",
