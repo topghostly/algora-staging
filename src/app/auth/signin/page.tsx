@@ -24,22 +24,20 @@ function SignInForm() {
     e.preventDefault();
     setLoading(true);
     setError("");
-    try {
-      const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
-      const res = await signIn("credentials", {
-        email: formData.email,
-        password: formData.password,
-        callbackUrl,
-      });
 
-      if (res?.error) {
-        setError("Invalid email or password");
-        setLoading(false);
-      }
-    } catch (err) {
-      setError("Something went wrong");
+    const res = await signIn("credentials", {
+      email: formData.email,
+      password: formData.password,
+      redirect: false,
+    });
+
+    if (res?.error) {
+      setError("Invalid email or password");
       setLoading(false);
+      return;
     }
+
+    router.replace("/dashboard");
   };
 
   const containerStyle: React.CSSProperties = {
