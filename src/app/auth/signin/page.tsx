@@ -119,7 +119,7 @@ function SignInForm() {
               />
             </svg>
           </span>{" "}
-          Login with Google
+          Sign in with Google
         </button>
 
         <div

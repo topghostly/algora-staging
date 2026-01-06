@@ -10,6 +10,9 @@ const outfit = Manrope({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Algora - Master Tech Skills",
   description: "Structured, project-based learning for African tech talent.",
+  icons: {
+    icon: "/images/algora.ico",
+  },
 };
 
 export default function RootLayout({

@@ -128,7 +128,7 @@ function SignUpForm() {
               />
             </svg>
           </span>{" "}
-          Signup with Google
+          Sign up with Google
         </button>
 
         <div
