@@ -72,7 +72,7 @@ export default function TrackSearch() {
             color: "var(--foreground)",
             transition: "all 0.2s ease",
             outline: "none",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.06)",
+            // boxShadow: "0 2px 4px rgba(0,0,0,0.06)",
           }}
           onFocus={(e) => (e.target.style.borderColor = "var(--primary)")}
           onBlur={(e) => (e.target.style.borderColor = "var(--border)")}

@@ -40,7 +40,7 @@
   --radius-lg: 12px;
   --radius-sm: 4px;
 
-  --container-width: 1200px;
+  --container-width: 1300px;
   --header-height: 64px;
 }
 
@@ -59,6 +59,16 @@
   --primary-light: #312E81;
   /* Indigo 900 */
 }
+
+::selection {
+  background-color: black;
+  color: white;
+}
+
+/* ::moz-selection {
+  background-color: var(--primary);
+  color: white;
+} */
 
 * {
   box-sizing: border-box;
@@ -131,6 +141,7 @@ button {
   border-radius: var(--radius-lg);
   padding: 1.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
 }
 
 /* Layout Utilities */
@@ -186,6 +197,10 @@ button {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.grid-cols-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 @media (min-width: 768px) {
   .md\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -194,17 +209,49 @@ button {
   .md\:grid-cols-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+
+  .md\:grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .md\:flex-row {
+    flex-direction: row;
+  }
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.gap-x-8 {
+  column-gap: 2rem;
+}
+
+.gap-y-4 {
+  row-gap: 1rem;
 }
 
 @media (min-width: 1024px) {
   .lg\:grid-cols-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+
+  .lg\:grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 /* Spacing Utilities */
 .p-4 {
   padding: 1rem;
+}
+
+.p-0 {
+  padding: 0;
+}
+
+.list-none {
+  list-style-type: none;
 }
 
 .p-6 {
@@ -466,4 +513,100 @@ button {
 
 .inline-flex {
   display: inline-flex;
+}
+
+/* Element styles */
+.home-spacing-p {
+  padding: 6rem 0;
+}
+
+/* Main Grid */
+.layout-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  /* Left 2/3, Right 1/3 */
+  gap: 24px;
+}
+
+.left-column {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 52% 48%;
+  gap: 24px;
+}
+
+.track-card {
+  grid-column: span 2;
+  display: flex;
+  flex-direction: row;
+  background: #fff;
+}
+
+/* Combined Right Sidebar */
+.sidebar-container {
+  display: grid;
+  grid-template-rows: 50% 50%;
+}
+
+.relevant-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.sidebar-image-wrapper {
+  flex: 1;
+  /* Spans the remaining vertical height */
+  overflow: hidden;
+}
+
+.sidebar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Shared Card Styles */
+.track-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.track-image-container {
+  flex: 1;
+}
+
+.card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.small-card {
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+
+.button-group {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+@media (max-width: 900px) {
+  .layout-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .left-column {
+    grid-template-columns: 1fr;
+  }
+
+  .track-card {
+    flex-direction: column;
+  }
 }

@@ -148,7 +148,7 @@ export default function Navbar() {
               </Dropdown>
             </div>
           ) : (
-            <div style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
               <Link
                 href="/tracks"
                 style={{ fontWeight: 500, color: "var(--muted)" }}
@@ -164,6 +164,7 @@ export default function Navbar() {
               <Link
                 href="/auth/signin"
                 style={{ fontWeight: 500, color: "var(--foreground)" }}
+                className="btn btn-outline"
               >
                 Sign In
               </Link>

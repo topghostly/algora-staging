@@ -6,7 +6,7 @@ on:
       - staging
 
 permissions:
-  contents: read # IMPORTANT: disable implicit write token
+  contents: read
 
 jobs:
   mirror:
@@ -18,7 +18,7 @@ jobs:
         with:
           ref: staging
           fetch-depth: 0
-          persist-credentials: false # 🔥 disables GITHUB_TOKEN
+          persist-credentials: false
 
       - name: Configure git
         run: |

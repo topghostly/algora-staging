@@ -2,6 +2,7 @@
 
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 
 function SignUpForm() {
@@ -30,129 +31,204 @@ function SignUpForm() {
       });
 
       if (res.ok) {
-        // If a plan was selected, redirect to login with callback to pricing
-        // Otherwise just go to login
         const callbackUrl = plan ? encodeURIComponent("/pricing") : "";
         const redirectUrl = plan
           ? `/auth/signin?callbackUrl=${callbackUrl}&registered=true`
           : `/auth/signin?registered=true`;
-
         router.push(redirectUrl);
       } else {
         const data = await res.json();
         setError(data.error || "Registration failed");
       }
     } catch (err) {
-      console.error("Signup error:", err);
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      setError("Something went wrong");
     } finally {
       setLoading(false);
     }
   };
 
+  const containerStyle: React.CSSProperties = {
+    maxWidth: "420px",
+    margin: "2rem auto",
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: "100%",
+    padding: "0.8rem",
+    backgroundColor: "#1A1A1A",
+    border: "1px solid #333",
+    borderRadius: "8px",
+    color: "#fff",
+    marginTop: "0.5rem",
+    fontSize: "0.95rem",
+  };
+
+  const socialBtnStyle: React.CSSProperties = {
+    width: "100%",
+    padding: "0.75rem",
+    borderRadius: "var(--radius)",
+    border: "1px solid var(--border)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "10px",
+    cursor: "pointer",
+    fontSize: "0.95rem",
+    marginBottom: "0.75rem",
+    backgroundColor: "var(--bg)",
+  };
+
   return (
-    <div className="container" style={{ maxWidth: "400px", marginTop: "4rem" }}>
-      <div className="card">
-        <h1 style={{ marginBottom: "1.5rem", textAlign: "center" }}>
-          Create Account
+    <div>
+      <div style={containerStyle} className="card">
+        <h1
+          style={{
+            textAlign: "center",
+            fontSize: "1.8rem",
+            fontWeight: 600,
+            marginBottom: "0.5rem",
+          }}
+        >
+          Create account
         </h1>
+        <p
+          style={{
+            textAlign: "center",
+            color: "var(--muted)",
+            marginBottom: "2rem",
+          }}
+        >
+          Sign up with your Google account
+        </p>
+
+        <button style={socialBtnStyle} onClick={() => signIn("google")}>
+          <span style={{ width: "20px", height: "20px" }}>
+            <svg
+              width="20px"
+              height="20px"
+              viewBox="-3 0 262 262"
+              xmlns="http://www.w3.org/2000/svg"
+              preserveAspectRatio="xMidYMid"
+            >
+              <path
+                d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"
+                fill="#4285F4"
+              />
+              <path
+                d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055-34.523 0-63.824-22.773-74.269-54.25l-1.531.13-40.298 31.187-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1"
+                fill="#34A853"
+              />
+              <path
+                d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82 0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602l42.356-32.782"
+                fill="#FBBC05"
+              />
+              <path
+                d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0 79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"
+                fill="#EB4335"
+              />
+            </svg>
+          </span>{" "}
+          Signup with Google
+        </button>
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            margin: "1.5rem 0",
+            color: "#444",
+          }}
+        >
+          <div
+            style={{ flex: 1, height: "1px", backgroundColor: "var(--border)" }}
+          />
+          <span
+            style={{
+              padding: "0 10px",
+              fontSize: "0.8rem",
+              color: "var(--muted)",
+            }}
+          >
+            Or continue with
+          </span>
+          <div
+            style={{ flex: 1, height: "1px", backgroundColor: "var(--border)" }}
+          />
+        </div>
 
         {error && (
-          <div
+          <p
             style={{
-              backgroundColor: "#FEF2F2",
-              color: "var(--error)",
-              padding: "0.75rem",
-              borderRadius: "var(--radius)",
+              color: "#FF453A",
+              fontSize: "0.85rem",
               marginBottom: "1rem",
-              fontSize: "0.9rem",
             }}
           >
             {error}
-          </div>
+          </p>
         )}
 
         <form
           onSubmit={handleSubmit}
-          style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+          style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}
         >
           <div>
-            <label
-              style={{
-                display: "block",
-                marginBottom: "0.5rem",
-                fontSize: "0.9rem",
-                fontWeight: 500,
-              }}
-            >
+            <label style={{ fontSize: "0.9rem", fontWeight: 500 }}>
               Full Name
             </label>
             <input
               type="text"
-              required
+              placeholder="John Doe"
               style={{
                 width: "100%",
                 padding: "0.75rem",
                 borderRadius: "var(--radius)",
                 border: "1px solid var(--border)",
                 fontSize: "1rem",
+                marginTop: "0.6rem",
               }}
+              required
               value={formData.name}
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
             />
           </div>
-
           <div>
-            <label
-              style={{
-                display: "block",
-                marginBottom: "0.5rem",
-                fontSize: "0.9rem",
-                fontWeight: 500,
-              }}
-            >
-              Email
-            </label>
+            <label style={{ fontSize: "0.9rem", fontWeight: 500 }}>Email</label>
             <input
               type="email"
-              required
+              placeholder="m@example.com"
               style={{
                 width: "100%",
                 padding: "0.75rem",
                 borderRadius: "var(--radius)",
                 border: "1px solid var(--border)",
                 fontSize: "1rem",
+                marginTop: "0.6rem",
               }}
+              required
               value={formData.email}
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
             />
           </div>
-
           <div>
-            <label
-              style={{
-                display: "block",
-                marginBottom: "0.5rem",
-                fontSize: "0.9rem",
-                fontWeight: 500,
-              }}
-            >
+            <label style={{ fontSize: "0.9rem", fontWeight: 500 }}>
               Password
             </label>
             <input
               type="password"
-              required
               style={{
                 width: "100%",
                 padding: "0.75rem",
                 borderRadius: "var(--radius)",
                 border: "1px solid var(--border)",
                 fontSize: "1rem",
+                marginTop: "0.6rem",
               }}
+              required
               value={formData.password}
               onChange={(e) =>
                 setFormData({ ...formData, password: e.target.value })
@@ -162,38 +238,73 @@ function SignUpForm() {
 
           <button
             type="submit"
-            className="btn btn-primary"
             disabled={loading}
-            style={{ marginTop: "0.5rem" }}
+            style={{
+              width: "100%",
+              padding: "0.8rem",
+              borderRadius: "var(--radius)",
+              border: "none",
+              backgroundColor: "var(--primary)",
+              color: "var(--background)",
+              fontWeight: 600,
+              cursor: "pointer",
+              marginTop: "0.5rem",
+            }}
           >
-            {loading ? "Creating Account..." : "Sign Up"}
+            {loading ? "Creating account..." : "Continue"}
           </button>
         </form>
 
         <p
           style={{
-            marginTop: "1.5rem",
             textAlign: "center",
+            marginTop: "1.5rem",
             fontSize: "0.9rem",
-            color: "var(--muted)",
           }}
         >
           Already have an account?{" "}
-          <Link
-            href="/auth/signin"
-            style={{ color: "var(--primary)", fontWeight: 500 }}
-          >
-            Sign In
+          <Link href="/auth/signin" style={{ textDecoration: "underline" }}>
+            Sign in
           </Link>
         </p>
       </div>
+      <p
+        style={{
+          textAlign: "center",
+          fontSize: "0.9rem",
+          color: "#666",
+          lineHeight: "1.4",
+        }}
+      >
+        By clicking continue, you agree to our <br />
+        <Link
+          href="/terms"
+          style={{ fontWeight: 600, textDecoration: "underline" }}
+        >
+          Terms of Service
+        </Link>{" "}
+        and{" "}
+        <Link
+          href="/privacy"
+          style={{ fontWeight: 600, textDecoration: "underline" }}
+        >
+          Privacy Policy
+        </Link>
+        .
+      </p>
     </div>
   );
 }
 
 export default function SignUp() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense
+      fallback={
+        <div style={{ color: "white", textAlign: "center", marginTop: "4rem" }}>
+          Loading...
+        </div>
+      }
+    >
       <SignUpForm />
     </Suspense>
   );
