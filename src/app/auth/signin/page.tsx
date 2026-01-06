@@ -25,16 +25,19 @@ function SignInForm() {
     setLoading(true);
     setError("");
     try {
+      const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
       const res = await signIn("credentials", {
         email: formData.email,
         password: formData.password,
-        redirect: false,
+        callbackUrl,
       });
-      if (res?.error) setError("Invalid email or password");
-      else router.push("/dashboard");
+
+      if (res?.error) {
+        setError("Invalid email or password");
+        setLoading(false);
+      }
     } catch (err) {
       setError("Something went wrong");
-    } finally {
       setLoading(false);
     }
   };
