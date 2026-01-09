@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useSession, signOut } from "next-auth/react";
-import { Menu, User, X } from "lucide-react";
+import { Menu, X, Layers, Video, Briefcase, User, LogOut } from "lucide-react";
 import { useState } from "react";
 import Dropdown from "./ui/Dropdown";
 
@@ -44,15 +44,6 @@ export default function Navbar() {
               style={{ objectFit: "contain" }}
             />
           </div>
-          {/* <span
-            style={{``
-              fontSize: "1.5rem",
-              fontWeight: 700,
-              color: "var(--foreground)",
-            }}
-          >
-            Algora
-          </span> */}
         </Link>
 
         {/* Desktop Navigation */}
@@ -65,76 +56,78 @@ export default function Navbar() {
               <Link
                 href="/dashboard"
                 style={{ fontWeight: 500, color: "var(--muted)" }}
+                className="btn-outline btn"
               >
                 Dashboard
               </Link>
 
               <Dropdown
                 position="below"
+                align="end"
                 trigger={
                   <div
                     style={{
-                      width: "40px",
+                      width: "45px",
                       height: "40px",
-                      borderRadius: "50%",
+                      borderRadius: "4px",
                       overflow: "hidden",
-                      //   border: "2px solid var(--border)",
                       position: "relative",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      backgroundColor: "var(--primary-light)",
+                      border: "1px solid var(--border)",
+                      cursor: "pointer",
                     }}
                   >
-                    <User size={25} className="text-primary" />
+                    <Menu size={20} />
                   </div>
                 }
-                dropdownClassName="right-0 translate-x-0"
               >
                 <div
                   style={{
                     padding: "0.5rem 0",
                     display: "flex",
                     flexDirection: "column",
-                    minWidth: "200px",
+                    minWidth: "220px",
                     backgroundColor: "var(--background)",
-                    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-                    borderRadius: "8px",
+                    boxShadow:
+                      "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                    borderRadius: "12px",
+                    border: "1px solid var(--border)",
                   }}
                 >
-                  {/* <div
-                    style={{
-                      padding: "0.5rem 1rem",
-                      fontSize: "0.75rem",
-                      fontWeight: "600",
-                      color: "#888",
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    My Account
-                  </div> */}
-
                   <Link href="/tracks">
-                    <div className="dropdown-item">Tracks</div>
+                    <div className="dropdown-item">
+                      <Layers size={16} />
+                      <span>Tracks</span>
+                    </div>
                   </Link>
 
                   <Link href="/dashboard/sessions">
-                    <div className="dropdown-item">Sessions</div>
+                    <div className="dropdown-item">
+                      <Video size={16} />
+                      <span>Sessions</span>
+                    </div>
                   </Link>
 
                   <Link href="/dashboard/projects">
-                    <div className="dropdown-item">Projects</div>
+                    <div className="dropdown-item">
+                      <Briefcase size={16} />
+                      <span>Projects</span>
+                    </div>
                   </Link>
 
                   <Link href="/dashboard/profile">
-                    <div className="dropdown-item">Profile</div>
+                    <div className="dropdown-item">
+                      <User size={16} />
+                      <span>Profile</span>
+                    </div>
                   </Link>
 
-                  <hr
+                  <div
                     style={{
-                      margin: "0",
-                      border: "none",
-                      borderTop: "1px solid rgba(255,255,255,0.1)",
+                      margin: "0.5rem 0",
+                      borderTop: "1px solid var(--border)",
                     }}
                   />
 
@@ -142,7 +135,8 @@ export default function Navbar() {
                     onClick={() => signOut()}
                     className="dropdown-item dropdown-item-signout"
                   >
-                    Sign Out
+                    <LogOut size={16} />
+                    <span>Sign Out</span>
                   </button>
                 </div>
               </Dropdown>
@@ -291,14 +285,17 @@ export default function Navbar() {
           }
         }
         .dropdown-item {
-          display: block;
-          padding: 0.625rem 1rem;
-          font-size: 0.9375rem;
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 0.6rem 1rem;
+          font-size: 0.875rem;
           color: var(--foreground);
           transition: all 0.2s ease;
           text-decoration: none;
-          border-radius: 6px;
+          border-radius: 8px;
           margin: 0 0.5rem;
+          cursor: pointer;
         }
         .dropdown-item:hover {
           background-color: var(--muted-light);
