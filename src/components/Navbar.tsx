@@ -6,10 +6,12 @@ import { useSession, signOut } from "next-auth/react";
 import { Menu, X, Layers, Video, Briefcase, User, LogOut } from "lucide-react";
 import { useState } from "react";
 import Dropdown from "./ui/Dropdown";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const router = useRouter();
 
   return (
     <nav
@@ -132,7 +134,10 @@ export default function Navbar() {
                   />
 
                   <button
-                    onClick={() => signOut()}
+                    onClick={() => {
+                      signOut();
+                      router.push("/auth/signin");
+                    }}
                     className="dropdown-item dropdown-item-signout"
                   >
                     <LogOut size={16} />

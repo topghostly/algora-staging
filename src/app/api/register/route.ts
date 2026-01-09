@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { sendEmail } from "@/lib/email";
-import { WelcomeEmail } from "@/components/emails/WelcomeEmail";
+import { VerifyEmail } from "@/components/emails/VerifyEmail";
+import { generateVerificationToken } from "@/lib/tokens";
 
 export async function POST(req: Request) {
   try {
@@ -40,11 +41,15 @@ export async function POST(req: Request) {
     // Remove password from response
     const { passwordHash, ...userWithoutPassword } = user;
 
-    // Send Welcome Email
+    // Generate verification token
+    const verificationToken = generateVerificationToken(email);
+    const verificationLink = `${process.env.NEXTAUTH_URL}/verify-email?token=${verificationToken}`;
+
+    // Send Verification Email
     await sendEmail({
       to: email,
-      subject: "Welcome to Algora",
-      react: WelcomeEmail({ name: name || "Learner" }) as any,
+      subject: "Verify your email address",
+      react: VerifyEmail({ verificationLink }) as any,
     });
 
     return NextResponse.json(userWithoutPassword);

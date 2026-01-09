@@ -327,6 +327,9 @@ button {
   margin-bottom: 2rem;
 }
 
+.mb-10 {
+  margin-bottom: 4rem;
+}
 /* Typography Utilities */
 .text-center {
   text-align: center;

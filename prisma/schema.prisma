@@ -38,6 +38,8 @@ model User {
   name          String?
   image         String?
   role          Role      @default(LEARNER)
+  emailVerified Boolean   @default(false)
+  emailVerifiedAt DateTime?
   
   // Subscription
   subscriptionTier SubscriptionTier @default(FREE)
