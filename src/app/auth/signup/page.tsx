@@ -50,6 +50,8 @@ function SignUpForm() {
   const containerStyle: React.CSSProperties = {
     maxWidth: "420px",
     margin: "2rem auto",
+    border: "none",
+    boxShadow: "none",
   };
 
   const inputStyle: React.CSSProperties = {
@@ -76,6 +78,7 @@ function SignUpForm() {
     fontSize: "0.95rem",
     marginBottom: "0.75rem",
     backgroundColor: "var(--bg)",
+    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
   };
 
   return (
@@ -84,7 +87,7 @@ function SignUpForm() {
         <h1
           style={{
             textAlign: "center",
-            fontSize: "1.8rem",
+            fontSize: "1.4rem",
             fontWeight: 600,
             marginBottom: "0.5rem",
           }}

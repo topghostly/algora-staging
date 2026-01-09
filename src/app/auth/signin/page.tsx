@@ -43,6 +43,8 @@ function SignInForm() {
   const containerStyle: React.CSSProperties = {
     maxWidth: "420px",
     margin: "2rem auto",
+    border: "none",
+    boxShadow: "none",
   };
 
   const inputStyle: React.CSSProperties = {
@@ -69,6 +71,7 @@ function SignInForm() {
     fontSize: "0.95rem",
     marginBottom: "0.75rem",
     backgroundColor: "var(--bg)",
+    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
   };
 
   return (
@@ -77,7 +80,7 @@ function SignInForm() {
         <h1
           style={{
             textAlign: "center",
-            fontSize: "1.8rem",
+            fontSize: "1.4rem",
             fontWeight: 600,
             marginBottom: "0.5rem",
           }}
@@ -213,11 +216,11 @@ function SignInForm() {
                 Password
               </label>
               <Link
-                href="/forgot"
+                href="/auth/forgot-password"
                 style={{
                   fontSize: "0.8rem",
-                  color: "#A1A1A1",
-                  textDecoration: "none",
+                  textDecoration: "underline",
+                  fontWeight: 500,
                 }}
               >
                 Forgot your password?

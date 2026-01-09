@@ -4,6 +4,7 @@ import "./globals.css";
 
 import { Providers } from "@/components/Providers";
 import Navbar from "@/components/Navbar";
+import { Toaster } from "@/components/ui/Toaster";
 
 const outfit = Manrope({ subsets: ["latin"] });
 
@@ -27,6 +28,7 @@ export default function RootLayout({
           <div className="flex flex-col min-h-screen">
             <Navbar />
             <main className="flex-grow">{children}</main>
+            <Toaster />
           </div>
         </Providers>
       </body>
