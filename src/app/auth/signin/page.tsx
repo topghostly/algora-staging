@@ -2,23 +2,27 @@
 
 import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Suspense } from "react";
+import { useSession } from "next-auth/react";
 
 function SignInForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const { data: session } = useSession();
+
   useEffect(() => {
-    if (searchParams.get("registered") === "true") {
-      setSuccess("Account created successfully! Please sign in.");
+    if (session) {
+      if (session.user.role === "TUTOR") router.replace("/tutor");
+      if (session.user.role === "LEARNER") router.replace("/dashboard");
+      if (session.user.role === "ADMIN") router.replace("/admin");
     }
-  }, [searchParams]);
+  }, [session]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,8 +40,6 @@ function SignInForm() {
       setLoading(false);
       return;
     }
-
-    router.replace("/dashboard");
   };
 
   const containerStyle: React.CSSProperties = {
