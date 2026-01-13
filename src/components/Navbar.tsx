@@ -7,10 +7,12 @@ import { Menu, X, Layers, Video, Briefcase, User, LogOut } from "lucide-react";
 import { useState } from "react";
 import Dropdown from "./ui/Dropdown";
 import { useRouter } from "next/navigation";
+import { ConfirmationDialog } from "./ui/AlertDialog";
 
 export default function Navbar() {
   const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSignOutDialogOpen, setIsSignOutDialogOpen] = useState(false);
   const router = useRouter();
 
   return (
@@ -134,10 +136,7 @@ export default function Navbar() {
                   />
 
                   <button
-                    onClick={() => {
-                      signOut();
-                      router.push("/auth/signin");
-                    }}
+                    onClick={() => setIsSignOutDialogOpen(true)}
                     className="dropdown-item dropdown-item-signout"
                   >
                     <LogOut size={16} />
@@ -245,7 +244,7 @@ export default function Navbar() {
                 Dashboard
               </Link>
               <button
-                onClick={() => signOut()}
+                onClick={() => setIsSignOutDialogOpen(true)}
                 style={{
                   textAlign: "left",
                   background: "none",
@@ -273,6 +272,19 @@ export default function Navbar() {
           )}
         </div>
       )}
+
+      <ConfirmationDialog
+        isOpen={isSignOutDialogOpen}
+        onOpenChange={setIsSignOutDialogOpen}
+        title="Sign Out"
+        description="Are you sure you want to sign out of your account?"
+        confirmText="Sign Out"
+        onConfirm={() => {
+          signOut();
+          router.push("/auth/signin");
+        }}
+        variant="destructive"
+      />
 
       <style jsx>{`
         .desktop-nav {

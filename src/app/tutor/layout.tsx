@@ -1,10 +1,19 @@
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 
-export default function TutorLayout({
+export default async function TutorLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getServerSession(authOptions);
+
+  if (!session || session.user.role !== "TUTOR") {
+    redirect("/");
+  }
+
   return (
     <div className="container py-8">
       <div className="flex flex-col gap-8">
