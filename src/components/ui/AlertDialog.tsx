@@ -177,7 +177,7 @@ export function ConfirmationDialog({
                 onClick={onConfirm}
                 className={cn(
                   variant === "default" &&
-                    "bg-primary hover:bg-primary-hover focus:ring-primary"
+                    "bg-gray-600 hover:bg-gray-700 focus:ring-gray-600"
                 )}
               >
                 {confirmText}

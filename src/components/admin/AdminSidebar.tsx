@@ -101,7 +101,7 @@ export default function AdminSidebar() {
         })}
       </nav>
 
-      <button
+      {/* <button
         onClick={() => setIsSignOutDialogOpen(true)}
         style={{
           display: "flex",
@@ -119,7 +119,7 @@ export default function AdminSidebar() {
       >
         <LogOut size={20} />
         Sign Out
-      </button>
+      </button> */}
 
       <ConfirmationDialog
         isOpen={isSignOutDialogOpen}

@@ -49,6 +49,8 @@ model User {
   
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  disabled      Boolean   @default(false)
+  suspended     Boolean   @default(false)
 
   // Relations
   progress      Progress[]
