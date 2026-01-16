@@ -142,7 +142,7 @@ export default function Home() {
               </Link>
             </div>
           </div>
-          <div className="container">
+          <div className="container flex justify-center">
             <Image
               src="/images/three_people_holding_piece.svg"
               alt="three_people_holding_piece"
@@ -404,7 +404,7 @@ const FirstStepCard = () => {
     >
       {/* Text */}
       <div
-        className="flex flex-col justify-center justify-between"
+        className="flex flex-col justify-center"
         style={{ flex: 1, padding: "1.5rem" }}
       >
         <div>
@@ -461,7 +461,7 @@ const VerticalStepCard = ({
       style={{ padding: 0 }}
     >
       <div
-        className="flex flex-col justify-center justify-between"
+        className="flex flex-col justify-center "
         style={{ flex: 1, padding: "1.5rem" }}
       >
         <div>

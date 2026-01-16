@@ -248,7 +248,7 @@ button {
 }
 
 /* Spacing Utilities */
-.p-4 {
+/* .p-4 {
   padding: 1rem;
 }
 
@@ -335,7 +335,7 @@ button {
 
 .mb-10 {
   margin-bottom: 4rem;
-}
+} */
 /* Typography Utilities */
 .text-center {
   text-align: center;
