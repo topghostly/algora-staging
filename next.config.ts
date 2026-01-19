@@ -41,6 +41,11 @@ const nextConfig: NextConfig = {
               .replace(/\s{2,}/g, " ")
               .trim(),
           },
+          {
+            key: "Content-Security-Policy",
+            value:
+              "frame-src 'self' https://js.paystack.co https://standard.paystack.co https://www.youtube.com https://www.youtube-nocookie.com",
+          },
         ],
       },
     ];

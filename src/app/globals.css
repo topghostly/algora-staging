@@ -719,4 +719,43 @@ button {
   color: var(--foreground) !important;
 }
 
+/* PLYR STYLES */
 
+/* Remove YouTube logo overlay */
+.plyr__video-embed iframe {
+  pointer-events: none;
+}
+
+/* Re-enable interaction only through Plyr */
+.plyr {
+  pointer-events: auto;
+}
+
+/* Hide YouTube watermark (best effort) */
+.ytp-watermark,
+.ytp-youtube-button,
+.ytp-share-button,
+.ytp-watch-later-button,
+.ytp-title,
+.ytp-chrome-top,
+.ytp-pause-overlay,
+.ytp-gradient-top,
+.ytp-gradient-bottom {
+  display: none !important;
+}
+
+/* Disable right-click */
+.plyr__video-wrapper {
+  user-select: none;
+}
+
+/* Hide loading YouTube spinner text */
+.ytp-spinner {
+  display: none !important;
+}
+
+/* Prevent text selection */
+.plyr * {
+  -webkit-user-select: none;
+  user-select: none;
+}

@@ -47,7 +47,7 @@ function getEmbedUrl(url: string) {
 async function getLessonData(
   trackId: string,
   lessonId: string,
-  userId: string
+  userId: string,
 ) {
   const track = await prisma.track.findUnique({
     where: { id: trackId },
@@ -70,6 +70,8 @@ async function getLessonData(
 
   if (!track) return null;
 
+  console.log(track);
+
   // Find the current lesson
   let currentLesson = null;
   let nextLesson = null;
@@ -91,6 +93,7 @@ async function getLessonData(
 }
 
 import { canAccessLesson } from "@/lib/access-control";
+import VideoPlayer from "@/components/ui/video-palyer";
 
 // ... existing imports
 
@@ -121,7 +124,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
         | "FREE"
         | "BASIC"
         | "PRO_LITE"
-        | "PRO_PLUS"
+        | "PRO_PLUS",
     ));
 
   return (
@@ -300,7 +303,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
                       backgroundColor: "#000",
                     }}
                   >
-                    <iframe
+                    {/* <iframe
                       src={getEmbedUrl(currentLesson.contentUrl)}
                       style={{
                         position: "absolute",
@@ -312,7 +315,8 @@ export default async function LessonPage({ params }: LessonPageProps) {
                       }}
                       allowFullScreen
                       title={currentLesson.title}
-                    />
+                    /> */}
+                    <VideoPlayer videoId={currentLesson.contentUrl} />
                   </div>
                 )}
 
