@@ -70,7 +70,7 @@ async function getLessonData(
 
   if (!track) return null;
 
-  console.log(track);
+  // console.log(track);
 
   // Find the current lesson
   let currentLesson = null;
