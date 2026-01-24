@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { Check } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { usePaystackPayment } from "react-paystack";

@@ -2,13 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  LayoutDashboard,
-  BookOpen,
-  Users,
-  Settings,
-  LogOut,
-} from "lucide-react";
+import { LayoutDashboard, BookOpen, Users, Settings } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
 import { ConfirmationDialog } from "../ui/AlertDialog";
