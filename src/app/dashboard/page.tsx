@@ -195,7 +195,7 @@ export default function Dashboard() {
               <BookOpen
                 size={48}
                 color="var(--muted)"
-                style={{ marginBottom: "1rem", opacity: 0.5 }}
+                className="mx-auto mb-4 opacity-50"
               />
               <h3 style={{ marginBottom: "0.5rem", fontWeight: 600 }}>
                 You haven't enrolled in any tracks yet.

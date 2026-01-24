@@ -20,7 +20,7 @@ export default async function ProfilePage() {
     include: {
       bookings: {
         include: {
-          session: {
+          tutorSession: {
             include: {
               tutor: {
                 select: { name: true },
@@ -29,7 +29,7 @@ export default async function ProfilePage() {
           },
         },
         orderBy: {
-          session: {
+          tutorSession: {
             startTime: "desc",
           },
         },

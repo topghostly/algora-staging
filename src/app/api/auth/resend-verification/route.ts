@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     if ((user as any).emailVerified) {
       return NextResponse.json(
         { error: "Email already verified" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -40,13 +40,13 @@ export async function POST(req: Request) {
 
     return NextResponse.json(
       { message: "Verification email sent" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Resend verification error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

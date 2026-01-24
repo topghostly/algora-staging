@@ -38,7 +38,7 @@ export default function EnrollButton({ trackId }: { trackId: string }) {
           "Enrollment failed. Status:",
           res.status,
           "Body:",
-          errorData
+          errorData,
         );
         alert(`Enrollment failed: ${res.status} ${res.statusText}`);
       }

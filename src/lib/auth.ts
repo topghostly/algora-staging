@@ -1,20 +1,45 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { verifyVerificationToken } from "./tokens";
+import { encrypt } from "./crypto";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
+
   session: {
     strategy: "jwt",
   },
+
   secret: process.env.NEXTAUTH_SECRET,
+
   pages: {
     signIn: "/auth/signin",
   },
+
   providers: [
+    // ─────────────────────────────────────────
+    // GOOGLE OAUTH (Calendar-ready)
+    // ─────────────────────────────────────────
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          scope:
+            "openid email profile https://www.googleapis.com/auth/calendar",
+          access_type: "offline",
+          prompt: "consent",
+        },
+      },
+    }),
+
+    // ─────────────────────────────────────────
+    // EMAIL + PASSWORD / TOKEN LOGIN
+    // ─────────────────────────────────────────
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -22,18 +47,19 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
         token: { label: "Token", type: "text" },
       },
+
       async authorize(credentials) {
+        // Magic-link / verification-token login
         if (credentials?.token) {
           const email = verifyVerificationToken(credentials.token);
-          if (!email) {
-            return null;
-          }
+          if (!email) return null;
+
           const user = await prisma.user.findUnique({
-            where: {
-              email,
-            },
+            where: { email },
           });
+
           if (!user) return null;
+
           return {
             id: user.id,
             email: user.email,
@@ -43,14 +69,14 @@ export const authOptions: NextAuthOptions = {
             emailVerified: (user as any).emailVerified,
           };
         }
+
+        // Email + password login
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
 
         const user = await prisma.user.findUnique({
-          where: {
-            email: credentials.email,
-          },
+          where: { email: credentials.email },
         });
 
         if (!user || !user.passwordHash) {
@@ -59,7 +85,7 @@ export const authOptions: NextAuthOptions = {
 
         const isValid = await bcrypt.compare(
           credentials.password,
-          user.passwordHash
+          user.passwordHash,
         );
 
         if (!isValid) {
@@ -77,18 +103,18 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+
   callbacks: {
-    async session({ session, token }) {
-      if (token && session.user) {
-        session.user.id = token.id as string;
-        session.user.role = token.role as string;
-        session.user.subscriptionTier = token.subscriptionTier as string;
-        (session.user as any).emailVerified = token.emailVerified as boolean;
-      }
-      return session;
-    },
-    async jwt({ token, user, session }) {
-      // On login
+    // ─────────────────────────────────────────
+    // JWT CALLBACK
+    // ─────────────────────────────────────────
+    async jwt({ token, user, account, session }) {
+      console.log("JWT CALLBACK", {
+        hasUser: !!user,
+        provider: account?.provider,
+      });
+
+      // Initial login
       if (user) {
         token.id = user.id;
         token.role = user.role;
@@ -96,7 +122,29 @@ export const authOptions: NextAuthOptions = {
         token.emailVerified = (user as any).emailVerified;
       }
 
-      // On session update OR forced refresh
+      // Google login
+      if (account?.provider === "google" && user?.email) {
+        token.provider = "google";
+
+        if (account.refresh_token) {
+          await prisma.user.updateMany({
+            where: { email: user.email },
+            data: {
+              googleId: account.providerAccountId,
+              googleRefreshToken: encrypt(account.refresh_token),
+              // emailVerified: true,
+              // emailVerifiedAt: new Date(),
+            },
+          });
+        }
+      }
+
+      // Credentials login
+      if (account?.provider === "credentials") {
+        token.provider = "credentials";
+      }
+
+      // Forced refresh / session update
       if (session) {
         const userId = (token.id || token.sub) as string;
 
@@ -117,5 +165,39 @@ export const authOptions: NextAuthOptions = {
 
       return token;
     },
+
+    // ─────────────────────────────────────────
+    // SESSION CALLBACK
+    // ─────────────────────────────────────────
+    async session({ session, token }) {
+      if (session.user && token) {
+        session.user.id = token.id as string;
+        session.user.role = token.role as string;
+        session.user.subscriptionTier = token.subscriptionTier as string;
+        (session.user as any).emailVerified = token.emailVerified as boolean;
+        (session.user as any).provider = token.provider as string;
+      }
+
+      return session;
+    },
+    // async signIn({ user, account }) {
+    //   if (account?.provider === "google" && user.email) {
+    //     await prisma.user.upsert({
+    //       where: { email: user.email },
+    //       update: {
+    //         emailVerified: true,
+    //         emailVerifiedAt: new Date(),
+    //       },
+    //       create: {
+    //         email: user.email,
+    //         name: user.name,
+    //         image: user.image,
+    //         emailVerified: true,
+    //         emailVerifiedAt: new Date(),
+    //       },
+    //     });
+    //   }
+    //   return true;
+    // },
   },
 };

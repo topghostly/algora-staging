@@ -14,15 +14,17 @@ function SignInForm() {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
   useEffect(() => {
-    if (session) {
-      if (session.user.role === "TUTOR") router.replace("/tutor");
-      if (session.user.role === "LEARNER") router.replace("/dashboard");
-      if (session.user.role === "ADMIN") router.replace("/admin");
-    }
-  }, [session]);
+    if (status !== "authenticated") return;
+
+    const role = session?.user?.role;
+
+    if (role === "TUTOR") router.replace("/tutor");
+    else if (role === "LEARNER") router.replace("/dashboard");
+    else if (role === "ADMIN") router.replace("/admin");
+  }, [status, session, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,8 +40,13 @@ function SignInForm() {
     if (res?.error) {
       setError("Invalid email or password");
       setLoading(false);
-      return;
     }
+  };
+
+  const handleGoogleSignIn = async () => {
+    await signIn("google", {
+      callbackUrl: "/auth/redirect",
+    });
   };
 
   const containerStyle: React.CSSProperties = {
@@ -98,7 +105,7 @@ function SignInForm() {
         >
           Login with your Google account
         </p>
-        <button style={socialBtnStyle} onClick={() => signIn("google")}>
+        <button style={socialBtnStyle} onClick={handleGoogleSignIn}>
           <span style={{ width: "20px", height: "20px" }}>
             <svg
               width="20px"

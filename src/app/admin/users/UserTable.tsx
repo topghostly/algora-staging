@@ -93,7 +93,7 @@ export default function UserTable({ users }: UserTableProps) {
       if (!res.ok) throw new Error(`Failed to ${action} user`);
 
       toast.success(
-        `User ${isSuspended ? "unsuspended" : "suspended"} successfully`
+        `User ${isSuspended ? "unsuspended" : "suspended"} successfully`,
       );
       router.refresh();
     } catch (error) {
