@@ -18,7 +18,7 @@ export async function bookSession(sessionId: string) {
   const userId = session.user.id;
 
   // 1. Get session details
-  const targetSession = await prisma.session.findUnique({
+  const targetSession = await prisma.tutorSession.findUnique({
     where: { id: sessionId },
     include: { bookings: true },
   });
@@ -38,9 +38,9 @@ export async function bookSession(sessionId: string) {
   // 3. Check if already booked
   const existingBooking = await prisma.booking.findUnique({
     where: {
-      userId_sessionId: {
+      userId_tutorSessionId: {
         userId,
-        sessionId,
+        tutorSessionId: sessionId,
       },
     },
   });
@@ -79,10 +79,10 @@ export async function bookSession(sessionId: string) {
   const booking = await prisma.booking.create({
     data: {
       userId,
-      sessionId,
+      tutorSessionId: sessionId,
     },
     include: {
-      session: {
+      tutorSession: {
         include: {
           tutor: { select: { name: true } },
         },
@@ -95,13 +95,13 @@ export async function bookSession(sessionId: string) {
   if (booking.user.email) {
     await sendEmail({
       to: booking.user.email,
-      subject: "Booking Confirmed: " + booking.session.title,
+      subject: "Booking Confirmed: " + booking.tutorSession.title,
       react: BookingConfirmationEmail({
         userName: booking.user.name || "Learner",
-        sessionTitle: booking.session.title,
-        tutorName: booking.session.tutor.name || "Tutor",
-        startTime: booking.session.startTime,
-        meetingLink: booking.session.meetingLink,
+        sessionTitle: booking.tutorSession.title,
+        tutorName: booking.tutorSession.tutor.name || "Tutor",
+        startTime: booking.tutorSession.startTime,
+        meetingLink: booking.tutorSession.meetingLink,
       }) as any,
     });
   }

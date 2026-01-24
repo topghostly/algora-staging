@@ -18,7 +18,7 @@ interface User {
   email: string;
   name: string | null;
   role: string;
-  emailVerified: boolean;
+  emailVerified: Date | null;
   subscriptionTier: string;
   createdAt: Date;
   disabled: boolean;

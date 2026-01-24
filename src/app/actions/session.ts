@@ -34,7 +34,7 @@ export async function createSession(formData: FormData) {
   const duration = parseInt(durationStr);
   const endDateTime = new Date(startDateTime.getTime() + duration * 60000);
 
-  await prisma.session.create({
+  await prisma.tutorSession.create({
     data: {
       title,
       type,

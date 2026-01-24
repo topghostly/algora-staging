@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Plus } from "lucide-react";
 
 async function getSessions(userId: string) {
-  return await prisma.session.findMany({
+  return await prisma.tutorSession.findMany({
     where: {
       tutorId: userId,
     },

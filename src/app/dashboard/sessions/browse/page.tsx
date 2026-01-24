@@ -7,7 +7,7 @@ import Link from "next/link";
 import { Calendar, Clock, User } from "lucide-react";
 
 async function getAvailableSessions(userId: string) {
-  const sessions = await prisma.session.findMany({
+  const sessions = await prisma.tutorSession.findMany({
     where: {
       startTime: {
         gt: new Date(),
