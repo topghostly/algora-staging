@@ -66,6 +66,7 @@ export const authOptions: NextAuthOptions = {
             name: user.name,
             role: user.role,
             subscriptionTier: user.subscriptionTier,
+            googleId: (user as any).googleId,
             emailVerified: (user as any).emailVerified,
           };
         }
@@ -98,6 +99,7 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           role: user.role,
           subscriptionTier: user.subscriptionTier,
+          googleId: (user as any).googleId,
           emailVerified: (user as any).emailVerified,
         };
       },
@@ -119,6 +121,7 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.role = user.role;
         token.subscriptionTier = user.subscriptionTier;
+        token.googleId = (user as any).googleId;
         token.emailVerified = (user as any).emailVerified;
       }
 
@@ -155,6 +158,7 @@ export const authOptions: NextAuthOptions = {
 
           if (freshUser) {
             token.emailVerified = (freshUser as any).emailVerified;
+            token.googleId = (freshUser as any).googleId;
             token.role = freshUser.role;
             token.subscriptionTier = freshUser.subscriptionTier;
             token.name = freshUser.name;
@@ -173,6 +177,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user && token) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
+        (session.user as any).googleId = token.googleId as string;
         session.user.subscriptionTier = token.subscriptionTier as string;
         (session.user as any).emailVerified = token.emailVerified as boolean;
         (session.user as any).provider = token.provider as string;

@@ -476,7 +476,7 @@ export default function TracksPage() {
                           fontSize: "1.5rem",
                           fontWeight: 700,
                           marginBottom: "0.75rem",
-                          height: "4rem",
+                          height: "4.4rem",
                           display: "-webkit-box",
                           WebkitLineClamp: 2,
                           WebkitBoxOrient: "vertical",
