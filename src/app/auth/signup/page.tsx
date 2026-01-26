@@ -18,6 +18,12 @@ function SignUpForm() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const handleGoogleSignIn = async () => {
+    await signIn("google", {
+      callbackUrl: "/auth/redirect",
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -104,7 +110,7 @@ function SignUpForm() {
           Sign up with your Google account
         </p>
 
-        <button style={socialBtnStyle} onClick={() => signIn("google")}>
+        <button style={socialBtnStyle} onClick={() => handleGoogleSignIn()}>
           <span style={{ width: "20px", height: "20px" }}>
             <svg
               width="20px"

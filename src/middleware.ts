@@ -26,7 +26,7 @@ export default withAuth(
       }
     }
 
-    if (isAuthPage) {
+    if (isAuthPage && req.nextUrl.pathname !== "/auth/redirect") {
       if (isAuth) {
         return NextResponse.redirect(new URL("/dashboard", req.url));
       }
@@ -61,7 +61,7 @@ export default withAuth(
       signIn: "/auth/signin",
     },
     secret: process.env.NEXTAUTH_SECRET,
-  }
+  },
 );
 
 export const config = {
