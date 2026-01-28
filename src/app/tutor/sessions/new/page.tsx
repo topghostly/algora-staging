@@ -15,7 +15,7 @@ function SubmitButton() {
 
 export default function NewSessionPage() {
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="w-lg mx-auto">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Create New Session</h1>
         <Link
@@ -26,10 +26,10 @@ export default function NewSessionPage() {
         </Link>
       </div>
 
-      <div className="card p-6">
+      <div className="p-4">
         <form action={createSession} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="block text-sm font-bold mb-2">
               Session Title
             </label>
             <input
@@ -43,24 +43,26 @@ export default function NewSessionPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label className="block text-sm font-bold mb-2">
                 Session Type
               </label>
               <select name="type" className="input w-full" required>
+                <option value="NULL"></option>
                 <option value="ONE_ON_ONE">One-on-One</option>
                 <option value="GROUP">Group Session</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label className="block text-sm font-bold mb-2">
                 Duration (minutes)
               </label>
               <select
                 name="duration"
                 className="input w-full"
                 required
-                defaultValue="60"
+                defaultValue="NULL"
               >
+                <option value="NULL"></option>
                 <option value="30">30 minutes</option>
                 <option value="45">45 minutes</option>
                 <option value="60">1 hour</option>
@@ -72,7 +74,7 @@ export default function NewSessionPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-2">Date</label>
+              <label className="block text-sm font-bold mb-2">Date</label>
               <input
                 type="date"
                 name="date"
@@ -82,9 +84,7 @@ export default function NewSessionPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">
-                Start Time
-              </label>
+              <label className="block text-sm font-bold mb-2">Start Time</label>
               <input
                 type="time"
                 name="startTime"
@@ -94,8 +94,8 @@ export default function NewSessionPage() {
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">
+          {/* <div>
+            <label className="block text-sm font-bold mb-2">
               Meeting Link (Optional)
             </label>
             <input
@@ -107,9 +107,9 @@ export default function NewSessionPage() {
             <p className="text-xs text-muted-foreground mt-1">
               You can add this later if you prefer.
             </p>
-          </div>
+          </div> */}
 
-          <div className="pt-4">
+          <div className="">
             <SubmitButton />
           </div>
         </form>

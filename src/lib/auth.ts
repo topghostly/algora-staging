@@ -27,14 +27,14 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      authorization: {
-        params: {
-          scope:
-            "openid email profile https://www.googleapis.com/auth/calendar",
-          access_type: "offline",
-          prompt: "consent",
-        },
-      },
+      // authorization: {
+      //   params: {
+      //     scope:
+      //       "openid email profile https://www.googleapis.com/auth/calendar",
+      //     access_type: "offline",
+      //     prompt: "consent",
+      //   },
+      // },
     }),
 
     // ─────────────────────────────────────────
@@ -68,6 +68,7 @@ export const authOptions: NextAuthOptions = {
             subscriptionTier: user.subscriptionTier,
             googleId: (user as any).googleId,
             emailVerified: (user as any).emailVerified,
+            calendarConnected: user.calendarConnected,
           };
         }
 
@@ -101,6 +102,7 @@ export const authOptions: NextAuthOptions = {
           subscriptionTier: user.subscriptionTier,
           googleId: (user as any).googleId,
           emailVerified: (user as any).emailVerified,
+          calendarConnected: user.calendarConnected,
         };
       },
     }),
@@ -111,11 +113,6 @@ export const authOptions: NextAuthOptions = {
     // JWT CALLBACK
     // ─────────────────────────────────────────
     async jwt({ token, user, account, session }) {
-      console.log("JWT CALLBACK", {
-        hasUser: !!user,
-        provider: account?.provider,
-      });
-
       // Initial login
       if (user) {
         token.id = user.id;
@@ -123,6 +120,7 @@ export const authOptions: NextAuthOptions = {
         token.subscriptionTier = user.subscriptionTier;
         token.googleId = (user as any).googleId;
         token.emailVerified = (user as any).emailVerified;
+        token.calendarConnected = (user as any).calendarConnected;
       }
 
       // Google login
@@ -158,6 +156,7 @@ export const authOptions: NextAuthOptions = {
 
           if (freshUser) {
             token.emailVerified = (freshUser as any).emailVerified;
+            token.calendarConnected = freshUser.calendarConnected;
             token.googleId = (freshUser as any).googleId;
             token.role = freshUser.role;
             token.subscriptionTier = freshUser.subscriptionTier;
@@ -180,29 +179,29 @@ export const authOptions: NextAuthOptions = {
         (session.user as any).googleId = token.googleId as string;
         session.user.subscriptionTier = token.subscriptionTier as string;
         (session.user as any).emailVerified = token.emailVerified as boolean;
+        (session.user as any).calendarConnected =
+          token.calendarConnected as boolean;
         (session.user as any).provider = token.provider as string;
       }
 
       return session;
     },
-    // async signIn({ user, account }) {
-    //   if (account?.provider === "google" && user.email) {
-    //     await prisma.user.upsert({
-    //       where: { email: user.email },
-    //       update: {
-    //         emailVerified: true,
-    //         emailVerifiedAt: new Date(),
-    //       },
-    //       create: {
-    //         email: user.email,
-    //         name: user.name,
-    //         image: user.image,
-    //         emailVerified: true,
-    //         emailVerifiedAt: new Date(),
-    //       },
-    //     });
-    //   }
-    //   return true;
-    // },
+    async signIn({ user, account }) {
+      if (
+        account?.provider === "google" &&
+        account.scope?.includes("calendar")
+      ) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            calendarConnected: true,
+            googleAccessToken: encrypt(account.access_token!),
+            googleRefreshToken: encrypt(account.refresh_token!),
+            calendarConnectedAt: new Date(),
+          },
+        });
+      }
+      return true;
+    },
   },
 };

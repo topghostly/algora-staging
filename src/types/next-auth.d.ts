@@ -7,6 +7,7 @@ declare module "next-auth" {
       role: string;
       subscriptionTier: string;
       emailVerified: boolean;
+      calendarConnected: boolean;
     } & DefaultSession["user"];
   }
 
@@ -14,6 +15,7 @@ declare module "next-auth" {
     role: string;
     subscriptionTier: string;
     emailVerified: boolean;
+    calendarConnected: boolean;
   }
 }
 
@@ -23,5 +25,6 @@ declare module "next-auth/jwt" {
     role: string;
     subscriptionTier: string;
     emailVerified: boolean;
+    calendarConnected: boolean;
   }
 }

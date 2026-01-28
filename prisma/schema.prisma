@@ -46,6 +46,9 @@ model User {
   emailVerified DateTime?
   googleId             String?  @unique
   googleRefreshToken   String?
+  calendarConnected    Boolean   @default(false)
+  googleAccessToken    String?
+  calendarConnectedAt  DateTime?
   
   // Subscription
   subscriptionTier SubscriptionTier @default(FREE)

@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import ConnectCalendarButton from "@/components/ConnectCalendarButton";
 
 export default async function TutorLayout({
   children,
@@ -18,20 +19,25 @@ export default async function TutorLayout({
     <div className="container py-8">
       <div className="flex flex-col gap-8">
         <div className="border-b pb-4">
-          <h1 className="text-3xl font-bold mb-10">Tutor Portal</h1>
-          <nav className="flex gap-4 text-sm text-muted-foreground">
-            <Link
-              href="/tutor"
-              className="hover:text-primary transition-colors"
-            >
-              Overview
-            </Link>
-            <Link
-              href="/tutor/sessions"
-              className="hover:text-primary transition-colors"
-            >
-              Sessions
-            </Link>
+          <h1 className="text-3xl font-bold my-10">Tutor Portal</h1>
+          <nav className="flex justify-between">
+            <div className="flex gap-4">
+              <Link
+                href="/tutor"
+                className="hover:text-primary transition-colors"
+              >
+                Overview
+              </Link>
+              <Link
+                href="/tutor/sessions"
+                className="hover:text-primary transition-colors"
+              >
+                Sessions
+              </Link>
+            </div>
+            {!session.user.calendarConnected && (
+              <ConnectCalendarButton email={session.user.email!} />
+            )}
           </nav>
         </div>
         {children}

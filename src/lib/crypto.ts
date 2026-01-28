@@ -2,7 +2,6 @@ import crypto from "crypto";
 
 const algorithm = "aes-256-gcm";
 
-// Take ANY length secret and derive a real 32-byte key from it
 const ENCRYPTION_SECRET = process.env.ENCRYPTION_KEY!;
 
 if (!ENCRYPTION_SECRET) {
