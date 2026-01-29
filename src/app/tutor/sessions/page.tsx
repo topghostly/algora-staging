@@ -4,6 +4,8 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Plus } from "lucide-react";
+import { toast } from "sonner";
+import SessionDelete from "@/components/sessionDelete";
 
 async function getSessions(userId: string) {
   return await prisma.tutorSession.findMany({
@@ -31,6 +33,7 @@ export default async function TutorSessionsPage() {
   }
 
   const sessions = await getSessions(session.user.id);
+  console.log(sessions);
 
   return (
     <div>
@@ -86,9 +89,7 @@ export default async function TutorSessionsPage() {
                   </p>
                   <div className="flex gap-2 mt-2">
                     <button className="btn btn-outline btn-sm">Edit</button>
-                    <button className="btn btn-outline btn-sm text-red-500 hover:bg-red-50 hover:border-red-200">
-                      Cancel
-                    </button>
+                    <SessionDelete id={s.id} />
                   </div>
                 </div>
               </div>

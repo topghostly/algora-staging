@@ -27,14 +27,6 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      // authorization: {
-      //   params: {
-      //     scope:
-      //       "openid email profile https://www.googleapis.com/auth/calendar",
-      //     access_type: "offline",
-      //     prompt: "consent",
-      //   },
-      // },
     }),
 
     // ─────────────────────────────────────────
@@ -133,8 +125,9 @@ export const authOptions: NextAuthOptions = {
             data: {
               googleId: account.providerAccountId,
               googleRefreshToken: encrypt(account.refresh_token),
-              // emailVerified: true,
-              // emailVerifiedAt: new Date(),
+              googleTokenExpiresAt: account.expires_at,
+              googleRefreshTokenExpiresIn: (account as any)
+                .refresh_token_expires_in,
             },
           });
         }
@@ -197,6 +190,9 @@ export const authOptions: NextAuthOptions = {
             calendarConnected: true,
             googleAccessToken: encrypt(account.access_token!),
             googleRefreshToken: encrypt(account.refresh_token!),
+            googleTokenExpiresAt: account.expires_at,
+            googleRefreshTokenExpiresIn: (account as any)
+              .refresh_token_expires_in,
             calendarConnectedAt: new Date(),
           },
         });

@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import ConnectCalendarButton from "@/components/ConnectCalendarButton";
+import { decrypt } from "@/lib/crypto";
 
 export default async function TutorLayout({
   children,

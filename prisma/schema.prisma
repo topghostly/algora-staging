@@ -49,6 +49,8 @@ model User {
   calendarConnected    Boolean   @default(false)
   googleAccessToken    String?
   calendarConnectedAt  DateTime?
+  googleTokenExpiresAt Int?
+  googleRefreshTokenExpiresIn Int?
   
   // Subscription
   subscriptionTier SubscriptionTier @default(FREE)
@@ -179,6 +181,7 @@ model TutorSession {
   startTime   DateTime
   endTime     DateTime
   meetingLink String?
+  googleEventId String?
   
   tutorId     String
   tutor       User        @relation(fields: [tutorId], references: [id])
@@ -197,7 +200,7 @@ model Booking {
   user      User     @relation(fields: [userId], references: [id])
   
   tutorSessionId String @map("sessionId")
-  tutorSession   TutorSession  @relation(fields: [tutorSessionId], references: [id])
+  tutorSession   TutorSession  @relation(fields: [tutorSessionId], references: [id], onDelete: Cascade)
   
   attended  Boolean  @default(false)
   

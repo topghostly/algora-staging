@@ -12,6 +12,7 @@ declare module "next-auth" {
   }
 
   interface User {
+    id: string;
     role: string;
     subscriptionTier: string;
     emailVerified: boolean;

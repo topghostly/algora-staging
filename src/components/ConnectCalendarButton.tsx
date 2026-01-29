@@ -17,8 +17,6 @@ export default function ConnectCalendarButton({ email }: { email: string }) {
     );
   };
 
-  //   scope: "https://www.googleapis.com/auth/calendar",
-
   return (
     <div>
       <button
