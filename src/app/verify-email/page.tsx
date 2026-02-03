@@ -13,7 +13,7 @@ function VerifyEmailContent() {
   const { update } = useSession();
   const token = searchParams.get("token");
   const [status, setStatus] = useState<"loading" | "success" | "error">(
-    "loading"
+    "loading",
   );
   const [message, setMessage] = useState("Verifying your email...");
 

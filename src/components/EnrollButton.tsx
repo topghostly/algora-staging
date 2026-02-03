@@ -16,10 +16,7 @@ export default function EnrollButton({ trackId }: { trackId: string }) {
       return;
     }
 
-    if (
-      !(session.user as any).emailVerified &&
-      !(session.user as any).googleId
-    ) {
+    if (!(session.user as any).emailVerified) {
       router.push("/email-not-verified");
       return;
     }

@@ -4,23 +4,25 @@ import { verifyVerificationToken } from "@/lib/tokens";
 
 export async function POST(req: Request) {
   try {
-    const { token } = await req.json();
+    const { token, googleMail } = await req.json();
 
-    if (!token) {
+    if (!token && !googleMail) {
       return NextResponse.json({ error: "Missing token" }, { status: 400 });
     }
 
     const email = verifyVerificationToken(token);
 
-    if (!email) {
+    if (!email && !googleMail) {
       return NextResponse.json(
         { error: "Invalid or expired token" },
         { status: 400 },
       );
     }
 
+    console.log(email, googleMail);
+
     const user = await prisma.user.findUnique({
-      where: { email },
+      where: { email: email ? email : googleMail },
     });
 
     if (!user) {
@@ -35,10 +37,9 @@ export async function POST(req: Request) {
     }
 
     await prisma.user.update({
-      where: { email },
+      where: { email: email ? email : googleMail },
       data: {
-        emailVerified: true,
-        emailVerifiedAt: new Date(),
+        emailVerified: new Date(),
       } as any,
     });
 

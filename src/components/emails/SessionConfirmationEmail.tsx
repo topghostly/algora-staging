@@ -68,6 +68,7 @@ export const SessionConfirmationEmail = ({
               backgroundSize: "cover",
               height: "240px",
               textAlign: "center",
+              backgroundColor: "#004D40",
             }}
           >
             <Text style={heroText}>Session Confirmed</Text>
