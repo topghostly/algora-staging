@@ -4,6 +4,13 @@ import { Check } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { usePaystackPayment } from "react-paystack";
 import { useRouter } from "next/navigation";
+import {
+  updateSubscription,
+  recordTransaction,
+} from "@/app/actions/subscription";
+import { SubscriptionTier } from "@prisma/client";
+import { toast } from "sonner";
+import { revalidatePath } from "next/cache";
 
 export default function PricingCard({
   title,
@@ -15,6 +22,8 @@ export default function PricingCard({
   buttonLink,
   planCode,
   amount,
+  tier,
+  creditsToAdd = 0,
   variant = "outline",
   popular = false,
   isCurrentPlan = false,
@@ -28,6 +37,8 @@ export default function PricingCard({
   buttonLink?: string;
   planCode?: string;
   amount?: number;
+  tier?: SubscriptionTier;
+  creditsToAdd?: number;
   variant?: "primary" | "outline";
   popular?: boolean;
   isCurrentPlan?: boolean;
@@ -45,13 +56,68 @@ export default function PricingCard({
 
   const initializePayment = usePaystackPayment(config);
 
-  const onSuccess = () => {
-    alert("Payment successful! Your subscription has been updated.");
-    router.refresh();
+  const onSuccess = async (reference: any) => {
+    // console.log("Payment successful", reference);
+    try {
+      if (tier) {
+        await updateSubscription(tier, reference.reference, creditsToAdd, {
+          reference: reference.reference,
+          paystackTransactionId: reference.transaction,
+          amount: amount || 0,
+          planCode: planCode,
+          status: reference.status,
+        });
+        toast.success(
+          `Payment successful! Your subscription has been updated to ${title}.`,
+          {
+            duration: 5000,
+          },
+        );
+        router.push("/dashboard");
+        router.refresh();
+      } else {
+        // Record non-tier transaction (if any)
+        await recordTransaction({
+          reference: reference.reference,
+          paystackTransactionId: reference.transaction,
+          amount: amount || 0,
+          status: reference.status,
+          planCode: planCode,
+        });
+        toast.success(
+          "Payment successful! Your subscription has been updated.",
+          {
+            duration: 5000,
+          },
+        );
+        router.refresh();
+      }
+    } catch (error) {
+      console.error("Failed to update subscription:", error);
+
+      // Log the failure in the database
+      await recordTransaction({
+        reference: reference.reference,
+        amount: amount || 0,
+        status: "FAILED_TO_UPDATE_USER",
+        planCode: planCode,
+        paystackTransactionId: reference.transaction,
+      });
+
+      toast.error(
+        "Payment was successful, but we encountered an error updating your account. Please contact support.",
+        {
+          duration: 5000,
+        },
+      );
+    }
   };
 
-  const onClose = () => {
-    // handle close
+  const onClose = async () => {
+    console.log("Payment modal closed by user");
+    // Optionally log closure as cancelled
+    // But we don't have a transaction reference yet unless we use one we generated
+    // Paystack doesn't provide the reference in onClose usually if it wasn't successful
   };
 
   const handleClick = () => {
@@ -97,6 +163,7 @@ export default function PricingCard({
         padding: "2rem",
         position: "relative",
         border: `2px solid ${borderColor}`,
+        overflow: "visible",
         transform: scale,
         zIndex: zIndex,
         boxShadow: shadow,
@@ -159,13 +226,13 @@ export default function PricingCard({
           marginBottom: "1rem",
         }}
       >
-        <span style={{ fontSize: "2rem", fontWeight: 800 }}>{price}</span>
+        <span style={{ fontSize: "2.5rem", fontWeight: 600 }}>{price}</span>
         {period && (
           <span
             style={{
               color: "var(--muted)",
               marginLeft: "0.25rem",
-              fontSize: "0.9rem",
+              fontSize: "1.2rem",
             }}
           >
             {period}

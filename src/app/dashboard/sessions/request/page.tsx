@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { createSessionRequest } from "@/app/actions/request";
 import Link from "next/link";
-import { ArrowLeft, Calendar } from "lucide-react";
+import { ArrowLeft, Calendar, Diameter } from "lucide-react";
 
 async function getTutors() {
   return await prisma.user.findMany({
@@ -31,8 +31,8 @@ export default async function RequestSessionPage() {
   if (user.credits1on1 < 1) {
     return (
       <>
-        <div className="container">
-          <div className="flex justify-between items-center mb-8">
+        <div className="container ">
+          <div className="flex justify-between items-center my-8">
             <h1 className="text-3xl font-bold">Request a 1-on-1 Session</h1>
             <div className="bg-muted/50 px-4 py-2 rounded-lg text-sm">
               <span className="text-muted-foreground mr-2">Your Plan:</span>
@@ -48,14 +48,14 @@ export default async function RequestSessionPage() {
         </div>
         <div className="h-[70vh] w-full flex items-center justify-center">
           <div className="text-center">
-            <Calendar className="mx-auto h-12 w-12 text-muted-foreground mb-8" />
+            <Diameter className="mx-auto h-12 w-12 text-muted-foreground mb-8" />
             <h3 className="text-2xl font-semibold mb-2">No credits left</h3>
             <p className="text-muted-foreground mb-3">
               You have no credits left to request a 1-on-1 session.
             </p>
-            <Link href="/pricing" className="btn btn-primary">
+            {/* <Link href="/pricing" className="btn btn-primary">
               Upgrade your plan
-            </Link>
+            </Link> */}
           </div>
         </div>
       </>

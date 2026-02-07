@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Manrope } from "next/font/google";
+import { Nata_Sans } from "next/font/google";
 import "./globals.css";
 
 import { Providers } from "@/components/Providers";
 import Navbar from "@/components/Navbar";
 import { Toaster } from "@/components/ui/Toaster";
 
-const outfit = Manrope({ subsets: ["latin"] });
+const outfit = Nata_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Algora - Master Tech Skills",

@@ -83,6 +83,20 @@ model User {
   
   studentRequests SessionRequest[] @relation("StudentRequests")
   tutorRequests   SessionRequest[] @relation("TutorRequests")
+  transactions    PaymentTransaction[]
+}
+
+model PaymentTransaction {
+  id                    String   @id @default(cuid())
+  userId                String
+  user                  User     @relation(fields: [userId], references: [id])
+  reference             String   @unique
+  paystackTransactionId String?
+  amount                Float
+  currency              String   @default("NGN")
+  status                String
+  planCode              String?
+  createdAt             DateTime @default(now())
 }
 
 model Track {

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { bookSession } from "@/app/actions/booking";
 import Link from "next/link";
 import { Calendar, Clock, User } from "lucide-react";
+import { toast } from "sonner";
 
 async function getAvailableSessions(userId: string) {
   const sessions = await prisma.tutorSession.findMany({
@@ -45,6 +46,43 @@ export default async function BrowseSessionsPage() {
 
   if (!session || !session.user) {
     redirect("/auth/signin");
+  }
+
+  if (session.user.subscriptionTier === "FREE") {
+    return (
+      <>
+        <div className="container">
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-3xl font-bold">Request a 1-on-1 Session</h1>
+            <div className="bg-muted/50 px-4 py-2 rounded-lg text-sm">
+              <span className="text-muted-foreground mr-2">Your Plan:</span>
+              <span className="font-semibold mr-4">
+                {session.user.subscriptionTier}
+              </span>
+              <span className="text-muted-foreground mr-2">
+                1-on-1 Credits:
+              </span>
+              {/* <span className="font-semibold">{session.user.credits1on1}</span> */}
+            </div>
+          </div>
+        </div>
+        <div className="h-[70vh] w-full flex items-center justify-center">
+          <div className="text-center">
+            <Calendar className="mx-auto h-12 w-12 text-muted-foreground mb-8" />
+            <h3 className="text-2xl font-semibold mb-2">
+              Upgrade to attend sessions
+            </h3>
+            <p className="text-muted-foreground mb-3">
+              You need to have a paid subscription to browse and attend
+              sessions.
+            </p>
+            <Link href="/pricing" className="btn btn-primary">
+              Upgrade your plan
+            </Link>
+          </div>
+        </div>
+      </>
+    );
   }
 
   const [availableSessions, user] = await Promise.all([

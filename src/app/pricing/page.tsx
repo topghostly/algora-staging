@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
+import { SubscriptionTier } from "@prisma/client";
 
 const PricingCard = dynamic(() => import("@/components/PricingCard"), {
   ssr: false,
@@ -107,6 +108,8 @@ export default function PricingPage() {
           buttonText="Join Basic"
           planCode={process.env.NEXT_PUBLIC_PAYSTACK_PLAN_BASIC}
           amount={4999}
+          tier={SubscriptionTier.BASIC}
+          creditsToAdd={0}
           variant="outline"
           isCurrentPlan={session?.user?.subscriptionTier === "BASIC"}
         />
@@ -126,6 +129,8 @@ export default function PricingPage() {
           buttonText="Join Pro Lite"
           planCode={process.env.NEXT_PUBLIC_PAYSTACK_PLAN_PRO_LITE}
           amount={9499}
+          tier={SubscriptionTier.PRO_LITE}
+          creditsToAdd={1}
           variant="primary"
           popular={true}
           isCurrentPlan={session?.user?.subscriptionTier === "PRO_LITE"}
@@ -147,6 +152,8 @@ export default function PricingPage() {
           buttonText="Join Pro Plus"
           planCode={process.env.NEXT_PUBLIC_PAYSTACK_PLAN_PRO_PLUS}
           amount={14999}
+          tier={SubscriptionTier.PRO_PLUS}
+          creditsToAdd={4}
           variant="outline"
           isCurrentPlan={session?.user?.subscriptionTier === "PRO_PLUS"}
         />
