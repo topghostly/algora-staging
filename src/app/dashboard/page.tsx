@@ -41,7 +41,6 @@ export default function Dashboard() {
     if (session) {
       fetchEnrollments();
     }
-    console.log(session);
   }, [session]);
 
   return (

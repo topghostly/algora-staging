@@ -9,6 +9,7 @@ import { Calendar, Clock, User } from "lucide-react";
 async function getAvailableSessions(userId: string) {
   const sessions = await prisma.tutorSession.findMany({
     where: {
+      type: "GROUP",
       startTime: {
         gt: new Date(),
       },
@@ -17,7 +18,7 @@ async function getAvailableSessions(userId: string) {
       tutor: {
         select: { name: true },
       },
-      bookings: {
+      sessionEnrollments: {
         select: { userId: true },
       },
     },
@@ -25,15 +26,17 @@ async function getAvailableSessions(userId: string) {
       startTime: "asc",
     },
   });
-
   // Filter out sessions where:
   // 1. User already booked
   // 2. 1-on-1 is full
   return sessions.filter((session) => {
-    const isBookedByUser = session.bookings.some((b) => b.userId === userId);
-    const isFull =
-      session.type === "ONE_ON_ONE" && session.bookings.length >= 1;
-    return !isBookedByUser && !isFull;
+    const isBookedByUser = session.sessionEnrollments.some(
+      (b) => b.userId === userId,
+    );
+    // const isFull =
+    //   session.type === "ONE_ON_ONE" && session.sessionEnrollments.length >= 1;
+    return !isBookedByUser;
+    // return !isBookedByUser && !isFull;
   });
 }
 
@@ -55,7 +58,7 @@ export default async function BrowseSessionsPage() {
   if (!user) redirect("/auth/signin");
 
   return (
-    <div className="container py-8">
+    <div className="container my-10">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Available Sessions</h1>
         <div className="bg-muted/50 px-4 py-2 rounded-lg text-sm">

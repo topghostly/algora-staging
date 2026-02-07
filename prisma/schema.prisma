@@ -36,6 +36,13 @@ enum CertificateType {
   TRACK
 }
 
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
+
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
@@ -68,10 +75,14 @@ model User {
   bookings      Booking[]
   tutorSessions TutorSession[] // Sessions taught by this user (if Tutor)
   enrollments   Enrollment[]
+  sessionEnrollments SessionEnrollment[]
   accounts      Account[]
   sessions      Session[]
   badges        Badge[]
   certificates  Certificate[]
+  
+  studentRequests SessionRequest[] @relation("StudentRequests")
+  tutorRequests   SessionRequest[] @relation("TutorRequests")
 }
 
 model Track {
@@ -187,11 +198,26 @@ model TutorSession {
   tutor       User        @relation(fields: [tutorId], references: [id])
   
   bookings    Booking[]
+  sessionEnrollments  SessionEnrollment[]
   
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt @default(now())
 
   @@map("Session")
+}
+
+model SessionEnrollment {
+  id           String @id @default(cuid())
+
+  userId       String
+  sessionId    String
+
+  user         User         @relation(fields: [userId], references: [id])
+  session      TutorSession @relation(fields: [sessionId], references: [id])
+
+  enrolledAt   DateTime @default(now())
+
+  @@unique([userId, sessionId]) // prevents double enrollment
 }
 
 model Booking {
@@ -279,4 +305,21 @@ model PasswordResetToken {
   createdAt DateTime @default(now())
 
   @@unique([email, token])
+}
+
+model SessionRequest {
+  id            String        @id @default(cuid())
+  title         String
+  studentId     String
+  tutorId       String
+  preferredTime String
+  preferredDate String
+  message       String?
+  status        RequestStatus @default(PENDING)
+  
+  student       User          @relation("StudentRequests", fields: [studentId], references: [id])
+  tutor         User          @relation("TutorRequests", fields: [tutorId], references: [id])
+  
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 }

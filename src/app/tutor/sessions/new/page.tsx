@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
 
+import { useSearchParams } from "next/navigation";
+
 function SubmitButton({ loading }: { loading: boolean }) {
   return (
     <button type="submit" className="btn btn-primary w-full" disabled={loading}>
@@ -15,7 +17,14 @@ function SubmitButton({ loading }: { loading: boolean }) {
 
 export default function NewSessionPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
+
+  const initialEmail = searchParams.get("studentEmail") || "";
+  const initialTitle = searchParams.get("title") || "";
+  const initialDate = searchParams.get("preferredDate") || "";
+  const initialTime = searchParams.get("preferredTime") || "";
+  const requestId = searchParams.get("requestId");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -29,14 +38,7 @@ export default function NewSessionPage() {
     const startTimeStr = formData.get("startTime") as string;
     const studentEmail = formData.get("studentEmail") as string;
 
-    if (
-      !title ||
-      !type ||
-      !duration ||
-      !date ||
-      !startTimeStr ||
-      !studentEmail
-    ) {
+    if (!title || !type || !duration || !date || !startTimeStr) {
       toast.error("Please fill in all required fields");
       setLoading(false);
       return;
@@ -59,6 +61,7 @@ export default function NewSessionPage() {
           startTime: startDateTime.toISOString(),
           endTime: endDateTime.toISOString(),
           type,
+          requestId, // Pass requestId to update its status
         }),
       });
 
@@ -95,7 +98,7 @@ export default function NewSessionPage() {
         </Link>
       </div>
 
-      <div className="p-4">
+      <div className="p-4 bg-card border rounded-xl shadow-sm">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-bold mb-2">
@@ -104,7 +107,7 @@ export default function NewSessionPage() {
             <input
               type="email"
               name="studentEmail"
-              required
+              defaultValue={initialEmail}
               placeholder="student@example.com"
               className="input w-full"
             />
@@ -117,6 +120,7 @@ export default function NewSessionPage() {
             <input
               type="text"
               name="title"
+              defaultValue={initialTitle}
               required
               placeholder="e.g., Weekly Mentorship Call"
               className="input w-full"
@@ -128,8 +132,12 @@ export default function NewSessionPage() {
               <label className="block text-sm font-bold mb-2">
                 Session Type
               </label>
-              <select name="type" className="input w-full" required>
-                <option value="NULL" disabled></option>
+              <select
+                name="type"
+                className="input w-full"
+                required
+                defaultValue="ONE_ON_ONE"
+              >
                 <option value="ONE_ON_ONE">One-on-One</option>
                 <option value="GROUP">Group Session</option>
               </select>
@@ -142,9 +150,8 @@ export default function NewSessionPage() {
                 name="duration"
                 className="input w-full"
                 required
-                defaultValue="NULL"
+                defaultValue="60"
               >
-                <option value="NULL" disabled></option>
                 <option value="30">30 minutes</option>
                 <option value="45">45 minutes</option>
                 <option value="60">1 hour</option>
@@ -160,6 +167,7 @@ export default function NewSessionPage() {
               <input
                 type="date"
                 name="date"
+                defaultValue={initialDate}
                 required
                 className="input w-full"
                 min={new Date().toISOString().split("T")[0]}
@@ -170,6 +178,7 @@ export default function NewSessionPage() {
               <input
                 type="time"
                 name="startTime"
+                defaultValue={initialTime}
                 required
                 className="input w-full"
               />

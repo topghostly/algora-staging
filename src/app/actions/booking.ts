@@ -6,7 +6,7 @@ import { authOptions } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { sendEmail } from "@/lib/email";
-import { BookingConfirmationEmail } from "@/components/emails/BookingConfirmationEmail";
+import { SessionEnrollmentConfirmation } from "@/components/emails/SessionEnrollmentConfirmation";
 
 export async function bookSession(sessionId: string) {
   const session = await getServerSession(authOptions);
@@ -20,7 +20,10 @@ export async function bookSession(sessionId: string) {
   // 1. Get session details
   const targetSession = await prisma.tutorSession.findUnique({
     where: { id: sessionId },
-    include: { bookings: true },
+    include: {
+      sessionEnrollments: true,
+      tutor: { select: { name: true } },
+    },
   });
 
   if (!targetSession) {
@@ -30,29 +33,34 @@ export async function bookSession(sessionId: string) {
   // 2. Check availability
   if (
     targetSession.type === "ONE_ON_ONE" &&
-    targetSession.bookings.length >= 1
+    targetSession.sessionEnrollments.length >= 1
   ) {
     throw new Error("Session is already booked");
   }
 
-  // 3. Check if already booked
-  const existingBooking = await prisma.booking.findUnique({
+  // 3. Check if already enrolled
+  const existingEnrollment = await prisma.sessionEnrollment.findUnique({
     where: {
-      userId_tutorSessionId: {
+      userId_sessionId: {
         userId,
-        tutorSessionId: sessionId,
+        sessionId,
       },
     },
   });
 
-  if (existingBooking) {
-    throw new Error("You have already booked this session");
+  if (existingEnrollment) {
+    throw new Error("You are already enrolled in this session");
   }
 
   // 4. Check permissions and credits
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { credits1on1: true, subscriptionTier: true },
+    select: {
+      credits1on1: true,
+      subscriptionTier: true,
+      email: true,
+      name: true,
+    },
   });
 
   if (!user) throw new Error("User not found");
@@ -75,37 +83,33 @@ export async function bookSession(sessionId: string) {
     });
   }
 
-  // 5. Create booking
-  const booking = await prisma.booking.create({
+  // 5. Create enrollment
+  const enrollment = await prisma.sessionEnrollment.create({
     data: {
       userId,
-      tutorSessionId: sessionId,
-    },
-    include: {
-      tutorSession: {
-        include: {
-          tutor: { select: { name: true } },
-        },
-      },
-      user: { select: { name: true, email: true } },
+      sessionId,
     },
   });
 
-  // Send Booking Confirmation Email
-  if (booking.user.email) {
+  // Send Enrollment Confirmation Email
+  if (user.email) {
     await sendEmail({
-      to: booking.user.email,
-      subject: "Booking Confirmed: " + booking.tutorSession.title,
-      react: BookingConfirmationEmail({
-        userName: booking.user.name || "Learner",
-        sessionTitle: booking.tutorSession.title,
-        tutorName: booking.tutorSession.tutor.name || "Tutor",
-        startTime: booking.tutorSession.startTime,
-        meetingLink: booking.tutorSession.meetingLink,
+      to: user.email,
+      subject: "Enrollment Confirmed: " + targetSession.title,
+      react: SessionEnrollmentConfirmation({
+        userName: user.name || "Learner",
+        sessionTitle: targetSession.title,
+        tutorName: targetSession.tutor.name || "Tutor",
+        date: targetSession.startTime.toLocaleDateString(),
+        time: `${targetSession.startTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - ${targetSession.endTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`,
+        meetingLink: targetSession.meetingLink || "",
       }) as any,
     });
   }
 
   revalidatePath("/dashboard/sessions");
+  revalidatePath("/dashboard/sessions/browse");
   revalidatePath("/tutor/sessions");
+
+  redirect("/dashboard/sessions");
 }

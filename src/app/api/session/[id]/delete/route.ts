@@ -21,8 +21,13 @@ export async function DELETE(
     const tutorSession = await prisma.tutorSession.findUnique({
       where: { id },
       select: {
+        id: true,
         googleEventId: true,
         tutorId: true,
+        type: true,
+        sessionEnrollments: {
+          select: { userId: true },
+        },
       },
     });
 
@@ -59,14 +64,32 @@ export async function DELETE(
       }
     }
 
-    await prisma.booking.deleteMany({
-      where: { tutorSessionId: id },
-    });
+    const operations = [
+      prisma.booking.deleteMany({
+        where: { tutorSessionId: id },
+      }),
+      prisma.sessionEnrollment.deleteMany({
+        where: { sessionId: id },
+      }),
+      prisma.tutorSession.delete({
+        where: { id },
+      }),
+    ];
 
-    await prisma.tutorSession.delete({
-      where: { id },
-    });
+    if (
+      tutorSession.type === "ONE_ON_ONE" &&
+      tutorSession.sessionEnrollments.length > 0
+    ) {
+      const studentId = tutorSession.sessionEnrollments[0].userId;
+      operations.push(
+        prisma.user.update({
+          where: { id: studentId },
+          data: { credits1on1: { increment: 1 } },
+        }) as any,
+      );
+    }
 
+    await prisma.$transaction(operations);
     revalidatePath("/tutor/sessions");
     return NextResponse.json({ message: "Session deleted successfully" });
   } catch (error: any) {

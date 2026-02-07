@@ -20,11 +20,20 @@ export async function POST(req: Request) {
       studentEmail = "td.bolaji@gmail.com",
       startTime,
       endTime,
+      type,
       title = "Algora 1-on-1 session",
       description = "Private learning session on Algora",
+      requestId,
     } = await req.json();
 
-    if (!studentEmail || !startTime || !endTime) {
+    if (!startTime || !endTime) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 },
+      );
+    }
+
+    if (type === "ONE_ON_ONE" && !studentEmail) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 },
@@ -74,11 +83,18 @@ export async function POST(req: Request) {
       where: { email: studentEmail },
     });
 
-    if (!student) {
+    if (!student && type === "ONE_ON_ONE") {
       return NextResponse.json({ error: "Student not found" }, { status: 404 });
     }
 
-    const event = {
+    const event: {
+      summary: string;
+      description: string;
+      start: { dateTime: string; timeZone: string };
+      end: { dateTime: string; timeZone: string };
+      conferenceData: { createRequest: { requestId: string } };
+      attendees?: { email: string }[];
+    } = {
       summary: title,
       description,
       start: {
@@ -89,13 +105,24 @@ export async function POST(req: Request) {
         dateTime: endTime,
         timeZone: "Africa/Lagos",
       },
-      attendees: [{ email: studentEmail }],
       conferenceData: {
         createRequest: {
-          requestId: `algora-1on1-${crypto.randomUUID()}`,
+          requestId: `algora-${type.toLowerCase()}-${crypto.randomUUID()}`,
         },
       },
     };
+
+    switch (type) {
+      case "ONE_ON_ONE":
+        event.attendees = [{ email: studentEmail }];
+        break;
+
+      case "GROUP":
+        break;
+
+      default:
+        break;
+    }
 
     const res = await fetch(
       "https://www.googleapis.com/calendar/v3/calendars/primary/events?conferenceDataVersion=1&sendUpdates=all",
@@ -115,8 +142,6 @@ export async function POST(req: Request) {
 
     const data = await res.json();
 
-    // Note: TutorSession schema currently lacks studentId and description.
-    // We'll create the session and assume a booking will link the student.
     const newSession = await prisma.tutorSession.create({
       data: {
         tutorId: session.user.id,
@@ -125,9 +150,26 @@ export async function POST(req: Request) {
         meetingLink: data.hangoutLink,
         googleEventId: data.id,
         title,
-        type: "ONE_ON_ONE",
+        type,
       },
     });
+
+    if (requestId) {
+      await prisma.sessionRequest.update({
+        where: { id: requestId },
+        data: { status: "ACCEPTED" },
+      });
+
+      // Auto-enroll the student
+      if (student) {
+        await prisma.sessionEnrollment.create({
+          data: {
+            userId: student.id,
+            sessionId: newSession.id,
+          },
+        });
+      }
+    }
 
     await prisma.booking.create({
       data: {

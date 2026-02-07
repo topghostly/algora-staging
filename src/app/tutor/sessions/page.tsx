@@ -33,7 +33,6 @@ export default async function TutorSessionsPage() {
   }
 
   const sessions = await getSessions(session.user.id);
-  console.log(sessions);
 
   return (
     <div>
