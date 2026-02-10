@@ -44,10 +44,7 @@ export default function Dashboard() {
   }, [session]);
 
   return (
-    <div
-      className="container"
-      style={{ marginTop: "4rem", paddingBottom: "4rem" }}
-    >
+    <div className="container" style={{ padding: "4rem 0" }}>
       <div style={{ marginBottom: "3rem" }}>
         <h1
           style={{

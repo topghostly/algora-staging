@@ -32,7 +32,7 @@ export default async function RequestSessionPage() {
     return (
       <>
         <div className="container ">
-          <div className="flex justify-between items-center my-8">
+          <div className="flex justify-between items-center my-16">
             <h1 className="text-3xl font-bold">Request a 1-on-1 Session</h1>
             <div className="bg-muted/50 px-4 py-2 rounded-lg text-sm">
               <span className="text-muted-foreground mr-2">Your Plan:</span>
@@ -63,7 +63,7 @@ export default async function RequestSessionPage() {
   }
   return (
     <div className="container py-10">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center my-16">
         <h1 className="text-3xl font-bold">Request a 1-on-1 Session</h1>
         <div className="bg-muted/50 px-4 py-2 rounded-lg text-sm">
           <span className="text-muted-foreground mr-2">Your Plan:</span>
@@ -97,7 +97,7 @@ export default async function RequestSessionPage() {
               id="tutorId"
               name="tutorId"
               required
-              className="w-full h-10 px-3 py-2 bg-background border rounded-md text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <option value="">Select a tutor...</option>
               {tutors.map((tutor) => (
@@ -118,7 +118,7 @@ export default async function RequestSessionPage() {
               type="text"
               required
               placeholder="e.g., Help with React Tables"
-              className="w-full h-10 px-3 py-2 bg-background border rounded-md text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             />
           </div>
 
@@ -133,7 +133,7 @@ export default async function RequestSessionPage() {
                 type="date"
                 required
                 min={new Date().toISOString().split("T")[0]}
-                className="w-full h-10 px-3 py-2 bg-background border rounded-md text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               />
             </div>
             <div className="space-y-2">
@@ -145,7 +145,7 @@ export default async function RequestSessionPage() {
                 name="preferredTime"
                 type="time"
                 required
-                className="w-full h-10 px-3 py-2 bg-background border rounded-md text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               />
             </div>
           </div>
@@ -158,7 +158,7 @@ export default async function RequestSessionPage() {
               id="message"
               name="message"
               placeholder="Tell the tutor what you'd like to cover..."
-              className="w-full min-h-[100px] px-3 py-2 bg-background border rounded-md text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="w-full min-h-[100px] px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             ></textarea>
           </div>
 

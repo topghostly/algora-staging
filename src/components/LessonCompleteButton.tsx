@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle, Circle, Loader2 } from "lucide-react";
+import { CheckCircle, CircleAlert, Loader2 } from "lucide-react";
 
 interface LessonCompleteButtonProps {
   lessonId: string;
@@ -41,9 +41,9 @@ export default function LessonCompleteButton({
 
   return (
     <button
-      onClick={toggleCompletion}
+      // onClick={toggleCompletion}
       disabled={loading}
-      className={`btn ${completed ? "btn-outline" : "btn-primary"}`}
+      className={`btn btn-outline`}
       style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
     >
       {loading ? (
@@ -51,9 +51,10 @@ export default function LessonCompleteButton({
       ) : completed ? (
         <CheckCircle size={18} color="var(--primary)" />
       ) : (
-        <Circle size={18} />
+        <CircleAlert size={18} color="var(--error)" />
       )}
-      {completed ? "Completed" : "Mark as Complete"}
+      {completed ? "Completed" : "Not Complete"}
+      {/* {completed ? "Completed" : "Mark as Complete"} */}
     </button>
   );
 }

@@ -67,7 +67,7 @@ export default async function TrackOverviewPage({
   // Calculate progress stats
   const totalLessons = track.modules.reduce(
     (acc: number, m: any) => acc + m.lessons.length,
-    0
+    0,
   );
   const completedLessons = track.modules.reduce((acc: number, m: any) => {
     return acc + m.lessons.filter((l: any) => l.progress.length > 0).length;
@@ -84,7 +84,7 @@ export default async function TrackOverviewPage({
     // Try to find first incomplete
     for (const module of track.modules) {
       const incompleteLesson = module.lessons.find(
-        (l) => l.progress.length === 0
+        (l) => l.progress.length === 0,
       );
       if (incompleteLesson) {
         firstLessonUrl = `/tracks/${track.id}/lessons/${incompleteLesson.id}`;
@@ -136,6 +136,7 @@ export default async function TrackOverviewPage({
                 color: "var(--muted)",
                 lineHeight: 1.6,
                 marginBottom: "2rem",
+                maxWidth: 780,
               }}
             >
               {track.description}

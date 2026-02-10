@@ -32,7 +32,7 @@ export default async function LearnerSessionsPage() {
 
   return (
     <div className="container">
-      <div className="flex items-center justify-between my-10">
+      <div className="flex items-center justify-between my-16">
         <h1 className="text-3xl font-bold">My Sessions</h1>
         <div className="flex gap-5">
           <Link href="/dashboard/sessions/browse" className="btn btn-primary">

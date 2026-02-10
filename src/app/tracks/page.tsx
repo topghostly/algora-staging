@@ -450,6 +450,7 @@ export default function TracksPage() {
                       style={{
                         display: "flex",
                         flexDirection: "column",
+                        justifyContent: "space-between",
                         height: "100%",
                       }}
                     >

@@ -70,8 +70,6 @@ async function getLessonData(
 
   if (!track) return null;
 
-  // console.log(track);
-
   // Find the current lesson
   let currentLesson = null;
   let nextLesson = null;
@@ -239,7 +237,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
             <h1 style={{ fontSize: "2rem", fontWeight: 700 }}>
               {currentLesson.title}
             </h1>
-            {hasAccess && currentLesson.type !== "QUIZ" && (
+            {hasAccess && currentLesson.type !== "QUIZ" && isCompleted && (
               <LessonCompleteButton
                 lessonId={currentLesson.id}
                 initialCompleted={isCompleted}
@@ -316,7 +314,12 @@ export default async function LessonPage({ params }: LessonPageProps) {
                       allowFullScreen
                       title={currentLesson.title}
                     /> */}
-                    <VideoPlayer videoId={currentLesson.contentUrl} />
+                    <VideoPlayer
+                      videoId={currentLesson.contentUrl}
+                      lessonId={currentLesson.id}
+                      isCompleted={isCompleted}
+                      trackId={track.id}
+                    />
                   </div>
                 )}
 
@@ -339,6 +342,14 @@ export default async function LessonPage({ params }: LessonPageProps) {
                   <QuizViewer
                     lessonId={currentLesson.id}
                     initialCompleted={isCompleted}
+                    trackId={track.id}
+                    allLessons={track.modules.flatMap((m: any) =>
+                      m.lessons.map((l: any) => ({
+                        id: l.id,
+                        title: l.title,
+                        completed: l.progress.length > 0,
+                      })),
+                    )}
                   />
                 )}
               </>

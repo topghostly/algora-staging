@@ -18,6 +18,7 @@ function SignUpForm() {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isSocialHovered, setIsSocialHovered] = useState(false);
 
   const handleGoogleSignIn = async () => {
     await signIn("google", {
@@ -84,8 +85,10 @@ function SignUpForm() {
     cursor: "pointer",
     fontSize: "0.95rem",
     marginBottom: "0.75rem",
-    backgroundColor: "var(--bg)",
-    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
+    boxShadow: isSocialHovered
+      ? "0 2px 9px rgba(0, 0, 0, 0.1)"
+      : "0 1px 3px rgba(0, 0, 0, 0.05)",
+    transition: "all 0.2s ease",
   };
 
   return (
@@ -111,7 +114,12 @@ function SignUpForm() {
           Sign up with your Google account
         </p>
 
-        <button style={socialBtnStyle} onClick={() => handleGoogleSignIn()}>
+        <button
+          style={socialBtnStyle}
+          onClick={() => handleGoogleSignIn()}
+          onMouseEnter={() => setIsSocialHovered(true)}
+          onMouseLeave={() => setIsSocialHovered(false)}
+        >
           <span style={{ width: "20px", height: "20px" }}>
             <svg
               width="20px"
@@ -180,7 +188,7 @@ function SignUpForm() {
 
         <form
           onSubmit={handleSubmit}
-          style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}
+          style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
         >
           <div>
             <label style={{ fontSize: "0.9rem", fontWeight: 500 }}>
@@ -189,14 +197,7 @@ function SignUpForm() {
             <input
               type="text"
               placeholder="John Doe"
-              style={{
-                width: "100%",
-                padding: "0.75rem",
-                borderRadius: "var(--radius)",
-                border: "1px solid var(--border)",
-                fontSize: "1rem",
-                marginTop: "0.6rem",
-              }}
+              className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               required
               value={formData.name}
               onChange={(e) =>
@@ -209,14 +210,7 @@ function SignUpForm() {
             <input
               type="email"
               placeholder="m@example.com"
-              style={{
-                width: "100%",
-                padding: "0.75rem",
-                borderRadius: "var(--radius)",
-                border: "1px solid var(--border)",
-                fontSize: "1rem",
-                marginTop: "0.6rem",
-              }}
+              className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               required
               value={formData.email}
               onChange={(e) =>
@@ -230,14 +224,7 @@ function SignUpForm() {
             </label>
             <input
               type="password"
-              style={{
-                width: "100%",
-                padding: "0.75rem",
-                borderRadius: "var(--radius)",
-                border: "1px solid var(--border)",
-                fontSize: "1rem",
-                marginTop: "0.6rem",
-              }}
+              className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               required
               value={formData.password}
               onChange={(e) =>

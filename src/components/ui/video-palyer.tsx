@@ -1,15 +1,44 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+
 import Plyr from "plyr";
 import "plyr/dist/plyr.css";
+// import { revalidatePage } from "@/app/actions/revalidate";
 
 type Props = {
   videoId: string;
+  lessonId: string;
+  isCompleted: boolean;
+  trackId: string;
 };
 
-export default function VideoPlayer({ videoId }: Props) {
+export default function VideoPlayer({
+  videoId,
+  lessonId,
+  isCompleted,
+  trackId,
+}: Props) {
   const ref = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+
+  const updateProgesss = async () => {
+    console.log("Starting progess update");
+    try {
+      const res = await fetch("/api/progress", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lessonId, completed: true }),
+      });
+
+      if (res.ok) {
+        router.refresh();
+      }
+    } catch (error) {
+      console.error("Progress update error:", error);
+    }
+  };
 
   useEffect(() => {
     if (!ref.current) return;
@@ -52,6 +81,15 @@ export default function VideoPlayer({ videoId }: Props) {
         iv_load_policy: 3,
         playsinline: 1,
       },
+    });
+
+    player.on("ended", () => {
+      if (isCompleted) return;
+      updateProgesss();
+      // revalidatePage(`/tracks/`);
+      // revalidatePage(`/tracks/${trackId}`);
+      // revalidatePage(`/tracks/${trackId}/lessons`);
+      // router.refresh();
     });
 
     return () => {

@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { bookSession } from "@/app/actions/booking";
 import Link from "next/link";
-import { Calendar, Clock, User } from "lucide-react";
+import { Calendar, CircleAlert, Clock, User } from "lucide-react";
 import { toast } from "sonner";
 
 async function getAvailableSessions(userId: string) {
@@ -50,22 +50,19 @@ export default async function BrowseSessionsPage() {
 
   if (session.user.subscriptionTier === "FREE") {
     return (
-      <>
-        <div className="container">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold">Request a 1-on-1 Session</h1>
-            <div className="bg-muted/50 px-4 py-2 rounded-lg text-sm">
-              <span className="text-muted-foreground mr-2">Your Plan:</span>
-              <span className="font-semibold mr-4">
-                {session.user.subscriptionTier}
-              </span>
-              <span className="text-muted-foreground mr-2">
-                1-on-1 Credits:
-              </span>
-              {/* <span className="font-semibold">{session.user.credits1on1}</span> */}
-            </div>
+      <div className="container">
+        <div className="flex justify-between items-center my-16">
+          <h1 className="text-3xl font-bold">Request a 1-on-1 Session</h1>
+          <div className="bg-muted/50 px-4 py-2 rounded-lg text-sm">
+            <span className="text-muted-foreground mr-2">Your Plan:</span>
+            <span className="font-semibold mr-4">
+              {session.user.subscriptionTier}
+            </span>
+            <span className="text-muted-foreground mr-2">1-on-1 Credits:</span>
+            {/* <span className="font-semibold">{session.user.credits1on1}</span> */}
           </div>
         </div>
+
         <div className="h-[70vh] w-full flex items-center justify-center">
           <div className="text-center">
             <Calendar className="mx-auto h-12 w-12 text-muted-foreground mb-8" />
@@ -81,7 +78,7 @@ export default async function BrowseSessionsPage() {
             </Link>
           </div>
         </div>
-      </>
+      </div>
     );
   }
 
@@ -96,8 +93,8 @@ export default async function BrowseSessionsPage() {
   if (!user) redirect("/auth/signin");
 
   return (
-    <div className="container my-10">
-      <div className="flex justify-between items-center mb-8">
+    <div className="container">
+      <div className="flex justify-between items-center my-16">
         <h1 className="text-3xl font-bold">Available Sessions</h1>
         <div className="bg-muted/50 px-4 py-2 rounded-lg text-sm">
           <span className="text-muted-foreground mr-2">Your Plan:</span>
@@ -108,8 +105,9 @@ export default async function BrowseSessionsPage() {
       </div>
 
       {availableSessions.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">
+        <div className="text-center h-[60vh] flex flex-col items-center justify-center">
+          <CircleAlert className="mx-auto h-12 w-12 text-muted-foreground mb-8" />
+          <p className="text-muted-foreground text-lg">
             No available sessions at the moment. Check back later!
           </p>
         </div>

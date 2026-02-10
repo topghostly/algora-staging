@@ -1,13 +1,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CheckCircle, XCircle, RefreshCw } from "lucide-react";
-import LessonCompleteButton from "./LessonCompleteButton";
+import { useRouter } from "next/navigation";
+import {
+  CheckCircle,
+  XCircle,
+  RefreshCw,
+  Lock,
+  ArrowRight,
+} from "lucide-react";
+import Link from "next/link";
 
 interface Option {
   id: string;
   text: string;
-  isCorrect: boolean; // In a real app, we might hide this and check on server
+  isCorrect: boolean;
 }
 
 interface Question {
@@ -19,24 +26,40 @@ interface Question {
 interface QuizViewerProps {
   lessonId: string;
   initialCompleted: boolean;
+  trackId: string;
+  allLessons: { id: string; title: string; completed: boolean }[];
 }
 
 export default function QuizViewer({
   lessonId,
   initialCompleted,
+  trackId,
+  allLessons,
 }: QuizViewerProps) {
+  const router = useRouter();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const [answers, setAnswers] = useState<Record<string, string>>({}); // questionId -> optionId
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
   const [passed, setPassed] = useState(initialCompleted);
+  const [submitting, setSubmitting] = useState(false);
+
+  // Find current lesson index to check prerequisites
+  const currentIndex = allLessons.findIndex((l) => l.id === lessonId);
+  const previousLessons = allLessons.slice(0, currentIndex);
+  const firstIncompleteLesson = previousLessons.find((l) => !l.completed);
 
   useEffect(() => {
-    fetchQuiz();
-  }, [lessonId]);
+    if (!firstIncompleteLesson) {
+      fetchQuiz();
+    } else {
+      setLoading(false);
+    }
+  }, [lessonId, firstIncompleteLesson]);
 
   async function fetchQuiz() {
+    setLoading(true);
     try {
       const res = await fetch(`/api/lessons/${lessonId}/quiz`);
       if (res.ok) {
@@ -55,7 +78,8 @@ export default function QuizViewer({
     setAnswers((prev) => ({ ...prev, [questionId]: optionId }));
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
+    setSubmitting(true);
     let correctCount = 0;
     questions.forEach((q) => {
       const selectedOptionId = answers[q.id];
@@ -73,11 +97,21 @@ export default function QuizViewer({
     setPassed(isPassed);
 
     if (isPassed && !initialCompleted) {
-      // Auto-complete if passed
-      // We can reuse the API used by LessonCompleteButton or just let the user click it
-      // But for better UX, let's just show the success state and let them click "Complete" or auto-trigger it.
-      // Actually, LessonCompleteButton handles the API call. We can just show it.
+      try {
+        const res = await fetch("/api/progress", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ lessonId, completed: true }),
+        });
+
+        if (res.ok) {
+          router.refresh();
+        }
+      } catch (error) {
+        console.error("Error updating progress on quiz pass:", error);
+      }
     }
+    setSubmitting(false);
   }
 
   function handleRetry() {
@@ -93,6 +127,55 @@ export default function QuizViewer({
         Loading quiz...
       </div>
     );
+
+  if (firstIncompleteLesson) {
+    return (
+      <div
+        className="card"
+        style={{
+          padding: "3rem",
+          textAlign: "center",
+          backgroundColor: "var(--muted-light)",
+        }}
+      >
+        <Lock
+          size={48}
+          color="var(--muted)"
+          style={{ margin: "0 auto", marginBottom: "1.5rem" }}
+        />
+        <h2
+          style={{
+            fontSize: "1.5rem",
+            fontWeight: 700,
+            marginBottom: "1rem",
+          }}
+        >
+          Prerequisites Not Met
+        </h2>
+        <p
+          style={{
+            color: "var(--muted)",
+            marginBottom: "2rem",
+            maxWidth: "400px",
+            margin: "0 auto 2rem",
+          }}
+        >
+          You must complete all previous lessons before you can take this quiz.
+        </p>
+        <Link
+          href={`/tracks/${trackId}/lessons/${firstIncompleteLesson.id}`}
+          className="btn btn-primary"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.5rem",
+          }}
+        >
+          Complete: {firstIncompleteLesson.title} <ArrowRight size={18} />
+        </Link>
+      </div>
+    );
+  }
 
   if (questions.length === 0)
     return (
@@ -169,14 +252,20 @@ export default function QuizViewer({
 
           <button
             onClick={handleSubmit}
-            disabled={Object.keys(answers).length < questions.length}
+            disabled={
+              Object.keys(answers).length < questions.length || submitting
+            }
             className="btn btn-primary"
             style={{
               alignSelf: "flex-start",
               padding: "0.75rem 2rem",
               fontSize: "1rem",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
             }}
           >
+            {submitting && <RefreshCw size={18} className="animate-spin" />}
             Submit Quiz
           </button>
         </div>
@@ -231,12 +320,8 @@ export default function QuizViewer({
                 }}
               >
                 <p style={{ color: "var(--muted)" }}>
-                  Great job! You can now complete this lesson.
+                  Great job! You have completed this lesson.
                 </p>
-                <LessonCompleteButton
-                  lessonId={lessonId}
-                  initialCompleted={initialCompleted}
-                />
               </div>
             )}
           </div>
