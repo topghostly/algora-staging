@@ -6,6 +6,7 @@ import { bookSession } from "@/app/actions/booking";
 import Link from "next/link";
 import { Calendar, CircleAlert, Clock, User } from "lucide-react";
 import { toast } from "sonner";
+import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 
 async function getAvailableSessions(userId: string) {
   const sessions = await prisma.tutorSession.findMany({
@@ -51,6 +52,14 @@ export default async function BrowseSessionsPage() {
   if (session.user.subscriptionTier === "FREE") {
     return (
       <div className="container">
+        <BreadcrumbNav
+          items={[
+            { label: "Dashboard", href: "/dashboard" },
+            { label: "Sessions", href: "/dashboard/sessions" },
+            { label: "Browse" },
+          ]}
+          className="mt-8 -mb-12"
+        />
         <div className="flex justify-between items-center my-16">
           <h1 className="text-3xl font-bold">Request a 1-on-1 Session</h1>
           <div className="bg-muted/50 px-4 py-2 rounded-lg text-sm">
@@ -94,8 +103,16 @@ export default async function BrowseSessionsPage() {
 
   return (
     <div className="container">
+      <BreadcrumbNav
+        items={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Sessions", href: "/dashboard/sessions" },
+          { label: "Browse" },
+        ]}
+        className="mt-8 -mb-12"
+      />
       <div className="flex justify-between items-center my-16">
-        <h1 className="text-3xl font-bold">Available Sessions</h1>
+        <h1 className="text-3xl font-medium">Available Sessions</h1>
         <div className="bg-muted/50 px-4 py-2 rounded-lg text-sm">
           <span className="text-muted-foreground mr-2">Your Plan:</span>
           <span className="font-semibold mr-4">{user.subscriptionTier}</span>

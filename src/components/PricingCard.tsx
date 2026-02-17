@@ -215,7 +215,7 @@ export default function PricingCard({
       )}
 
       <h3
-        style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "0.5rem" }}
+        style={{ fontSize: "1.5rem", fontWeight: 500, marginBottom: "0.5rem" }}
       >
         {title}
       </h3>

@@ -9,7 +9,7 @@ import {
   XCircle,
   ShieldAlert,
 } from "lucide-react";
-import { ConfirmationDialog } from "@/components/ui/AlertDialog";
+import { ConfirmationDialog } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 

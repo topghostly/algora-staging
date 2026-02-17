@@ -13,6 +13,7 @@ import {
   MoveLeft,
 } from "lucide-react";
 import EnrollButton from "@/components/EnrollButton";
+import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 
 export const dynamic = "force-dynamic";
 
@@ -107,23 +108,17 @@ export default async function TrackOverviewPage({
           }}
         >
           <div style={{ flex: 1 }}>
-            <Link
-              href="/tracks"
-              style={{
-                color: "var(--muted)",
-                fontSize: "0.9rem",
-                marginBottom: "1rem",
-                display: "flex",
-                gap: "5px",
-              }}
-            >
-              <MoveLeft size={16} />
-              Back to Tracks
-            </Link>
+            <BreadcrumbNav
+              items={[
+                { label: "Tracks", href: "/tracks" },
+                { label: track.title },
+              ]}
+              className="mb-4"
+            />
             <h1
               style={{
                 fontSize: "3rem",
-                fontWeight: 700,
+                fontWeight: 500,
                 marginBottom: "1rem",
                 lineHeight: 1.2,
               }}
@@ -228,7 +223,7 @@ export default async function TrackOverviewPage({
                 <h3
                   style={{
                     fontSize: "1.25rem",
-                    fontWeight: 700,
+                    fontWeight: 500,
                     marginBottom: "1rem",
                   }}
                 >
@@ -253,7 +248,7 @@ export default async function TrackOverviewPage({
 
       {/* Curriculum Section */}
       <div style={{ maxWidth: "800px" }}>
-        <h2 style={{ fontSize: "2rem", fontWeight: 700, marginBottom: "2rem" }}>
+        <h2 style={{ fontSize: "2rem", fontWeight: 500, marginBottom: "2rem" }}>
           Curriculum
         </h2>
 
@@ -273,7 +268,7 @@ export default async function TrackOverviewPage({
                   borderBottom: "1px solid var(--border)",
                 }}
               >
-                <h3 style={{ fontSize: "1.1rem", fontWeight: 700, margin: 0 }}>
+                <h3 style={{ fontSize: "1.1rem", fontWeight: 500, margin: 0 }}>
                   <span
                     style={{ color: "var(--muted)", marginRight: "0.75rem" }}
                   >

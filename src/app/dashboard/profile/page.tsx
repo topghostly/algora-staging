@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import SubscriptionCard from "@/components/profile/SubscriptionCard";
 import BookingHistory from "@/components/profile/BookingHistory";
+import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
@@ -42,6 +43,13 @@ export default async function ProfilePage() {
 
   return (
     <div className="container py-8 max-w-4xl">
+      <BreadcrumbNav
+        items={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Profile" },
+        ]}
+        className="mb-4"
+      />
       <ProfileHeader user={user} />
 
       <div className="grid gap-6 md:grid-cols-2">

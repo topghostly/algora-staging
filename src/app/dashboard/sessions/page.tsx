@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Calendar, Video } from "lucide-react";
+import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 
 async function getUserBookings(userId: string) {
   return await prisma.sessionEnrollment.findMany({
@@ -32,8 +33,15 @@ export default async function LearnerSessionsPage() {
 
   return (
     <div className="container">
+      <BreadcrumbNav
+        items={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Sessions" },
+        ]}
+        className="mt-8 -mb-12"
+      />
       <div className="flex items-center justify-between my-16">
-        <h1 className="text-3xl font-bold">My Sessions</h1>
+        <h1 className="text-3xl font-medium">My Sessions</h1>
         <div className="flex gap-5">
           <Link href="/dashboard/sessions/browse" className="btn btn-primary">
             Browse Available Sessions
@@ -48,7 +56,7 @@ export default async function LearnerSessionsPage() {
         <div className="h-[70vh] w-full flex items-center justify-center">
           <div className="text-center">
             <Calendar className="mx-auto h-12 w-12 text-muted-foreground mb-8" />
-            <h3 className="text-2xl font-semibold mb-2">No sessions booked</h3>
+            <h3 className="text-2xl font-medium mb-2">No sessions booked</h3>
             <p className="text-muted-foreground mb-3">
               You haven't booked any mentorship sessions yet.
             </p>

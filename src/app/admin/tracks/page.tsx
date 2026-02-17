@@ -29,7 +29,7 @@ export default async function AdminTracksPage() {
           marginBottom: "2rem",
         }}
       >
-        <h1 style={{ fontSize: "2rem", fontWeight: 700 }}>Tracks</h1>
+        <h1 style={{ fontSize: "2rem", fontWeight: 500 }}>Tracks</h1>
         <Link
           href="/admin/tracks/new"
           className="btn btn-primary"

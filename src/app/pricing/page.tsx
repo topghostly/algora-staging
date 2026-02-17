@@ -37,7 +37,7 @@ export default function PricingPage() {
   return (
     <main className="container" style={{ padding: "6rem 0 10rem 0" }}>
       <div style={{ textAlign: "center", marginBottom: "5rem" }}>
-        <h1 style={{ fontSize: "3rem", fontWeight: 700, marginBottom: "1rem" }}>
+        <h1 style={{ fontSize: "3rem", fontWeight: 500, marginBottom: "1rem" }}>
           Simple, Transparent Pricing
         </h1>
         <p

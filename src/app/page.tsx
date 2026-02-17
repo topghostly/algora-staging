@@ -83,8 +83,8 @@ export default function Home() {
             </div>
             <h1
               style={{
-                fontSize: "3.8rem",
-                fontWeight: 700,
+                fontSize: "3.6rem",
+                fontWeight: 500,
                 lineHeight: 1.2,
                 marginBottom: "1.5rem",
                 maxWidth: "800px",
@@ -170,7 +170,7 @@ export default function Home() {
               <h2
                 style={{
                   fontSize: "3.3rem",
-                  fontWeight: 700,
+                  fontWeight: 500,
                   marginBottom: "1rem",
                 }}
               >
@@ -215,7 +215,7 @@ export default function Home() {
               <h2
                 style={{
                   fontSize: "3.3rem",
-                  fontWeight: 700,
+                  fontWeight: 500,
                   marginBottom: "1rem",
                 }}
               >
@@ -263,7 +263,7 @@ export default function Home() {
               <h2
                 style={{
                   fontSize: "3.3rem",
-                  fontWeight: 700,
+                  fontWeight: 500,
                   marginBottom: "1rem",
                 }}
               >
@@ -309,7 +309,7 @@ export default function Home() {
               <h2
                 style={{
                   fontSize: "3.3rem",
-                  fontWeight: 700,
+                  fontWeight: 500,
                   marginBottom: "1rem",
                 }}
               >
@@ -348,7 +348,7 @@ export default function Home() {
             <h2
               style={{
                 fontSize: "2.5rem",
-                fontWeight: 700,
+                fontWeight: 500,
                 marginBottom: "1.5rem",
               }}
             >
@@ -374,7 +374,7 @@ export default function Home() {
                 border: "none",
                 padding: "1rem 2.5rem",
                 fontSize: "1.1rem",
-                fontWeight: 700,
+                fontWeight: 500,
               }}
             >
               Get Started Now{" "}
@@ -586,7 +586,7 @@ function FeatureCard({
       >
         {icon}
       </div>
-      <h3 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "1rem" }}>
+      <h3 style={{ fontSize: "1.5rem", fontWeight: 500, marginBottom: "1rem" }}>
         {title}
       </h3>
       <p style={{ color: "var(--muted)", lineHeight: 1.6 }}>{description}</p>

@@ -140,7 +140,7 @@ export default function QuizEditor({ lessonId }: QuizEditorProps) {
           marginBottom: "1.5rem",
         }}
       >
-        <h3 style={{ fontSize: "1.2rem", fontWeight: 700 }}>Quiz Questions</h3>
+        <h3 style={{ fontSize: "1.2rem", fontWeight: 500 }}>Quiz Questions</h3>
         <button
           onClick={handleSave}
           disabled={isSaving}

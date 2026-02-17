@@ -22,7 +22,7 @@ export default async function AdminDashboardPage() {
 
   return (
     <div>
-      <h1 style={{ fontSize: "2rem", fontWeight: 700, marginBottom: "2rem" }}>
+      <h1 style={{ fontSize: "2rem", fontWeight: 500, marginBottom: "2rem" }}>
         Dashboard
       </h1>
 
@@ -57,7 +57,7 @@ export default async function AdminDashboardPage() {
             <div style={{ fontSize: "0.9rem", color: "var(--muted)" }}>
               Total Users
             </div>
-            <div style={{ fontSize: "1.5rem", fontWeight: 700 }}>
+            <div style={{ fontSize: "1.5rem", fontWeight: 500 }}>
               {stats.userCount}
             </div>
           </div>
@@ -86,7 +86,7 @@ export default async function AdminDashboardPage() {
             <div style={{ fontSize: "0.9rem", color: "var(--muted)" }}>
               Active Tracks
             </div>
-            <div style={{ fontSize: "1.5rem", fontWeight: 700 }}>
+            <div style={{ fontSize: "1.5rem", fontWeight: 500 }}>
               {stats.trackCount}
             </div>
           </div>
@@ -115,7 +115,7 @@ export default async function AdminDashboardPage() {
             <div style={{ fontSize: "0.9rem", color: "var(--muted)" }}>
               Total Lessons
             </div>
-            <div style={{ fontSize: "1.5rem", fontWeight: 700 }}>
+            <div style={{ fontSize: "1.5rem", fontWeight: 500 }}>
               {stats.lessonCount}
             </div>
           </div>
@@ -144,7 +144,7 @@ export default async function AdminDashboardPage() {
             <div style={{ fontSize: "0.9rem", color: "var(--muted)" }}>
               Revenue
             </div>
-            <div style={{ fontSize: "1.5rem", fontWeight: 700 }}>$0.00</div>
+            <div style={{ fontSize: "1.5rem", fontWeight: 500 }}>$0.00</div>
           </div>
         </div>
       </div>

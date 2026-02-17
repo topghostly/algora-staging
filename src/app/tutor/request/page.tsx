@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { updateRequestStatus } from "@/app/actions/request";
 import Link from "next/link";
 import { Calendar, Clock, User, Check, X } from "lucide-react";
+import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 
 async function getRequests(tutorId: string) {
   return await prisma.sessionRequest.findMany({
@@ -34,6 +35,13 @@ export default async function TutorRequestsPage() {
 
   return (
     <div className="container py-10">
+      <BreadcrumbNav
+        items={[
+          { label: "Tutor Dashboard", href: "/tutor" },
+          { label: "Session Requests" },
+        ]}
+        className="mb-6"
+      />
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Session Requests</h1>
         <p className="text-muted-foreground">

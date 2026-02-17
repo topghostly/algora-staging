@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { LayoutDashboard, BookOpen, Users, Settings } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
-import { ConfirmationDialog } from "../ui/AlertDialog";
+import { ConfirmationDialog } from "../ui/alert-dialog";
 
 const sidebarItems = [
   {
@@ -52,7 +52,7 @@ export default function AdminSidebar() {
         <h2
           style={{
             fontSize: "1.25rem",
-            fontWeight: 700,
+            fontWeight: 500,
             color: "var(--primary)",
           }}
         >

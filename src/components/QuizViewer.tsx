@@ -146,7 +146,7 @@ export default function QuizViewer({
         <h2
           style={{
             fontSize: "1.5rem",
-            fontWeight: 700,
+            fontWeight: 500,
             marginBottom: "1rem",
           }}
         >
@@ -288,7 +288,7 @@ export default function QuizViewer({
             <h2
               style={{
                 fontSize: "2rem",
-                fontWeight: 700,
+                fontWeight: 500,
                 marginBottom: "0.5rem",
               }}
             >
@@ -296,7 +296,7 @@ export default function QuizViewer({
             </h2>
             <p style={{ fontSize: "1.2rem", color: "var(--muted)" }}>
               You scored{" "}
-              <span style={{ fontWeight: 700, color: "var(--foreground)" }}>
+              <span style={{ fontWeight: 500, color: "var(--foreground)" }}>
                 {score}%
               </span>
             </p>

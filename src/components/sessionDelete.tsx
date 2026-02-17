@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { ConfirmationDialog } from "@/components/ui/AlertDialog";
+import { ConfirmationDialog } from "@/components/ui/alert-dialog";
 
 const SessionDelete = ({ id }: { id: string }) => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);

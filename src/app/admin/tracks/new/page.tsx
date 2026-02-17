@@ -56,7 +56,7 @@ export default function NewTrackPage() {
         >
           <ChevronLeft size={16} /> Back to Tracks
         </Link>
-        <h1 style={{ fontSize: "2rem", fontWeight: 700 }}>Create New Track</h1>
+        <h1 style={{ fontSize: "2rem", fontWeight: 500 }}>Create New Track</h1>
       </div>
 
       <div className="card" style={{ padding: "2rem" }}>

@@ -246,7 +246,7 @@ export default function TracksPage() {
         </div>
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
           <h1
-            style={{ fontSize: "3rem", fontWeight: 700, marginBottom: "1rem" }}
+            style={{ fontSize: "3rem", fontWeight: 500, marginBottom: "1rem" }}
           >
             Learning Tracks
           </h1>
@@ -367,7 +367,7 @@ export default function TracksPage() {
               alignItems: "center",
             }}
           >
-            <h3 style={{ fontSize: "2rem", fontWeight: 700 }}>
+            <h3 style={{ fontSize: "2rem", fontWeight: 500 }}>
               {debouncedQuery
                 ? `Search results for "${debouncedQuery}"`
                 : "Recommended Tracks"}
@@ -475,7 +475,7 @@ export default function TracksPage() {
                       <h2
                         style={{
                           fontSize: "1.5rem",
-                          fontWeight: 700,
+                          fontWeight: 500,
                           marginBottom: "0.75rem",
                           height: "4.4  rem",
                           display: "-webkit-box",

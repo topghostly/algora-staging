@@ -7,7 +7,9 @@ import { Menu, X, Layers, Video, Briefcase, User, LogOut } from "lucide-react";
 import { useState } from "react";
 import Dropdown from "./ui/Dropdown";
 import { useRouter } from "next/navigation";
-import { ConfirmationDialog } from "./ui/AlertDialog";
+import { ConfirmationDialog } from "./ui/alert-dialog";
+
+import { Badge } from "@/components/ui/badge";
 
 export default function Navbar() {
   const { data: session } = useSession();
@@ -26,7 +28,6 @@ export default function Navbar() {
       }}
     >
       <div
-        // className="container"
         style={{
           display: "flex",
           justifyContent: "space-between",
@@ -35,20 +36,30 @@ export default function Navbar() {
           padding: "0 2rem",
         }}
       >
-        {/* Logo */}
-        <Link
-          href="/"
-          style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
-        >
-          <div style={{ position: "relative", width: "50px", height: "50px" }}>
-            <Image
-              src="/logo.png"
-              alt="Algora Logo"
-              fill
-              style={{ objectFit: "contain" }}
-            />
-          </div>
-        </Link>
+        <div className="flex items-center gap-1">
+          <Link
+            href="/"
+            style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+          >
+            <div
+              style={{ position: "relative", width: "50px", height: "50px" }}
+            >
+              <Image
+                src="/logo.png"
+                alt="Algora Logo"
+                fill
+                style={{ objectFit: "contain" }}
+              />
+            </div>
+          </Link>
+          {session && (
+            <div>
+              <Badge variant="outline" className="rounded-full">
+                {session?.user.role}
+              </Badge>
+            </div>
+          )}
+        </div>
 
         {/* Desktop Navigation */}
         <div
@@ -57,13 +68,28 @@ export default function Navbar() {
         >
           {session ? (
             <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-              <Link
-                href="/dashboard"
-                style={{ fontWeight: 500, color: "var(--muted)" }}
-                className="btn-outline btn"
-              >
-                Dashboard
-              </Link>
+              {session.user.role === "LEARNER" && (
+                <Link
+                  href="/dashboard"
+                  style={{ fontWeight: 500, color: "var(--muted)" }}
+                  className="btn-outline btn"
+                >
+                  Dashboard
+                </Link>
+              )}
+
+              <div>
+                <Image
+                  src={
+                    session.user.image! ||
+                    "https://avatar.iran.liara.run/public/40"
+                  }
+                  alt=""
+                  width={40}
+                  height={40}
+                  className="rounded-full"
+                />
+              </div>
 
               <Dropdown
                 position="below"
@@ -100,26 +126,48 @@ export default function Navbar() {
                     border: "1px solid var(--border)",
                   }}
                 >
-                  <Link href="/tracks">
-                    <div className="dropdown-item">
-                      <Layers size={16} />
-                      <span>Tracks</span>
-                    </div>
-                  </Link>
+                  {session.user.role === "ADMIN" && (
+                    <Link href="/admin">
+                      <div className="dropdown-item">
+                        <Layers size={16} />
+                        <span>Admin</span>
+                      </div>
+                    </Link>
+                  )}
 
-                  <Link href="/dashboard/sessions">
-                    <div className="dropdown-item">
-                      <Video size={16} />
-                      <span>Sessions</span>
-                    </div>
-                  </Link>
+                  {session.user.role === "LEARNER" && (
+                    <>
+                      <Link href="/tracks">
+                        <div className="dropdown-item">
+                          <Layers size={16} />
+                          <span>Tracks</span>
+                        </div>
+                      </Link>
 
-                  <Link href="/dashboard/projects">
-                    <div className="dropdown-item">
-                      <Briefcase size={16} />
-                      <span>Projects</span>
-                    </div>
-                  </Link>
+                      <Link href="/dashboard/sessions">
+                        <div className="dropdown-item">
+                          <Video size={16} />
+                          <span>Sessions</span>
+                        </div>
+                      </Link>
+
+                      <Link href="/dashboard/projects">
+                        <div className="dropdown-item">
+                          <Briefcase size={16} />
+                          <span>Projects</span>
+                        </div>
+                      </Link>
+                    </>
+                  )}
+
+                  {session.user.role === "TUTOR" && (
+                    <Link href="/tutor">
+                      <div className="dropdown-item">
+                        <Layers size={16} />
+                        <span>Dashboard</span>
+                      </div>
+                    </Link>
+                  )}
 
                   <Link href="/dashboard/profile">
                     <div className="dropdown-item">
@@ -127,7 +175,6 @@ export default function Navbar() {
                       <span>Profile</span>
                     </div>
                   </Link>
-
                   <div
                     style={{
                       margin: "0.5rem 0",
@@ -163,13 +210,6 @@ export default function Navbar() {
               >
                 Pricing
               </Link>
-              {/* <Link
-                href="/auth/signin"
-                style={{ fontWeight: 500, color: "var(--foreground)" }}
-                className="btn btn-outline"
-              >
-                Sign In
-              </Link> */}
               <Link href="/auth/signup" className="btn btn-primary">
                 Get Started
               </Link>

@@ -92,6 +92,7 @@ async function getLessonData(
 
 import { canAccessLesson } from "@/lib/access-control";
 import VideoPlayer from "@/components/ui/video-palyer";
+import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 
 // ... existing imports
 
@@ -141,20 +142,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
         <div
           style={{ padding: "1.5rem", borderBottom: "1px solid var(--border)" }}
         >
-          <Link
-            href={`/tracks/${track.id}`}
-            style={{
-              fontSize: "0.9rem",
-              color: "var(--muted)",
-              marginBottom: "0.5rem",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-            }}
-          >
-            <MoveLeft size={16} /> Back to Overview
-          </Link>
-          <h2 style={{ fontSize: "1.1rem", fontWeight: 700, lineHeight: 1.3 }}>
+          <h2 style={{ fontSize: "1.1rem", fontWeight: 500, lineHeight: 1.3 }}>
             {track.title}
           </h2>
         </div>
@@ -226,6 +214,14 @@ export default async function LessonPage({ params }: LessonPageProps) {
       {/* Main Content */}
       <main style={{ flex: 1, overflowY: "auto", padding: "2rem 4rem" }}>
         <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+          <BreadcrumbNav
+            items={[
+              { label: "Tracks", href: "/tracks" },
+              { label: track.title, href: `/tracks/${track.id}` },
+              { label: currentLesson.title },
+            ]}
+            className="mb-4"
+          />
           <div
             style={{
               display: "flex",
@@ -234,7 +230,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
               marginBottom: "1.5rem",
             }}
           >
-            <h1 style={{ fontSize: "2rem", fontWeight: 700 }}>
+            <h1 style={{ fontSize: "2rem", fontWeight: 500 }}>
               {currentLesson.title}
             </h1>
             {hasAccess && currentLesson.type !== "QUIZ" && isCompleted && (
@@ -267,7 +263,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
                 <h2
                   style={{
                     fontSize: "1.5rem",
-                    fontWeight: 700,
+                    fontWeight: 500,
                     marginBottom: "1rem",
                   }}
                 >

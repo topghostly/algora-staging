@@ -4,6 +4,7 @@ import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { BookOpen, ArrowRight } from "lucide-react";
+import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 
 interface EnrolledTrack {
   id: string;
@@ -45,12 +46,13 @@ export default function Dashboard() {
 
   return (
     <div className="container" style={{ padding: "4rem 0" }}>
+      {/* <BreadcrumbNav items={[{ label: "Dashboard" }]} className="mb-4" /> */}
       <div style={{ marginBottom: "3rem" }}>
         <h1
           style={{
             marginBottom: "0.5rem",
             fontSize: "2.5rem",
-            fontWeight: 700,
+            fontWeight: 500,
           }}
         >
           Dashboard
@@ -81,7 +83,7 @@ export default function Dashboard() {
               marginBottom: "1.5rem",
             }}
           >
-            <h2 style={{ fontSize: "1.5rem", fontWeight: 700 }}>My Learning</h2>
+            <h2 style={{ fontSize: "1.5rem", fontWeight: 500 }}>My Learning</h2>
             <Link
               href="/tracks"
               className="btn btn-outline"
@@ -119,7 +121,7 @@ export default function Dashboard() {
                     <h3
                       style={{
                         fontSize: "1.25rem",
-                        fontWeight: 700,
+                        fontWeight: 500,
                         marginBottom: "0.5rem",
                       }}
                     >

@@ -2,429 +2,560 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Save, Plus, Trash2, GripVertical, Video, FileText, X, Check, Edit2, HelpCircle } from "lucide-react";
+import {
+  Save,
+  Plus,
+  Trash2,
+  GripVertical,
+  Video,
+  FileText,
+  X,
+  Check,
+  Edit2,
+  HelpCircle,
+} from "lucide-react";
 import QuizEditor from "./QuizEditor";
 
 interface Lesson {
-    id: string;
-    title: string;
-    type: "VIDEO" | "TEXT" | "QUIZ";
-    order: number;
-    contentUrl?: string;
-    textContent?: string;
+  id: string;
+  title: string;
+  type: "VIDEO" | "TEXT" | "QUIZ";
+  order: number;
+  contentUrl?: string;
+  textContent?: string;
 }
 
 interface Module {
-    id: string;
-    title: string;
-    order: number;
-    lessons: Lesson[];
+  id: string;
+  title: string;
+  order: number;
+  lessons: Lesson[];
 }
 
 interface Track {
-    id: string;
-    title: string;
-    description: string;
-    published: boolean;
-    modules: Module[];
+  id: string;
+  title: string;
+  description: string;
+  published: boolean;
+  modules: Module[];
 }
 
 export default function TrackEditor({ track }: { track: Track }) {
-    const router = useRouter();
-    const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
-    // Form State
-    const [title, setTitle] = useState(track.title);
-    const [description, setDescription] = useState(track.description);
-    const [published, setPublished] = useState(track.published);
+  // Form State
+  const [title, setTitle] = useState(track.title);
+  const [description, setDescription] = useState(track.description);
+  const [published, setPublished] = useState(track.published);
 
-    // UI State for adding items
-    const [isAddingModule, setIsAddingModule] = useState(false);
-    const [newModuleTitle, setNewModuleTitle] = useState("");
+  // UI State for adding items
+  const [isAddingModule, setIsAddingModule] = useState(false);
+  const [newModuleTitle, setNewModuleTitle] = useState("");
 
-    const [addingLessonToModuleId, setAddingLessonToModuleId] = useState<string | null>(null);
-    const [newLessonTitle, setNewLessonTitle] = useState("");
-    const [newLessonType, setNewLessonType] = useState<"VIDEO" | "TEXT">("VIDEO");
+  const [addingLessonToModuleId, setAddingLessonToModuleId] = useState<
+    string | null
+  >(null);
+  const [newLessonTitle, setNewLessonTitle] = useState("");
+  const [newLessonType, setNewLessonType] = useState<"VIDEO" | "TEXT">("VIDEO");
 
-    // UI State for editing content
-    const [editingLessonId, setEditingLessonId] = useState<string | null>(null);
-    const [editLessonContent, setEditLessonContent] = useState("");
+  // UI State for editing content
+  const [editingLessonId, setEditingLessonId] = useState<string | null>(null);
+  const [editLessonContent, setEditLessonContent] = useState("");
 
-    async function handleUpdateTrack() {
-        setIsLoading(true);
-        try {
-            const res = await fetch(`/api/tracks/${track.id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ title, description, published }),
-            });
+  async function handleUpdateTrack() {
+    setIsLoading(true);
+    try {
+      const res = await fetch(`/api/tracks/${track.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, description, published }),
+      });
 
-            if (!res.ok) throw new Error("Failed to update track");
+      if (!res.ok) throw new Error("Failed to update track");
 
-            router.refresh();
-        } catch (error) {
-            console.error(error);
-            alert("Error updating track");
-        } finally {
-            setIsLoading(false);
-        }
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      alert("Error updating track");
+    } finally {
+      setIsLoading(false);
     }
+  }
 
-    async function handleAddModule() {
-        if (!newModuleTitle.trim()) return;
+  async function handleAddModule() {
+    if (!newModuleTitle.trim()) return;
 
-        try {
-            const res = await fetch("/api/modules", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    title: newModuleTitle,
-                    trackId: track.id,
-                    order: track.modules.length,
-                }),
-            });
+    try {
+      const res = await fetch("/api/modules", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: newModuleTitle,
+          trackId: track.id,
+          order: track.modules.length,
+        }),
+      });
 
-            if (!res.ok) throw new Error("Failed to create module");
+      if (!res.ok) throw new Error("Failed to create module");
 
-            setNewModuleTitle("");
-            setIsAddingModule(false);
-            router.refresh();
-        } catch (error) {
-            console.error(error);
-            alert("Error creating module");
-        }
+      setNewModuleTitle("");
+      setIsAddingModule(false);
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      alert("Error creating module");
     }
+  }
 
-    async function handleDeleteModule(moduleId: string) {
-        if (!confirm("Are you sure? This will delete all lessons in this module.")) return;
+  async function handleDeleteModule(moduleId: string) {
+    if (!confirm("Are you sure? This will delete all lessons in this module."))
+      return;
 
-        try {
-            const res = await fetch(`/api/modules/${moduleId}`, {
-                method: "DELETE",
-            });
+    try {
+      const res = await fetch(`/api/modules/${moduleId}`, {
+        method: "DELETE",
+      });
 
-            if (!res.ok) throw new Error("Failed to delete module");
-            router.refresh();
-        } catch (error) {
-            console.error(error);
-            alert("Error deleting module");
-        }
+      if (!res.ok) throw new Error("Failed to delete module");
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      alert("Error deleting module");
     }
+  }
 
-    async function handleAddLesson() {
-        if (!newLessonTitle.trim() || !addingLessonToModuleId) return;
+  async function handleAddLesson() {
+    if (!newLessonTitle.trim() || !addingLessonToModuleId) return;
 
-        try {
-            const res = await fetch("/api/lessons", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    title: newLessonTitle,
-                    moduleId: addingLessonToModuleId,
-                    type: newLessonType,
-                    order: 99,
-                    contentUrl: newLessonType === "VIDEO" ? "" : undefined,
-                    textContent: newLessonType === "TEXT" ? "New lesson content..." : undefined,
-                }),
-            });
+    try {
+      const res = await fetch("/api/lessons", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: newLessonTitle,
+          moduleId: addingLessonToModuleId,
+          type: newLessonType,
+          order: 99,
+          contentUrl: newLessonType === "VIDEO" ? "" : undefined,
+          textContent:
+            newLessonType === "TEXT" ? "New lesson content..." : undefined,
+        }),
+      });
 
-            if (!res.ok) throw new Error("Failed to create lesson");
+      if (!res.ok) throw new Error("Failed to create lesson");
 
-            setNewLessonTitle("");
-            setAddingLessonToModuleId(null);
-            router.refresh();
-        } catch (error) {
-            console.error(error);
-            alert("Error creating lesson");
-        }
+      setNewLessonTitle("");
+      setAddingLessonToModuleId(null);
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      alert("Error creating lesson");
     }
+  }
 
-    async function handleDeleteLesson(lessonId: string) {
-        if (!confirm("Are you sure you want to delete this lesson?")) return;
+  async function handleDeleteLesson(lessonId: string) {
+    if (!confirm("Are you sure you want to delete this lesson?")) return;
 
-        try {
-            const res = await fetch(`/api/lessons/${lessonId}`, {
-                method: "DELETE",
-            });
+    try {
+      const res = await fetch(`/api/lessons/${lessonId}`, {
+        method: "DELETE",
+      });
 
-            if (!res.ok) throw new Error("Failed to delete lesson");
-            router.refresh();
-        } catch (error) {
-            console.error(error);
-            alert("Error deleting lesson");
-        }
+      if (!res.ok) throw new Error("Failed to delete lesson");
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      alert("Error deleting lesson");
     }
+  }
 
-    async function handleSaveLessonContent(lesson: Lesson) {
-        try {
-            const body: Partial<Lesson> = {
-                title: lesson.title,
-                type: lesson.type,
-                order: lesson.order,
-            };
+  async function handleSaveLessonContent(lesson: Lesson) {
+    try {
+      const body: Partial<Lesson> = {
+        title: lesson.title,
+        type: lesson.type,
+        order: lesson.order,
+      };
 
-            if (lesson.type === "VIDEO") {
-                body.contentUrl = editLessonContent;
-            } else if (lesson.type === "TEXT") {
-                body.textContent = editLessonContent;
-            }
+      if (lesson.type === "VIDEO") {
+        body.contentUrl = editLessonContent;
+      } else if (lesson.type === "TEXT") {
+        body.textContent = editLessonContent;
+      }
 
-            const res = await fetch(`/api/lessons/${lesson.id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(body),
-            });
+      const res = await fetch(`/api/lessons/${lesson.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
 
-            if (!res.ok) throw new Error("Failed to update lesson");
+      if (!res.ok) throw new Error("Failed to update lesson");
 
-            setEditingLessonId(null);
-            router.refresh();
-        } catch (error) {
-            console.error(error);
-            alert("Error updating lesson content");
-        }
+      setEditingLessonId(null);
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      alert("Error updating lesson content");
     }
+  }
 
-    function startEditingLesson(lesson: Lesson) {
-        setEditingLessonId(lesson.id);
-        setEditLessonContent(lesson.type === "VIDEO" ? (lesson.contentUrl || "") : (lesson.textContent || ""));
-    }
+  function startEditingLesson(lesson: Lesson) {
+    setEditingLessonId(lesson.id);
+    setEditLessonContent(
+      lesson.type === "VIDEO"
+        ? lesson.contentUrl || ""
+        : lesson.textContent || "",
+    );
+  }
 
-    return (
-        <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
-            {/* Header / Track Settings */}
-            <div className="card" style={{ padding: "2rem", marginBottom: "2rem" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1.5rem" }}>
-                    <h2 style={{ fontSize: "1.5rem", fontWeight: 700 }}>Track Settings</h2>
-                    <button
-                        onClick={handleUpdateTrack}
-                        disabled={isLoading}
-                        className="btn btn-primary"
+  return (
+    <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
+      {/* Header / Track Settings */}
+      <div className="card" style={{ padding: "2rem", marginBottom: "2rem" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginBottom: "1.5rem",
+          }}
+        >
+          <h2 style={{ fontSize: "1.5rem", fontWeight: 500 }}>
+            Track Settings
+          </h2>
+          <button
+            onClick={handleUpdateTrack}
+            disabled={isLoading}
+            className="btn btn-primary"
+          >
+            <Save size={18} style={{ marginRight: "0.5rem" }} />
+            {isLoading ? "Saving..." : "Save Changes"}
+          </button>
+        </div>
+
+        <div style={{ display: "grid", gap: "1.5rem" }}>
+          <div>
+            <label className="label">Track Title</label>
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="input"
+              style={{ width: "100%" }}
+            />
+          </div>
+          <div>
+            <label className="label">Description</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="input"
+              style={{ width: "100%", minHeight: "100px" }}
+            />
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <input
+              type="checkbox"
+              id="published"
+              checked={published}
+              onChange={(e) => setPublished(e.target.checked)}
+              style={{ width: "1.2rem", height: "1.2rem" }}
+            />
+            <label htmlFor="published" style={{ fontWeight: 500 }}>
+              Published (Visible to students)
+            </label>
+          </div>
+        </div>
+      </div>
+
+      {/* Curriculum Builder */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "1.5rem",
+        }}
+      >
+        <h2 style={{ fontSize: "1.5rem", fontWeight: 500 }}>Curriculum</h2>
+        {!isAddingModule ? (
+          <button
+            onClick={() => setIsAddingModule(true)}
+            className="btn btn-outline"
+          >
+            <Plus size={18} style={{ marginRight: "0.5rem" }} />
+            Add Module
+          </button>
+        ) : (
+          <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+            <input
+              autoFocus
+              placeholder="Module Title"
+              className="input"
+              value={newModuleTitle}
+              onChange={(e) => setNewModuleTitle(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleAddModule()}
+            />
+            <button
+              onClick={handleAddModule}
+              className="btn btn-primary"
+              style={{ padding: "0.5rem" }}
+            >
+              <Check size={18} />
+            </button>
+            <button
+              onClick={() => setIsAddingModule(false)}
+              className="btn btn-outline"
+              style={{ padding: "0.5rem" }}
+            >
+              <X size={18} />
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        {track.modules.map((module) => (
+          <div
+            key={module.id}
+            className="card"
+            style={{ padding: 0, overflow: "hidden" }}
+          >
+            {/* Module Header */}
+            <div
+              style={{
+                padding: "1rem 1.5rem",
+                backgroundColor: "var(--muted-light)",
+                borderBottom: "1px solid var(--border)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "1rem" }}
+              >
+                <GripVertical
+                  size={20}
+                  color="var(--muted)"
+                  style={{ cursor: "grab" }}
+                />
+                <h3 style={{ fontWeight: 600, margin: 0 }}>{module.title}</h3>
+              </div>
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+              >
+                <button
+                  onClick={() => setAddingLessonToModuleId(module.id)}
+                  className="btn btn-sm btn-outline"
+                  style={{ fontSize: "0.8rem", padding: "0.25rem 0.75rem" }}
+                  disabled={addingLessonToModuleId === module.id}
+                >
+                  <Plus size={14} style={{ marginRight: "0.25rem" }} />
+                  Add Lesson
+                </button>
+                <button
+                  onClick={() => handleDeleteModule(module.id)}
+                  className="btn-icon"
+                  style={{ color: "var(--error)" }}
+                  title="Delete Module"
+                >
+                  <Trash2 size={18} />
+                </button>
+              </div>
+            </div>
+
+            {/* Lessons List */}
+            <div style={{ padding: "0.5rem 0" }}>
+              {module.lessons.map((lesson) => (
+                <div key={lesson.id}>
+                  <div
+                    style={{
+                      padding: "0.75rem 1.5rem",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "1rem",
+                      borderBottom: "1px solid var(--border-light)",
+                      backgroundColor:
+                        editingLessonId === lesson.id
+                          ? "rgba(var(--primary-rgb), 0.05)"
+                          : "transparent",
+                    }}
+                  >
+                    <GripVertical
+                      size={16}
+                      color="var(--muted)"
+                      style={{ cursor: "grab" }}
+                    />
+                    {lesson.type === "VIDEO" ? (
+                      <Video size={16} color="var(--primary)" />
+                    ) : lesson.type === "QUIZ" ? (
+                      <HelpCircle size={16} color="var(--primary)" />
+                    ) : (
+                      <FileText size={16} color="var(--muted)" />
+                    )}
+                    <span style={{ flex: 1, fontWeight: 500 }}>
+                      {lesson.title}
+                    </span>
+
+                    <div style={{ display: "flex", gap: "0.5rem" }}>
+                      <button
+                        onClick={() => startEditingLesson(lesson)}
+                        className="btn-icon"
+                        style={{ color: "var(--primary)" }}
+                        title="Edit Content"
+                      >
+                        <Edit2 size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteLesson(lesson.id)}
+                        className="btn-icon"
+                        style={{ color: "var(--error)" }}
+                        title="Delete Lesson"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Inline Content Editor */}
+                  {editingLessonId === lesson.id && (
+                    <div
+                      style={{
+                        padding: "1rem 1.5rem",
+                        borderBottom: "1px solid var(--border-light)",
+                        backgroundColor: "var(--background)",
+                      }}
                     >
-                        <Save size={18} style={{ marginRight: "0.5rem" }} />
-                        {isLoading ? "Saving..." : "Save Changes"}
-                    </button>
-                </div>
-
-                <div style={{ display: "grid", gap: "1.5rem" }}>
-                    <div>
-                        <label className="label">Track Title</label>
-                        <input
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
+                      <div style={{ marginBottom: "1rem" }}>
+                        <label
+                          className="label"
+                          style={{ fontSize: "0.85rem" }}
+                        >
+                          {lesson.type === "VIDEO"
+                            ? "Video URL (YouTube/Vimeo)"
+                            : lesson.type === "TEXT"
+                              ? "Lesson Content (Markdown)"
+                              : "Quiz Settings"}
+                        </label>
+                        {lesson.type === "QUIZ" ? (
+                          <QuizEditor lessonId={lesson.id} />
+                        ) : lesson.type === "VIDEO" ? (
+                          <input
                             className="input"
                             style={{ width: "100%" }}
-                        />
-                    </div>
-                    <div>
-                        <label className="label">Description</label>
-                        <textarea
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
+                            value={editLessonContent}
+                            onChange={(e) =>
+                              setEditLessonContent(e.target.value)
+                            }
+                            placeholder="https://youtube.com/..."
+                          />
+                        ) : (
+                          <textarea
                             className="input"
-                            style={{ width: "100%", minHeight: "100px" }}
-                        />
+                            style={{
+                              width: "100%",
+                              minHeight: "150px",
+                              fontFamily: "monospace",
+                            }}
+                            value={editLessonContent}
+                            onChange={(e) =>
+                              setEditLessonContent(e.target.value)
+                            }
+                            placeholder="# Lesson Title..."
+                          />
+                        )}
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "flex-end",
+                          gap: "0.5rem",
+                        }}
+                      >
+                        <button
+                          onClick={() => setEditingLessonId(null)}
+                          className="btn btn-sm btn-outline"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={() => handleSaveLessonContent(lesson)}
+                          className="btn btn-sm btn-primary"
+                        >
+                          Save Content
+                        </button>
+                      </div>
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                        <input
-                            type="checkbox"
-                            id="published"
-                            checked={published}
-                            onChange={(e) => setPublished(e.target.checked)}
-                            style={{ width: "1.2rem", height: "1.2rem" }}
-                        />
-                        <label htmlFor="published" style={{ fontWeight: 500 }}>Published (Visible to students)</label>
-                    </div>
+                  )}
                 </div>
-            </div>
+              ))}
 
-            {/* Curriculum Builder */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-                <h2 style={{ fontSize: "1.5rem", fontWeight: 700 }}>Curriculum</h2>
-                {!isAddingModule ? (
-                    <button onClick={() => setIsAddingModule(true)} className="btn btn-outline">
-                        <Plus size={18} style={{ marginRight: "0.5rem" }} />
-                        Add Module
-                    </button>
-                ) : (
-                    <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                        <input
-                            autoFocus
-                            placeholder="Module Title"
-                            className="input"
-                            value={newModuleTitle}
-                            onChange={(e) => setNewModuleTitle(e.target.value)}
-                            onKeyDown={(e) => e.key === "Enter" && handleAddModule()}
-                        />
-                        <button onClick={handleAddModule} className="btn btn-primary" style={{ padding: "0.5rem" }}>
-                            <Check size={18} />
-                        </button>
-                        <button onClick={() => setIsAddingModule(false)} className="btn btn-outline" style={{ padding: "0.5rem" }}>
-                            <X size={18} />
-                        </button>
-                    </div>
+              {/* Add Lesson Form */}
+              {addingLessonToModuleId === module.id && (
+                <div
+                  style={{
+                    padding: "0.75rem 1.5rem",
+                    display: "flex",
+                    gap: "0.5rem",
+                    alignItems: "center",
+                    backgroundColor: "rgba(var(--primary-rgb), 0.05)",
+                  }}
+                >
+                  <select
+                    className="input"
+                    style={{ width: "auto" }}
+                    value={newLessonType}
+                    onChange={(e) =>
+                      setNewLessonType(e.target.value as "VIDEO" | "TEXT")
+                    }
+                  >
+                    <option value="VIDEO">Video</option>
+                    <option value="TEXT">Text</option>
+                    <option value="QUIZ">Quiz</option>
+                  </select>
+                  <input
+                    autoFocus
+                    placeholder="Lesson Title"
+                    className="input"
+                    style={{ flex: 1 }}
+                    value={newLessonTitle}
+                    onChange={(e) => setNewLessonTitle(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleAddLesson()}
+                  />
+                  <button
+                    onClick={handleAddLesson}
+                    className="btn btn-primary"
+                    style={{ padding: "0.5rem" }}
+                  >
+                    <Check size={18} />
+                  </button>
+                  <button
+                    onClick={() => setAddingLessonToModuleId(null)}
+                    className="btn btn-outline"
+                    style={{ padding: "0.5rem" }}
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+              )}
+
+              {module.lessons.length === 0 &&
+                addingLessonToModuleId !== module.id && (
+                  <div
+                    style={{
+                      padding: "1.5rem",
+                      textAlign: "center",
+                      color: "var(--muted)",
+                      fontSize: "0.9rem",
+                    }}
+                  >
+                    No lessons in this module yet.
+                  </div>
                 )}
             </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                {track.modules.map((module) => (
-                    <div key={module.id} className="card" style={{ padding: 0, overflow: "hidden" }}>
-                        {/* Module Header */}
-                        <div
-                            style={{
-                                padding: "1rem 1.5rem",
-                                backgroundColor: "var(--muted-light)",
-                                borderBottom: "1px solid var(--border)",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "space-between"
-                            }}
-                        >
-                            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                                <GripVertical size={20} color="var(--muted)" style={{ cursor: "grab" }} />
-                                <h3 style={{ fontWeight: 600, margin: 0 }}>{module.title}</h3>
-                            </div>
-                            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                                <button
-                                    onClick={() => setAddingLessonToModuleId(module.id)}
-                                    className="btn btn-sm btn-outline"
-                                    style={{ fontSize: "0.8rem", padding: "0.25rem 0.75rem" }}
-                                    disabled={addingLessonToModuleId === module.id}
-                                >
-                                    <Plus size={14} style={{ marginRight: "0.25rem" }} />
-                                    Add Lesson
-                                </button>
-                                <button
-                                    onClick={() => handleDeleteModule(module.id)}
-                                    className="btn-icon"
-                                    style={{ color: "var(--error)" }}
-                                    title="Delete Module"
-                                >
-                                    <Trash2 size={18} />
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Lessons List */}
-                        <div style={{ padding: "0.5rem 0" }}>
-                            {module.lessons.map((lesson) => (
-                                <div key={lesson.id}>
-                                    <div
-                                        style={{
-                                            padding: "0.75rem 1.5rem",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: "1rem",
-                                            borderBottom: "1px solid var(--border-light)",
-                                            backgroundColor: editingLessonId === lesson.id ? "rgba(var(--primary-rgb), 0.05)" : "transparent"
-                                        }}
-                                    >
-                                        <GripVertical size={16} color="var(--muted)" style={{ cursor: "grab" }} />
-                                        {lesson.type === "VIDEO" ? (
-                                            <Video size={16} color="var(--primary)" />
-                                        ) : lesson.type === "QUIZ" ? (
-                                            <HelpCircle size={16} color="var(--primary)" />
-                                        ) : (
-                                            <FileText size={16} color="var(--muted)" />
-                                        )}
-                                        <span style={{ flex: 1, fontWeight: 500 }}>{lesson.title}</span>
-
-                                        <div style={{ display: "flex", gap: "0.5rem" }}>
-                                            <button
-                                                onClick={() => startEditingLesson(lesson)}
-                                                className="btn-icon"
-                                                style={{ color: "var(--primary)" }}
-                                                title="Edit Content"
-                                            >
-                                                <Edit2 size={16} />
-                                            </button>
-                                            <button
-                                                onClick={() => handleDeleteLesson(lesson.id)}
-                                                className="btn-icon"
-                                                style={{ color: "var(--error)" }}
-                                                title="Delete Lesson"
-                                            >
-                                                <Trash2 size={16} />
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {/* Inline Content Editor */}
-                                    {editingLessonId === lesson.id && (
-                                        <div style={{ padding: "1rem 1.5rem", borderBottom: "1px solid var(--border-light)", backgroundColor: "var(--background)" }}>
-                                            <div style={{ marginBottom: "1rem" }}>
-                                                <label className="label" style={{ fontSize: "0.85rem" }}>
-                                                    {lesson.type === "VIDEO" ? "Video URL (YouTube/Vimeo)" : lesson.type === "TEXT" ? "Lesson Content (Markdown)" : "Quiz Settings"}
-                                                </label>
-                                                {lesson.type === "QUIZ" ? (
-                                                    <QuizEditor lessonId={lesson.id} />
-                                                ) : lesson.type === "VIDEO" ? (
-                                                    <input
-                                                        className="input"
-                                                        style={{ width: "100%" }}
-                                                        value={editLessonContent}
-                                                        onChange={(e) => setEditLessonContent(e.target.value)}
-                                                        placeholder="https://youtube.com/..."
-                                                    />
-                                                ) : (
-                                                    <textarea
-                                                        className="input"
-                                                        style={{ width: "100%", minHeight: "150px", fontFamily: "monospace" }}
-                                                        value={editLessonContent}
-                                                        onChange={(e) => setEditLessonContent(e.target.value)}
-                                                        placeholder="# Lesson Title..."
-                                                    />
-                                                )}
-                                            </div>
-                                            <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem" }}>
-                                                <button onClick={() => setEditingLessonId(null)} className="btn btn-sm btn-outline">Cancel</button>
-                                                <button onClick={() => handleSaveLessonContent(lesson)} className="btn btn-sm btn-primary">Save Content</button>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-
-                            {/* Add Lesson Form */}
-                            {addingLessonToModuleId === module.id && (
-                                <div style={{ padding: "0.75rem 1.5rem", display: "flex", gap: "0.5rem", alignItems: "center", backgroundColor: "rgba(var(--primary-rgb), 0.05)" }}>
-                                    <select
-                                        className="input"
-                                        style={{ width: "auto" }}
-                                        value={newLessonType}
-                                        onChange={(e) => setNewLessonType(e.target.value as "VIDEO" | "TEXT")}
-                                    >
-                                        <option value="VIDEO">Video</option>
-                                        <option value="TEXT">Text</option>
-                                        <option value="QUIZ">Quiz</option>
-                                    </select>
-                                    <input
-                                        autoFocus
-                                        placeholder="Lesson Title"
-                                        className="input"
-                                        style={{ flex: 1 }}
-                                        value={newLessonTitle}
-                                        onChange={(e) => setNewLessonTitle(e.target.value)}
-                                        onKeyDown={(e) => e.key === "Enter" && handleAddLesson()}
-                                    />
-                                    <button onClick={handleAddLesson} className="btn btn-primary" style={{ padding: "0.5rem" }}>
-                                        <Check size={18} />
-                                    </button>
-                                    <button onClick={() => setAddingLessonToModuleId(null)} className="btn btn-outline" style={{ padding: "0.5rem" }}>
-                                        <X size={18} />
-                                    </button>
-                                </div>
-                            )}
-
-                            {module.lessons.length === 0 && addingLessonToModuleId !== module.id && (
-                                <div style={{ padding: "1.5rem", textAlign: "center", color: "var(--muted)", fontSize: "0.9rem" }}>
-                                    No lessons in this module yet.
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }

@@ -52,7 +52,7 @@ export default async function AdminTrackPage({ params }: AdminTrackPageProps) {
         >
           <ChevronLeft size={16} /> Back to Tracks
         </Link>
-        <h1 style={{ fontSize: "2rem", fontWeight: 700 }}>Edit Track</h1>
+        <h1 style={{ fontSize: "2rem", fontWeight: 500 }}>Edit Track</h1>
       </div>
 
       <TrackEditor track={track as any} />

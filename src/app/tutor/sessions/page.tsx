@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Plus } from "lucide-react";
+import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 import { toast } from "sonner";
 import SessionDelete from "@/components/sessionDelete";
 
@@ -35,7 +36,14 @@ export default async function TutorSessionsPage() {
   const sessions = await getSessions(session.user.id);
 
   return (
-    <div>
+    <div className="space-y-6">
+      <BreadcrumbNav
+        items={[
+          { label: "Tutor Dashboard", href: "/tutor" },
+          { label: "Sessions" },
+        ]}
+        className="mb-4"
+      />
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-semibold">Your Sessions</h2>
         <Link

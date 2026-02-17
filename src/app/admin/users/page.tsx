@@ -31,7 +31,7 @@ export default async function AdminUsersPage() {
           marginBottom: "2rem",
         }}
       >
-        <h1 style={{ fontSize: "2rem", fontWeight: 700 }}>Users</h1>
+        <h1 style={{ fontSize: "2rem", fontWeight: 500 }}>Users</h1>
       </div>
 
       <UserTable users={users} />

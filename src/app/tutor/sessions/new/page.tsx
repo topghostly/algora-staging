@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 
 import { useSearchParams } from "next/navigation";
+import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 
 function SubmitButton({ loading }: { loading: boolean }) {
   return (
@@ -88,6 +89,14 @@ export default function NewSessionPage() {
 
   return (
     <div className="w-lg mx-auto">
+      <BreadcrumbNav
+        items={[
+          { label: "Tutor Dashboard", href: "/tutor" },
+          { label: "Sessions", href: "/tutor/sessions" },
+          { label: "New Session" },
+        ]}
+        className="mb-6"
+      />
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Create New Session</h1>
         <Link
