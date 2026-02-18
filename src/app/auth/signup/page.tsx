@@ -97,7 +97,7 @@ function SignUpForm() {
         <h1
           style={{
             textAlign: "center",
-            fontSize: "1.4rem",
+            fontSize: "1.6rem",
             fontWeight: 600,
             marginBottom: "0.5rem",
           }}
@@ -262,6 +262,20 @@ function SignUpForm() {
           Already have an account?{" "}
           <Link href="/auth/signin" style={{ textDecoration: "underline" }}>
             Sign in
+          </Link>
+        </p>
+        <p
+          style={{
+            textAlign: "center",
+            marginTop: "0.5rem",
+            fontSize: "0.9rem",
+          }}
+        >
+          <Link
+            href="/auth/tutor-signup"
+            style={{ textDecoration: "underline", fontWeight: 600 }}
+          >
+            Create a tutor account
           </Link>
         </p>
       </div>

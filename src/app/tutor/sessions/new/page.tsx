@@ -69,6 +69,15 @@ export default function NewSessionPage() {
       const result = await response.json();
 
       if (!response.ok) {
+        if (
+          response.status === 401 &&
+          (result.error?.includes("Calendar not connected") ||
+            result.error?.includes("Calendar connection expired"))
+        ) {
+          toast.error(result.error);
+          router.push("/tutor");
+          return;
+        }
         throw new Error(result.error || "Failed to create session");
       }
 
@@ -98,19 +107,19 @@ export default function NewSessionPage() {
         className="mb-6"
       />
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Create New Session</h1>
-        <Link
+        <h1 className="text-3xl font-medium">Create New Session</h1>
+        {/* <Link
           href="/tutor/sessions"
           className="text-muted-foreground hover:text-foreground"
         >
           Cancel
-        </Link>
+        </Link> */}
       </div>
 
-      <div className="p-4 bg-card border rounded-xl shadow-sm">
+      <div className="p-4 bg-card ">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-bold mb-2">
+            <label className="block text-sm font-medium mb-2">
               Student Email
             </label>
             <input
@@ -123,7 +132,7 @@ export default function NewSessionPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-bold mb-2">
+            <label className="block text-sm font-medium mb-2">
               Session Title
             </label>
             <input
@@ -138,7 +147,7 @@ export default function NewSessionPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-bold mb-2">
+              <label className="block text-sm font-medium mb-2">
                 Session Type
               </label>
               <select
@@ -152,7 +161,7 @@ export default function NewSessionPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-bold mb-2">
+              <label className="block text-sm font-medium mb-2">
                 Duration (minutes)
               </label>
               <select
@@ -172,7 +181,7 @@ export default function NewSessionPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-bold mb-2">Date</label>
+              <label className="block text-sm font-medium mb-2">Date</label>
               <input
                 type="date"
                 name="date"
@@ -183,7 +192,9 @@ export default function NewSessionPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-bold mb-2">Start Time</label>
+              <label className="block text-sm font-medium mb-2">
+                Start Time
+              </label>
               <input
                 type="time"
                 name="startTime"

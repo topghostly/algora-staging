@@ -4,7 +4,7 @@ import { verifyVerificationToken } from "@/lib/tokens";
 
 export async function POST(req: Request) {
   try {
-    const { token, googleMail } = await req.json();
+    const { token, googleMail, role } = await req.json();
 
     if (!token && !googleMail) {
       return NextResponse.json({ error: "Missing token" }, { status: 400 });
@@ -29,18 +29,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 400 });
     }
 
-    if ((user as any).emailVerified) {
-      return NextResponse.json(
-        { message: "Email already verified" },
-        { status: 200 },
-      );
+    const dataToUpdate: any = {
+      emailVerified: new Date(),
+    };
+
+    if (role) {
+      dataToUpdate.role = role;
     }
 
     await prisma.user.update({
       where: { email: email ? email : googleMail },
-      data: {
-        emailVerified: new Date(),
-      } as any,
+      data: dataToUpdate,
     });
 
     return NextResponse.json(

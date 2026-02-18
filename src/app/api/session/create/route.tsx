@@ -43,6 +43,7 @@ export async function POST(req: Request) {
     const account = await prisma.user.findUnique({
       where: { id: session.user.id as string },
       select: {
+        calendarConnected: true,
         googleAccessToken: true,
         googleRefreshToken: true,
         googleTokenExpiresAt: true,
@@ -55,6 +56,23 @@ export async function POST(req: Request) {
       !account.googleRefreshToken ||
       !account.googleTokenExpiresAt
     ) {
+      // If we thought it was connected but tokens are missing, sync the DB
+      if (account?.calendarConnected) {
+        await prisma.user.update({
+          where: { id: session.user.id },
+          data: {
+            calendarConnected: false,
+            calendarConnectedAt: null,
+            googleAccessToken: null,
+            googleRefreshToken: null,
+            googleTokenExpiresAt: null,
+          },
+        });
+      }
+
+      revalidatePath("/tutor");
+      revalidatePath("/tutor", "layout");
+
       return NextResponse.json(
         { error: "Google Calendar not connected" },
         { status: 401 },
@@ -63,20 +81,59 @@ export async function POST(req: Request) {
 
     let accessToken = decrypt(account.googleAccessToken);
 
-    if (account.googleTokenExpiresAt * 1000 < Date.now()) {
-      const refreshed = await refreshGoogleAccessToken(
-        decrypt(account.googleRefreshToken),
-      );
+    // Refresh token if it's expired or about to expire (5 min buffer)
+    const EXPIRATION_BUFFER = 300; // 5 minutes
+    if (
+      account.googleTokenExpiresAt * 1000 <
+      Date.now() + EXPIRATION_BUFFER * 1000
+    ) {
+      try {
+        const refreshed = await refreshGoogleAccessToken(
+          decrypt(account.googleRefreshToken),
+        );
 
-      await prisma.user.update({
-        where: { id: session.user.id },
-        data: {
-          googleAccessToken: encrypt(refreshed.access_token),
-          googleTokenExpiresAt: refreshed.expires_at,
-        },
-      });
+        await prisma.user.update({
+          where: { id: session.user.id },
+          data: {
+            googleAccessToken: encrypt(refreshed.access_token),
+            googleTokenExpiresAt: refreshed.expires_at,
+          },
+        });
 
-      accessToken = refreshed.access_token;
+        accessToken = refreshed.access_token;
+      } catch (refreshError: any) {
+        console.error("Token refresh error:", refreshError);
+
+        // If the refresh token is revoked or invalid, disconnect the calendar
+        if (
+          refreshError.error === "invalid_grant" ||
+          refreshError.message?.includes("invalid_grant")
+        ) {
+          await prisma.user.update({
+            where: { id: session.user.id },
+            data: {
+              calendarConnected: false,
+              calendarConnectedAt: null,
+              googleAccessToken: null,
+              googleRefreshToken: null,
+              googleTokenExpiresAt: null,
+            },
+          });
+
+          revalidatePath("/tutor");
+          revalidatePath("/tutor", "layout");
+
+          return NextResponse.json(
+            {
+              error:
+                "Google Calendar connection expired. Please re-connect your calendar.",
+            },
+            { status: 401 },
+          );
+        }
+
+        throw refreshError; // Re-throw other errors to be caught by the outer catch
+      }
     }
 
     const student = await prisma.user.findUnique({

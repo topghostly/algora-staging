@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { verifyVerificationToken } from "./tokens";
 import { encrypt } from "./crypto";
+import { cookies } from "next/headers";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -108,30 +109,67 @@ export const authOptions: NextAuthOptions = {
     // JWT CALLBACK
     // ─────────────────────────────────────────
     async jwt({ token, user, account, session }) {
-      // Initial login
-      if (user) {
+      // Initial login - runs after user is created/linked by adapter
+      if (user && account) {
         token.id = user.id;
         token.role = user.role;
         token.subscriptionTier = user.subscriptionTier;
         token.googleId = (user as any).googleId;
         token.emailVerified = (user as any).emailVerified;
         token.calendarConnected = (user as any).calendarConnected;
-      }
 
-      // Google login
-      if (account?.provider === "google" && user?.email) {
-        token.provider = "google";
+        if (account.provider === "google") {
+          token.provider = "google";
 
-        if (account.refresh_token) {
-          await prisma.user.updateMany({
-            where: { email: user.email },
-            data: {
-              googleId: account.providerAccountId,
-              googleRefreshToken: encrypt(account.refresh_token),
-              googleTokenExpiresAt: account.expires_at,
-              googleRefreshTokenExpiresIn: (account as any)
-                .refresh_token_expires_in,
-            },
+          const cookieStore = await cookies();
+          const pendingRole = cookieStore.get("pending_role")?.value;
+
+          const dataToUpdate: any = {
+            emailVerified: new Date(),
+          };
+
+          if (pendingRole === "TUTOR") {
+            dataToUpdate.role = "TUTOR";
+            token.role = "TUTOR";
+          }
+
+          if (account.refresh_token) {
+            dataToUpdate.googleId = account.providerAccountId;
+            dataToUpdate.googleRefreshToken = encrypt(account.refresh_token);
+            dataToUpdate.googleTokenExpiresAt = account.expires_at;
+            dataToUpdate.googleRefreshTokenExpiresIn = (
+              account as any
+            ).refresh_token_expires_in;
+          }
+
+          if (account.scope?.includes("calendar")) {
+            dataToUpdate.calendarConnected = true;
+            dataToUpdate.calendarConnectedAt = new Date();
+
+            if (account.access_token) {
+              dataToUpdate.googleAccessToken = encrypt(account.access_token);
+            }
+
+            if (account.refresh_token) {
+              dataToUpdate.googleRefreshToken = encrypt(account.refresh_token);
+            }
+
+            if (account.expires_at) {
+              dataToUpdate.googleTokenExpiresAt = account.expires_at;
+            }
+
+            if ((account as any).refresh_token_expires_in) {
+              dataToUpdate.googleRefreshTokenExpiresIn = (
+                account as any
+              ).refresh_token_expires_in;
+            }
+
+            token.calendarConnected = true;
+          }
+
+          await prisma.user.update({
+            where: { id: user.id },
+            data: dataToUpdate,
           });
         }
       }
@@ -183,23 +221,6 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
     async signIn({ user, account }) {
-      if (
-        account?.provider === "google" &&
-        account.scope?.includes("calendar")
-      ) {
-        await prisma.user.update({
-          where: { id: user.id },
-          data: {
-            calendarConnected: true,
-            googleAccessToken: encrypt(account.access_token!),
-            googleRefreshToken: encrypt(account.refresh_token!),
-            googleTokenExpiresAt: account.expires_at,
-            googleRefreshTokenExpiresIn: (account as any)
-              .refresh_token_expires_in,
-            calendarConnectedAt: new Date(),
-          },
-        });
-      }
       return true;
     },
   },

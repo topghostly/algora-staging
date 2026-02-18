@@ -58,6 +58,7 @@ model User {
   calendarConnectedAt  DateTime?
   googleTokenExpiresAt Int?
   googleRefreshTokenExpiresIn Int?
+  specialties          String[]  @default([])
   
   // Subscription
   subscriptionTier SubscriptionTier @default(FREE)

@@ -7,12 +7,12 @@ import { generateVerificationToken } from "@/lib/tokens";
 
 export async function POST(req: Request) {
   try {
-    const { email, password, name } = await req.json();
+    const { email, password, name, role } = await req.json();
 
     if (!email || !password) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     if (existingUser) {
       return NextResponse.json(
         { error: "User already exists" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
         email,
         name,
         passwordHash: hashedPassword,
-        role: "LEARNER", // Default role
+        role: role || "LEARNER",
       },
     });
 
@@ -65,7 +65,7 @@ export async function POST(req: Request) {
           "Internal server error: " +
           (error instanceof Error ? error.message : "Unknown error"),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

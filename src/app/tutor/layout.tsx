@@ -3,7 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import ConnectCalendarButton from "@/components/ConnectCalendarButton";
-import { decrypt } from "@/lib/crypto";
+import { prisma } from "@/lib/prisma";
 
 export default async function TutorLayout({
   children,
@@ -15,6 +15,15 @@ export default async function TutorLayout({
   if (!session || session.user.role !== "TUTOR") {
     redirect("/");
   }
+
+  // Fetch the latest calendar connection status from the DB
+  // to ensure UI updates immediately after a redirection from route.tsx
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { calendarConnected: true },
+  });
+
+  const isCalendarConnected = user?.calendarConnected || false;
 
   return (
     <div className="container py-8">
@@ -37,13 +46,13 @@ export default async function TutorLayout({
                   Sessions
                 </Link>
               </div>
-              <div>
+              <div className="mr-2">
                 <Link href="/tutor/request" className="btn btn-outline">
                   1-on-1 Requests
                 </Link>
               </div>
             </div>
-            {!session.user.calendarConnected && (
+            {!isCalendarConnected && (
               <ConnectCalendarButton email={session.user.email!} />
             )}
           </nav>

@@ -4,7 +4,7 @@ import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { BookOpen, ArrowRight } from "lucide-react";
-import { BreadcrumbNav } from "@/components/BreadcrumbNav";
+import { useRouter } from "next/navigation";
 
 interface EnrolledTrack {
   id: string;
@@ -23,6 +23,7 @@ export default function Dashboard() {
   const { data: session } = useSession();
   const [enrollments, setEnrollments] = useState<EnrolledTrack[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     async function fetchEnrollments() {
@@ -43,6 +44,10 @@ export default function Dashboard() {
       fetchEnrollments();
     }
   }, [session]);
+
+  if (session?.user?.role === "TUTOR") {
+    router.replace("/tutor");
+  }
 
   return (
     <div className="container" style={{ padding: "4rem 0" }}>
@@ -182,29 +187,19 @@ export default function Dashboard() {
               ))}
             </div>
           ) : (
-            <div
-              style={{
-                padding: "4rem",
-                textAlign: "center",
-                backgroundColor: "var(--muted-light)",
-                borderRadius: "var(--radius)",
-                border: "1px dashed var(--border)",
-              }}
-            >
-              <BookOpen
-                size={48}
-                color="var(--muted)"
-                className="mx-auto mb-4 opacity-50"
-              />
-              <h3 style={{ marginBottom: "0.5rem", fontWeight: 600 }}>
-                You haven't enrolled in any tracks yet.
-              </h3>
-              <p style={{ color: "var(--muted)", marginBottom: "1.5rem" }}>
-                Start your journey by choosing a learning path.
-              </p>
-              <Link href="/tracks" className="btn btn-primary">
-                Explore Tracks
-              </Link>
+            <div className="h-[50vh] w-full flex items-center justify-center">
+              <div className="text-center">
+                <BookOpen className="mx-auto h-12 w-12 text-muted-foreground mb-8" />
+                <h3 className="text-2xl font-medium mb-2">
+                  You haven't enrolled in any tracks yet.
+                </h3>
+                <p className="text-muted-foreground mb-3">
+                  Start your journey by choosing a learning path.
+                </p>
+                <Link href="/tracks" className="btn btn-primary">
+                  Explore Tracks
+                </Link>
+              </div>
             </div>
           )}
         </div>

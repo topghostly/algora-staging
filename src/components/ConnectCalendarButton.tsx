@@ -20,7 +20,7 @@ export default function ConnectCalendarButton({ email }: { email: string }) {
   return (
     <div>
       <button
-        className="btn-outline flex gap-3 px-3 py-2 rounded-md items-center duration-300"
+        className="btn-outline text-nowrap flex gap-3 px-3 py-2 rounded-md items-center duration-300"
         onClick={connectCalendar}
       >
         Connect Calendar{" "}

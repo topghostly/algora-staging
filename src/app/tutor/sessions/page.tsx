@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Info, Plus } from "lucide-react";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 import { toast } from "sonner";
 import SessionDelete from "@/components/sessionDelete";
@@ -57,14 +57,19 @@ export default async function TutorSessionsPage() {
 
       <div className="space-y-4">
         {sessions.length === 0 ? (
-          <div className="text-center py-12 border rounded-lg bg-muted/50">
-            <p className="text-muted-foreground">No sessions created yet.</p>
-            <Link
-              href="/tutor/sessions/new"
-              className="text-primary hover:underline mt-2 inline-block"
-            >
-              Create your first session
-            </Link>
+          <div className="h-[50vh] w-full flex items-center justify-center">
+            <div className="text-center">
+              <Info className="mx-auto h-12 w-12 text-muted-foreground mb-8" />
+              <h3 className="text-2xl font-medium mb-2">
+                You haven't created any sessions yet.
+              </h3>
+              <p className="text-muted-foreground mb-3">
+                Start your journey by creating a learning path.
+              </p>
+              <Link href="/tutor/sessions/new" className="btn btn-primary">
+                Create your first session
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="grid gap-4">

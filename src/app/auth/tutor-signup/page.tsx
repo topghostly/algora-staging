@@ -1,53 +1,59 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Suspense } from "react";
-import { useSession } from "next-auth/react";
 
-function SignInForm() {
+function SignUpForm() {
   const router = useRouter();
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const searchParams = useSearchParams();
+  const plan = searchParams.get("plan");
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [isSocialHovered, setIsSocialHovered] = useState(false);
 
-  const { data: session, status } = useSession();
-
-  useEffect(() => {
-    if (status !== "authenticated") return;
-
-    const role = session?.user?.role;
-
-    if (role === "TUTOR") router.replace("/tutor");
-    else if (role === "LEARNER") router.replace("/dashboard");
-    else if (role === "ADMIN") router.replace("/admin");
-  }, [status, session, router]);
+  const handleGoogleSignIn = async () => {
+    document.cookie = "pending_role=TUTOR; path=/; max-age=120";
+    await signIn("google", {
+      callbackUrl: "/auth/redirect",
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
-    const res = await signIn("credentials", {
-      email: formData.email,
-      password: formData.password,
-      redirect: false,
-    });
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData, role: "TUTOR" }),
+      });
 
-    if (res?.error) {
-      setError("Invalid email or password");
+      if (res.ok) {
+        const callbackUrl = plan ? encodeURIComponent("/pricing") : "";
+        const redirectUrl = plan
+          ? `/auth/signin?callbackUrl=${callbackUrl}&registered=true`
+          : `/auth/signin?registered=true`;
+        router.push(redirectUrl);
+      } else {
+        const data = await res.json();
+        setError(data.error || "Registration failed");
+      }
+    } catch (err) {
+      setError("Something went wrong");
+    } finally {
       setLoading(false);
     }
-  };
-
-  const handleGoogleSignIn = async () => {
-    await signIn("google", {
-      callbackUrl: "/auth/redirect",
-    });
   };
 
   const containerStyle: React.CSSProperties = {
@@ -97,7 +103,7 @@ function SignInForm() {
             marginBottom: "0.5rem",
           }}
         >
-          Welcome back
+          Create tutor account
         </h1>
         <p
           style={{
@@ -106,11 +112,12 @@ function SignInForm() {
             marginBottom: "2rem",
           }}
         >
-          Login with your Google account
+          Sign up with your Google account
         </p>
+
         <button
           style={socialBtnStyle}
-          onClick={handleGoogleSignIn}
+          onClick={() => handleGoogleSignIn()}
           onMouseEnter={() => setIsSocialHovered(true)}
           onMouseLeave={() => setIsSocialHovered(false)}
         >
@@ -140,7 +147,7 @@ function SignInForm() {
               />
             </svg>
           </span>{" "}
-          Sign in with Google
+          Sign up with Google
         </button>
 
         <div
@@ -179,67 +186,48 @@ function SignInForm() {
             {error}
           </p>
         )}
-        {success && (
-          <p
-            style={{
-              color: "#32D74B",
-              fontSize: "0.85rem",
-              marginBottom: "1rem",
-            }}
-          >
-            {success}
-          </p>
-        )}
 
         <form
           onSubmit={handleSubmit}
-          style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}
+          style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
         >
           <div>
-            <label
-              style={{
-                fontSize: "0.9rem",
-                fontWeight: 500,
-              }}
-            >
-              Email
+            <label style={{ fontSize: "0.9rem", fontWeight: 500 }}>
+              Full Name
             </label>
+            <input
+              type="text"
+              placeholder="John Doe"
+              className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              required
+              value={formData.name}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
+            />
+          </div>
+          <div>
+            <label style={{ fontSize: "0.9rem", fontWeight: 500 }}>Email</label>
             <input
               type="email"
               placeholder="m@example.com"
               className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               required
+              value={formData.email}
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
             />
           </div>
           <div>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <label style={{ fontSize: "0.9rem", fontWeight: 500 }}>
-                Password
-              </label>
-              <Link
-                href="/auth/forgot-password"
-                style={{
-                  fontSize: "0.8rem",
-                  textDecoration: "underline",
-                  fontWeight: 500,
-                }}
-              >
-                Forgot your password?
-              </Link>
-            </div>
+            <label style={{ fontSize: "0.9rem", fontWeight: 500 }}>
+              Password
+            </label>
             <input
               type="password"
               className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               required
+              value={formData.password}
               onChange={(e) =>
                 setFormData({ ...formData, password: e.target.value })
               }
@@ -254,14 +242,14 @@ function SignInForm() {
               padding: "0.8rem",
               borderRadius: "var(--radius)",
               border: "none",
-              backgroundColor: "var(--primary)",
-              color: "var(--background)",
+              backgroundColor: "black",
+              color: "white",
               fontWeight: 600,
               cursor: "pointer",
               marginTop: "0.5rem",
             }}
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading ? "Creating account..." : "Continue"}
           </button>
         </form>
 
@@ -272,9 +260,23 @@ function SignInForm() {
             fontSize: "0.9rem",
           }}
         >
-          Don't have an account?{" "}
-          <Link href="/auth/signup" style={{ textDecoration: "underline" }}>
-            Sign up
+          Already have an account?{" "}
+          <Link href="/auth/signin" style={{ textDecoration: "underline" }}>
+            Sign in
+          </Link>
+        </p>
+        <p
+          style={{
+            textAlign: "center",
+            marginTop: "0.5rem",
+            fontSize: "0.9rem",
+          }}
+        >
+          <Link
+            href="/auth/signup"
+            style={{ textDecoration: "underline", fontWeight: 600 }}
+          >
+            Create a student account
           </Link>
         </p>
       </div>
@@ -306,7 +308,7 @@ function SignInForm() {
   );
 }
 
-export default function SignIn() {
+export default function SignUp() {
   return (
     <Suspense
       fallback={
@@ -315,7 +317,7 @@ export default function SignIn() {
         </div>
       }
     >
-      <SignInForm />
+      <SignUpForm />
     </Suspense>
   );
 }

@@ -7,14 +7,14 @@ import { Providers } from "@/components/Providers";
 import Navbar from "@/components/Navbar";
 import { Toaster } from "@/components/ui/Toaster";
 
-const outfit = Nata_Sans({ subsets: ["latin"] });
+// const outfit = Nata_Sans({ subsets: ["latin"] });
 
-const stackSans = localFont({
-  src: "./fonts/StackSansHeadline.ttf",
-  variable: "--font-stack",
-  weight: "100 900",
-  display: "swap",
-});
+// const stackSans = localFont({
+//   src: "./fonts/StackSansHeadline.ttf",
+//   variable: "--font-stack",
+//   weight: "100 900",
+//   display: "swap",
+// });
 
 const euclid = localFont({
   src: [
@@ -67,7 +67,7 @@ export default function RootLayout({
         <Providers>
           <div className="flex flex-col min-h-screen">
             <Navbar />
-            <main className="flex-grow">{children}</main>
+            <main className="grow">{children}</main>
             <Toaster />
           </div>
         </Providers>
