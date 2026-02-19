@@ -28,7 +28,7 @@ export default async function TutorLayout({
   return (
     <div className="container py-8">
       <div className="flex flex-col gap-8">
-        <div className="border-b pb-4">
+        {/* <div className="border-b pb-4">
           <h1 className="text-3xl font-bold my-10">Tutor Portal</h1>
           <nav className="flex justify-between">
             <div className="flex gap-4 w-full justify-between">
@@ -56,7 +56,7 @@ export default async function TutorLayout({
               <ConnectCalendarButton email={session.user.email!} />
             )}
           </nav>
-        </div>
+        </div> */}
         {children}
       </div>
     </div>

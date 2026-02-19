@@ -8,6 +8,8 @@ declare module "next-auth" {
       subscriptionTier: string;
       emailVerified: boolean;
       calendarConnected: boolean;
+      hasCompletedOnboarding: boolean;
+      specialties: string[];
     } & DefaultSession["user"];
   }
 
@@ -17,6 +19,8 @@ declare module "next-auth" {
     subscriptionTier: string;
     emailVerified: boolean;
     calendarConnected: boolean;
+    hasCompletedOnboarding: boolean;
+    specialties: string[];
   }
 }
 
@@ -27,5 +31,7 @@ declare module "next-auth/jwt" {
     subscriptionTier: string;
     emailVerified: boolean;
     calendarConnected: boolean;
+    hasCompletedOnboarding: boolean;
+    specialties: string[];
   }
 }

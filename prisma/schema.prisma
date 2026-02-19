@@ -59,6 +59,7 @@ model User {
   googleTokenExpiresAt Int?
   googleRefreshTokenExpiresIn Int?
   specialties          String[]  @default([])
+  hasCompletedOnboarding Boolean @default(false)
   
   // Subscription
   subscriptionTier SubscriptionTier @default(FREE)

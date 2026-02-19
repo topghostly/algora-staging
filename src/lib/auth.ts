@@ -65,6 +65,8 @@ export const authOptions: NextAuthOptions = {
             googleId: (user as any).googleId,
             emailVerified: (user as any).emailVerified,
             calendarConnected: user.calendarConnected,
+            hasCompletedOnboarding: (user as any).hasCompletedOnboarding,
+            specialties: (user as any).specialties,
           };
         }
 
@@ -99,6 +101,8 @@ export const authOptions: NextAuthOptions = {
           googleId: (user as any).googleId,
           emailVerified: (user as any).emailVerified,
           calendarConnected: user.calendarConnected,
+          hasCompletedOnboarding: (user as any).hasCompletedOnboarding,
+          specialties: (user as any).specialties,
         };
       },
     }),
@@ -117,6 +121,7 @@ export const authOptions: NextAuthOptions = {
         token.googleId = (user as any).googleId;
         token.emailVerified = (user as any).emailVerified;
         token.calendarConnected = (user as any).calendarConnected;
+        token.hasCompletedOnboarding = (user as any).hasCompletedOnboarding;
 
         if (account.provider === "google") {
           token.provider = "google";
@@ -165,6 +170,8 @@ export const authOptions: NextAuthOptions = {
             }
 
             token.calendarConnected = true;
+            token.hasCompletedOnboarding = true;
+            dataToUpdate.hasCompletedOnboarding = true;
           }
 
           await prisma.user.update({
@@ -196,6 +203,9 @@ export const authOptions: NextAuthOptions = {
             token.subscriptionTier = freshUser.subscriptionTier;
             token.name = freshUser.name;
             token.email = freshUser.email;
+            token.hasCompletedOnboarding = (
+              freshUser as any
+            ).hasCompletedOnboarding;
           }
         }
       }
@@ -215,6 +225,8 @@ export const authOptions: NextAuthOptions = {
         (session.user as any).emailVerified = token.emailVerified as boolean;
         (session.user as any).calendarConnected =
           token.calendarConnected as boolean;
+        (session.user as any).hasCompletedOnboarding =
+          token.hasCompletedOnboarding as boolean;
         (session.user as any).provider = token.provider as string;
       }
 

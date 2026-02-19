@@ -1,8 +1,32 @@
+"use client";
+
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Calendar, Users, Clock } from "lucide-react";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 
 export default function TutorDashboard() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (
+      status === "authenticated" &&
+      session?.user?.role === "TUTOR" &&
+      !session?.user?.hasCompletedOnboarding
+    ) {
+      router.push("/tutor/onboarding");
+    }
+  }, [session, status, router]);
+
+  const frameworks = [
+    { value: "react", label: "React" },
+    { value: "next", label: "Next.js" },
+    { value: "vue", label: "Vue" },
+  ];
+  const [value, setValue] = useState("");
   return (
     <div className="space-y-6">
       <BreadcrumbNav items={[{ label: "Tutor Dashboard" }]} className="mb-4" />
