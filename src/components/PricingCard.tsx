@@ -43,7 +43,7 @@ export default function PricingCard({
   popular?: boolean;
   isCurrentPlan?: boolean;
 }) {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const router = useRouter();
 
   const config = {
@@ -73,8 +73,8 @@ export default function PricingCard({
             duration: 5000,
           },
         );
+        await update();
         router.push("/dashboard");
-        router.refresh();
       } else {
         // Record non-tier transaction (if any)
         await recordTransaction({
@@ -90,7 +90,7 @@ export default function PricingCard({
             duration: 5000,
           },
         );
-        router.refresh();
+        await update();
       }
     } catch (error) {
       console.error("Failed to update subscription:", error);

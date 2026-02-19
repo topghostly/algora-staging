@@ -58,13 +58,21 @@ export default async function RequestSessionPage() {
         <div className="h-[70vh] w-full flex items-center justify-center">
           <div className="text-center">
             <Diameter className="mx-auto h-12 w-12 text-muted-foreground mb-8" />
-            <h3 className="text-2xl font-medium mb-2">No credits left</h3>
+            <h3 className="text-2xl font-medium mb-2">
+              {!["FREE", "BASIC"].includes(user.subscriptionTier)
+                ? "No credits left"
+                : "Upgrade your plan"}
+            </h3>
             <p className="text-muted-foreground mb-3">
-              You have no credits left to request a 1-on-1 session.
+              {!["FREE", "BASIC"].includes(user.subscriptionTier)
+                ? "You have no credits left to request a 1-on-1 session."
+                : "Upgrade to a PRO plan to get 1-on-1 sessions"}
             </p>
-            {/* <Link href="/pricing" className="btn btn-primary">
-              Upgrade your plan
-            </Link> */}
+            {["FREE", "BASIC"].includes(user.subscriptionTier) && (
+              <Link href="/pricing" className="btn btn-primary">
+                Upgrade your plan
+              </Link>
+            )}
           </div>
         </div>
       </>
