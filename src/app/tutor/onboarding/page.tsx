@@ -9,7 +9,7 @@ import { MultiCombobox, ComboboxOption } from "@/components/ui/combobox";
 import ConnectCalendarButton from "@/components/ConnectCalendarButton";
 import { BookOpen, GraduationCap, Calendar, CheckCircle2 } from "lucide-react";
 
-const SPECIALTY_OPTIONS: ComboboxOption[] = [
+export const SPECIALTY_OPTIONS: ComboboxOption[] = [
   { value: "Web Development", label: "Web Development" },
   { value: "Frontend Development", label: "Frontend Development" },
   { value: "Backend Development", label: "Backend Development" },

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import { usePathname } from "next/navigation";
 import { clsx, type ClassValue } from "clsx";
 
 interface DropdownProps {
@@ -22,10 +23,15 @@ export default function Dropdown({
 }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
 
   const closeDropdown = useCallback(() => {
     setIsOpen(false);
   }, []);
+
+  useEffect(() => {
+    closeDropdown();
+  }, [pathname, closeDropdown]);
 
   const toggleDropdown = useCallback(() => {
     setIsOpen((prev) => !prev);
@@ -47,13 +53,21 @@ export default function Dropdown({
       }
     };
 
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeDropdown();
+      }
+    };
+
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleKeyDown);
       window.addEventListener("scroll", handleScroll, { capture: true });
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("scroll", handleScroll, { capture: true });
     };
   }, [isOpen, closeDropdown]);
@@ -144,7 +158,7 @@ export default function Dropdown({
       <div
         className={clsx(
           "absolute min-w-[200px] bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden",
-          dropdownClassName
+          dropdownClassName,
         )}
         style={{
           ...getPositionStyles(),

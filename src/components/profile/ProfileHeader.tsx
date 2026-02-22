@@ -66,7 +66,7 @@ export default function ProfileHeader({ user }: ProfileHeaderProps) {
       <div>
         <h1 className="text-2xl font-bold">{user.name || "User"}</h1>
         <p className="text-muted-foreground">{user.email}</p>
-        <div className="mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground">
+        <div className="mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-white">
           {user.role}
         </div>
       </div>

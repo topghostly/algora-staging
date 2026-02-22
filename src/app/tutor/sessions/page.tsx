@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Info, Plus } from "lucide-react";
+import { Info, Plus, User } from "lucide-react";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 import { toast } from "sonner";
 import SessionDelete from "@/components/sessionDelete";
@@ -35,6 +35,13 @@ export default async function TutorSessionsPage() {
 
   const sessions = await getSessions(session.user.id);
 
+  const pendingRequestsCount = await prisma.sessionRequest.count({
+    where: {
+      tutorId: session.user.id,
+      status: "PENDING",
+    },
+  });
+
   return (
     <div className="space-y-6">
       <BreadcrumbNav
@@ -45,14 +52,38 @@ export default async function TutorSessionsPage() {
         className="mb-4"
       />
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold">Your Sessions</h2>
-        <Link
-          href="/tutor/sessions/new"
-          className="btn btn-primary flex items-center gap-2"
+        <h1
+          style={{
+            marginBottom: "0.5rem",
+            fontSize: "2rem",
+            fontWeight: 500,
+          }}
         >
-          <Plus size={16} />
-          Create Session
-        </Link>
+          Your Sessions
+        </h1>
+        <div className="flex gap-3">
+          <Link
+            href="/tutor/request"
+            className="btn btn-outline flex items-center gap-2 relative"
+          >
+            <User size={16} strokeWidth={3} />
+            1-on-1 Request
+            <div className="absolute -top-2 -right-2">
+              {pendingRequestsCount > 0 && (
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[12px] font-bold text-primary-foreground">
+                  {pendingRequestsCount}
+                </span>
+              )}
+            </div>
+          </Link>
+          <Link
+            href="/tutor/sessions/new"
+            className="btn btn-primary flex items-center gap-2"
+          >
+            <Plus size={16} strokeWidth={3} />
+            Create Session
+          </Link>
+        </div>
       </div>
 
       <div className="space-y-4">

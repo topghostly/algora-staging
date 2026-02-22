@@ -10,7 +10,7 @@ export async function createSessionRequest(formData: FormData) {
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user) {
-    throw new Error("Unauthorized");
+    return { success: false, error: "Unauthorized" };
   }
 
   const studentId = session.user.id;
@@ -21,41 +21,49 @@ export async function createSessionRequest(formData: FormData) {
   const message = formData.get("message") as string;
 
   if (!title || !tutorId || !preferredDate || !preferredTime) {
-    throw new Error("Missing required fields");
+    return { success: false, error: "Missing required fields" };
   }
 
-  // Check student credits
-  const student = await prisma.user.findUnique({
-    where: { id: studentId },
-    select: { credits1on1: true },
-  });
-
-  if (!student || student.credits1on1 < 1) {
-    throw new Error("Insufficient credits");
-  }
-
-  await prisma.$transaction([
-    prisma.sessionRequest.create({
-      data: {
-        title,
-        studentId,
-        tutorId,
-        preferredDate,
-        preferredTime,
-        message,
-        status: "PENDING",
-      },
-    }),
-    prisma.user.update({
+  try {
+    // Check student credits
+    const student = await prisma.user.findUnique({
       where: { id: studentId },
-      data: { credits1on1: { decrement: 1 } },
-    }),
-  ]);
+      select: { credits1on1: true },
+    });
 
-  revalidatePath("/dashboard/sessions");
-  revalidatePath("/dashboard/sessions/request");
+    if (!student || student.credits1on1 < 1) {
+      return { success: false, error: "Insufficient credits" };
+    }
 
-  redirect("/dashboard/sessions");
+    await prisma.$transaction([
+      prisma.sessionRequest.create({
+        data: {
+          title,
+          studentId,
+          tutorId,
+          preferredDate,
+          preferredTime,
+          message,
+          status: "PENDING",
+        },
+      }),
+      prisma.user.update({
+        where: { id: studentId },
+        data: { credits1on1: { decrement: 1 } },
+      }),
+    ]);
+
+    revalidatePath("/dashboard/sessions");
+    revalidatePath("/dashboard/sessions/request");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to create session request:", error);
+    return {
+      success: false,
+      error: "An unexpected error occurred. Please try again.",
+    };
+  }
 }
 
 export async function updateRequestStatus(
