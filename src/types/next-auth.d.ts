@@ -10,6 +10,7 @@ declare module "next-auth" {
       calendarConnected: boolean;
       hasCompletedOnboarding: boolean;
       specialties: string[];
+      tutorBio: string | null;
     } & DefaultSession["user"];
   }
 
@@ -21,6 +22,7 @@ declare module "next-auth" {
     calendarConnected: boolean;
     hasCompletedOnboarding: boolean;
     specialties: string[];
+    tutorBio: string | null;
   }
 }
 
@@ -33,5 +35,6 @@ declare module "next-auth/jwt" {
     calendarConnected: boolean;
     hasCompletedOnboarding: boolean;
     specialties: string[];
+    tutorBio: string | null;
   }
 }

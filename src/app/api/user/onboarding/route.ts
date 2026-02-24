@@ -11,12 +11,13 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { specialties, hasCompletedOnboarding } = await req.json();
+    const { specialties, hasCompletedOnboarding, tutorBio } = await req.json();
 
     const updateData: any = {};
     if (specialties !== undefined) updateData.specialties = specialties;
     if (hasCompletedOnboarding !== undefined)
       updateData.hasCompletedOnboarding = hasCompletedOnboarding;
+    if (tutorBio !== undefined) updateData.tutorBio = tutorBio;
 
     const updatedUser = (await prisma.user.update({
       where: { email: session.user.email! },

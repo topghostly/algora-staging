@@ -6,8 +6,10 @@ import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { MultiCombobox, ComboboxOption } from "@/components/ui/combobox";
+import { Textarea } from "@/components/ui/textarea";
 import ConnectCalendarButton from "@/components/ConnectCalendarButton";
 import { BookOpen, GraduationCap, Calendar, CheckCircle2 } from "lucide-react";
+import { toast } from "sonner";
 
 export const SPECIALTY_OPTIONS: ComboboxOption[] = [
   { value: "Web Development", label: "Web Development" },
@@ -32,6 +34,7 @@ export default function OnboardingPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
+  const [bio, setBio] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -46,7 +49,12 @@ export default function OnboardingPage() {
 
   const handleSaveSpecialties = async () => {
     if (selectedSpecialties.length === 0) {
-      alert("Please select at least one specialty.");
+      toast.error("Please select at least one specialty.");
+      return;
+    }
+
+    if (!bio.trim()) {
+      toast.error("Please provide a short professional bio.");
       return;
     }
 
@@ -55,18 +63,23 @@ export default function OnboardingPage() {
       const res = await fetch("/api/user/onboarding", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ specialties: selectedSpecialties }),
+        body: JSON.stringify({
+          specialties: selectedSpecialties,
+          tutorBio: bio,
+        }),
       });
 
       if (res.ok) {
         await update();
         setActiveTab("calendar");
+        toast.success("Specialties saved successfully!");
       } else {
-        alert("Failed to save specialties. Please try again.");
+        console.log(res);
+        toast.error("Failed to save specialties. Please try again.");
       }
     } catch (error) {
       console.error(error);
-      alert("An error occurred. Please try again.");
+      toast.error("An error occurred. Please try again.");
     } finally {
       setIsSaving(false);
     }
@@ -140,12 +153,30 @@ export default function OnboardingPage() {
             </p>
 
             <div className="mb-8">
+              <label className="text-sm font-medium mb-1.5 block">
+                Specialties
+              </label>
               <MultiCombobox
                 options={SPECIALTY_OPTIONS}
                 value={selectedSpecialties}
                 onValueChange={setSelectedSpecialties}
                 placeholder="Search and select specialties..."
               />
+            </div>
+
+            <div className="mb-6">
+              <label className="text-sm font-medium mb-1.5 block">
+                Professional Bio
+              </label>
+              <Textarea
+                placeholder="Briefly describe your tutoring style, experience, and what students can expect..."
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                className="h-32"
+              />
+              <p className="text-xs text-muted-foreground mt-1.5">
+                Tell students about your expertise and teaching approach.
+              </p>
             </div>
 
             <div className="flex justify-end items-center mt-8">

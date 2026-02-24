@@ -205,6 +205,10 @@ export default function NewSessionPage() {
             </div>
           </div>
 
+          <div className="text-sm text-muted-foreground">
+            The date and time can be adjusted based on your availability.
+          </div>
+
           <div className="">
             <SubmitButton loading={loading} />
           </div>

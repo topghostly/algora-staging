@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Plus, Trash2, X } from "lucide-react";
+import { toast } from "sonner";
 
 interface Option {
   text: string;
@@ -64,10 +65,10 @@ export default function QuizEditor({ lessonId }: QuizEditorProps) {
         const data = await res.json();
         throw new Error(data.error || "Failed to save quiz");
       }
-      alert("Quiz saved successfully!");
+      toast.success("Quiz saved successfully!");
     } catch (error: any) {
       console.error(error);
-      alert(`Error saving quiz: ${error.message}`);
+      toast.error(`Error saving quiz: ${error.message}`);
     } finally {
       setIsSaving(false);
     }

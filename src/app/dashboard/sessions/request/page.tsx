@@ -11,7 +11,14 @@ import { SessionRequestForm } from "@/components/SessionRequestForm";
 async function getTutors() {
   return await prisma.user.findMany({
     where: { role: "TUTOR" },
-    select: { id: true, name: true, email: true, specialties: true },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      specialties: true,
+      image: true,
+      tutorBio: true,
+    },
   });
 }
 

@@ -14,6 +14,7 @@ import {
   Edit2,
   HelpCircle,
 } from "lucide-react";
+import { toast } from "sonner";
 import QuizEditor from "./QuizEditor";
 
 interface Lesson {
@@ -77,7 +78,7 @@ export default function TrackEditor({ track }: { track: Track }) {
       router.refresh();
     } catch (error) {
       console.error(error);
-      alert("Error updating track");
+      toast.error("Error updating track");
     } finally {
       setIsLoading(false);
     }
@@ -104,7 +105,7 @@ export default function TrackEditor({ track }: { track: Track }) {
       router.refresh();
     } catch (error) {
       console.error(error);
-      alert("Error creating module");
+      toast.error("Error creating module");
     }
   }
 
@@ -121,7 +122,7 @@ export default function TrackEditor({ track }: { track: Track }) {
       router.refresh();
     } catch (error) {
       console.error(error);
-      alert("Error deleting module");
+      toast.error("Error deleting module");
     }
   }
 
@@ -150,7 +151,7 @@ export default function TrackEditor({ track }: { track: Track }) {
       router.refresh();
     } catch (error) {
       console.error(error);
-      alert("Error creating lesson");
+      toast.error("Error creating lesson");
     }
   }
 
@@ -166,7 +167,7 @@ export default function TrackEditor({ track }: { track: Track }) {
       router.refresh();
     } catch (error) {
       console.error(error);
-      alert("Error deleting lesson");
+      toast.error("Error deleting lesson");
     }
   }
 
@@ -196,7 +197,7 @@ export default function TrackEditor({ track }: { track: Track }) {
       router.refresh();
     } catch (error) {
       console.error(error);
-      alert("Error updating lesson content");
+      toast.error("Error updating lesson content");
     }
   }
 

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 
 export default function EnrollButton({ trackId }: { trackId: string }) {
   const router = useRouter();
@@ -40,7 +41,7 @@ export default function EnrollButton({ trackId }: { trackId: string }) {
           "Body:",
           errorData,
         );
-        alert(`Enrollment failed: ${res.status} ${res.statusText}`);
+        toast.error(`Enrollment failed: ${res.status} ${res.statusText}`);
       }
     } catch (error) {
       console.error("Error enrolling:", error);

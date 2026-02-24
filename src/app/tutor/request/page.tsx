@@ -69,7 +69,7 @@ export default async function TutorRequestsPage() {
           {requests.map((request: any) => (
             <div
               key={request.id}
-              className="bg-card border rounded-xl p-6 shadow-sm"
+              className="bg-card border border-gray-200 rounded-xl p-6 shadow-sm"
             >
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="space-y-4 flex-1">
@@ -99,7 +99,7 @@ export default async function TutorRequestsPage() {
                   </div>
 
                   {request.message && (
-                    <div className="bg-muted/30 p-4 rounded-lg text-sm border italic">
+                    <div className="p-2 text-md italic">
                       "{request.message}"
                     </div>
                   )}

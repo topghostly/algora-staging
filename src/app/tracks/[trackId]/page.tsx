@@ -110,7 +110,7 @@ export default async function TrackOverviewPage({
           <div style={{ flex: 1 }}>
             <BreadcrumbNav
               items={[
-                { label: "Tracks", href: "/tracks" },
+                { label: "Dashboard", href: "/dashboard" },
                 { label: track.title },
               ]}
               className="mb-4"

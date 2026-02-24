@@ -216,7 +216,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
         <div style={{ maxWidth: "800px", margin: "0 auto" }}>
           <BreadcrumbNav
             items={[
-              { label: "Tracks", href: "/tracks" },
+              { label: "Dashboard", href: "/dashboard" },
               { label: track.title, href: `/tracks/${track.id}` },
               { label: currentLesson.title },
             ]}
