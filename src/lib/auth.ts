@@ -62,11 +62,11 @@ export const authOptions: NextAuthOptions = {
             name: user.name,
             role: user.role,
             subscriptionTier: user.subscriptionTier,
-            googleId: (user as any).googleId,
-            emailVerified: (user as any).emailVerified,
+            emailVerified: user.emailVerified as any,
             calendarConnected: user.calendarConnected,
-            hasCompletedOnboarding: (user as any).hasCompletedOnboarding,
-            specialties: (user as any).specialties,
+            hasCompletedOnboarding: user.hasCompletedOnboarding,
+            specialties: user.specialties,
+            tutorBio: user.tutorBio,
           };
         }
 
@@ -98,11 +98,11 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           role: user.role,
           subscriptionTier: user.subscriptionTier,
-          googleId: (user as any).googleId,
-          emailVerified: (user as any).emailVerified,
+          emailVerified: user.emailVerified as any,
           calendarConnected: user.calendarConnected,
-          hasCompletedOnboarding: (user as any).hasCompletedOnboarding,
-          specialties: (user as any).specialties,
+          hasCompletedOnboarding: user.hasCompletedOnboarding,
+          specialties: user.specialties,
+          tutorBio: user.tutorBio,
         };
       },
     }),
@@ -118,10 +118,11 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.role = user.role;
         token.subscriptionTier = user.subscriptionTier;
-        token.googleId = (user as any).googleId;
-        token.emailVerified = (user as any).emailVerified;
-        token.calendarConnected = (user as any).calendarConnected;
-        token.hasCompletedOnboarding = (user as any).hasCompletedOnboarding;
+        token.emailVerified = user.emailVerified as any;
+        token.calendarConnected = user.calendarConnected;
+        token.hasCompletedOnboarding = user.hasCompletedOnboarding;
+        token.specialties = user.specialties;
+        token.tutorBio = user.tutorBio;
 
         if (account.provider === "google") {
           token.provider = "google";
@@ -196,16 +197,15 @@ export const authOptions: NextAuthOptions = {
           });
 
           if (freshUser) {
-            token.emailVerified = (freshUser as any).emailVerified;
+            token.emailVerified = freshUser.emailVerified as any;
             token.calendarConnected = freshUser.calendarConnected;
-            token.googleId = (freshUser as any).googleId;
             token.role = freshUser.role;
             token.subscriptionTier = freshUser.subscriptionTier;
             token.name = freshUser.name;
             token.email = freshUser.email;
-            token.hasCompletedOnboarding = (
-              freshUser as any
-            ).hasCompletedOnboarding;
+            token.hasCompletedOnboarding = freshUser.hasCompletedOnboarding;
+            token.specialties = freshUser.specialties;
+            token.tutorBio = freshUser.tutorBio;
           }
         }
       }
@@ -218,16 +218,15 @@ export const authOptions: NextAuthOptions = {
     // ─────────────────────────────────────────
     async session({ session, token }) {
       if (session.user && token) {
-        session.user.id = token.id as string;
-        session.user.role = token.role as string;
-        (session.user as any).googleId = token.googleId as string;
-        session.user.subscriptionTier = token.subscriptionTier as string;
-        (session.user as any).emailVerified = token.emailVerified as boolean;
-        (session.user as any).calendarConnected =
-          token.calendarConnected as boolean;
-        (session.user as any).hasCompletedOnboarding =
-          token.hasCompletedOnboarding as boolean;
-        (session.user as any).provider = token.provider as string;
+        session.user.id = token.id;
+        session.user.role = token.role;
+        session.user.subscriptionTier = token.subscriptionTier;
+        session.user.emailVerified = token.emailVerified as any;
+        session.user.calendarConnected = token.calendarConnected;
+        session.user.hasCompletedOnboarding = token.hasCompletedOnboarding;
+        session.user.specialties = token.specialties;
+        session.user.tutorBio = token.tutorBio;
+        (session.user as any).provider = token.provider;
       }
 
       return session;
