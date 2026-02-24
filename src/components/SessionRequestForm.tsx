@@ -145,7 +145,7 @@ export function SessionRequestForm({ tutors }: SessionRequestFormProps) {
       <button
         type="submit"
         disabled={isPending}
-        className="btn btn-primary w-full py-6 text-base"
+        className="btn btn-primary py-6 text-base"
       >
         {isPending ? "Submitting..." : "Submit Request"}
       </button>

@@ -16,7 +16,9 @@ export default function AuthRedirect() {
         router.replace("/admin");
         break;
       case "TUTOR":
-        router.replace("/tutor");
+        if (!session.user.hasCompletedOnboarding)
+          router.replace("/tutor/onboarding");
+        else router.replace("/tutor");
         break;
       default:
         router.replace("/dashboard");

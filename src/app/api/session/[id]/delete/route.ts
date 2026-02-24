@@ -87,6 +87,16 @@ export async function DELETE(
           data: { credits1on1: { increment: 1 } },
         }) as any,
       );
+      operations.push(
+        prisma.sessionRequest.updateMany({
+          where: {
+            tutorId: tutorSession.tutorId,
+            studentId,
+            status: "ACCEPTED",
+          },
+          data: { status: "REJECTED" },
+        }) as any,
+      );
     }
 
     await prisma.$transaction(operations);

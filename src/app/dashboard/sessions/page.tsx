@@ -16,9 +16,23 @@ async function getUserBookings(userId: string) {
         },
       },
     },
-    // orderBy: {
-    //   session: { enrolledAt: "asc" },
-    // },
+  });
+}
+
+async function getUserSessionRequests(userId: string) {
+  return await prisma.sessionRequest.findMany({
+    where: {
+      studentId: userId,
+      status: {
+        in: ["PENDING", "REJECTED"],
+      },
+    },
+    include: {
+      tutor: true,
+    },
+    orderBy: {
+      updatedAt: "desc",
+    },
   });
 }
 
@@ -30,6 +44,7 @@ export default async function LearnerSessionsPage() {
   }
 
   const bookings = await getUserBookings(session.user.id);
+  const requests = await getUserSessionRequests(session.user.id);
 
   return (
     <div className="container">
@@ -52,8 +67,54 @@ export default async function LearnerSessionsPage() {
         </div>
       </div>
 
+      {requests.length > 0 && (
+        <div className="mb-1">
+          <h3 className="text-xl font-medium mb-6 ">
+            One-on-One Sessions Overview
+          </h3>
+
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {requests.map((request) => (
+              <div
+                key={request.id}
+                className="card p-5 border-l-4 flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-semibold">{request.title}</h4>
+                    <span
+                      className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded ${
+                        request.status === "PENDING"
+                          ? "bg-amber-100 text-amber-700"
+                          : "bg-red-100 text-red-700"
+                      }`}
+                    >
+                      {request.status}
+                    </span>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    with {request.tutor.name || request.tutor.email}
+                  </p>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Calendar size={14} />
+                    <span>
+                      {request.preferredDate} at {request.preferredTime}
+                    </span>
+                  </div>
+                </div>
+                {request.status === "REJECTED" && (
+                  <p className="mt-3 text-[11px] text-red-600 bg-red-50 p-2 rounded">
+                    This request was rejected. Your credit has been refunded.
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {bookings.length === 0 ? (
-        <div className="h-[70vh] w-full flex items-center justify-center">
+        <div className="h-[40vh] w-full flex items-center justify-center">
           <div className="text-center">
             <Calendar className="mx-auto h-12 w-12 text-muted-foreground mb-8" />
             <h3 className="text-2xl font-medium mb-2">No sessions booked</h3>
