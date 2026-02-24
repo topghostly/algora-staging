@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { updateRequestStatus } from "@/app/actions/request";
 import Link from "next/link";
-import { Calendar, Clock, User, Check, X } from "lucide-react";
+import { Calendar, Clock, User, Check, X, Info } from "lucide-react";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 
 async function getRequests(tutorId: string) {
@@ -43,14 +43,23 @@ export default async function TutorRequestsPage() {
         className="mb-6"
       />
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Session Requests</h1>
-        <p className="text-muted-foreground">
+        <h1
+          style={{
+            marginBottom: "0.5rem",
+            fontSize: "2rem",
+            fontWeight: 500,
+          }}
+        >
+          Session Requests
+        </h1>
+        <p className="text-muted-foreground p-2 rounded-md">
           {requests.length} pending requests
         </p>
       </div>
 
       {requests.length === 0 ? (
-        <div className="text-center py-12 border-2 border-dashed rounded-xl">
+        <div className="h-[60vh] text-center py-12 flex flex-col items-center justify-center">
+          <Info className="mx-auto h-12 w-12 text-muted-foreground mb-8" />
           <p className="text-muted-foreground">
             No pending requests at the moment.
           </p>
