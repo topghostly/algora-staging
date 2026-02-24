@@ -43,6 +43,12 @@ enum RequestStatus {
   EXPIRED
 }
 
+enum SessionStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
@@ -219,6 +225,7 @@ model TutorSession {
   
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt @default(now())
+  status      SessionStatus @default(PENDING)
 
   @@map("Session")
 }
