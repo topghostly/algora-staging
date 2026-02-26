@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Calendar, CircleAlert, Clock, User } from "lucide-react";
 import { toast } from "sonner";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
+import { ErrorState } from "@/components/ErrorState";
 
 async function getAvailableSessions(userId: string) {
   const sessions = await prisma.tutorSession.findMany({
@@ -91,15 +92,39 @@ export default async function BrowseSessionsPage() {
     );
   }
 
-  const [availableSessions, user] = await Promise.all([
-    getAvailableSessions(session.user.id),
-    prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { subscriptionTier: true, credits1on1: true },
-    }),
-  ]);
+  let availableSessions = null;
+  let user = null;
 
-  if (!user) redirect("/auth/signin");
+  try {
+    [availableSessions, user] = await Promise.all([
+      getAvailableSessions(session.user.id),
+      prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { subscriptionTier: true, credits1on1: true },
+      }),
+    ]);
+  } catch (error) {
+    console.error("Error fetching available sessions:", error);
+    // Keep them null to trigger ErrorState
+  }
+
+  if (!availableSessions || !user) {
+    return (
+      <div className="container">
+        <BreadcrumbNav
+          items={[
+            { label: "Dashboard", href: "/dashboard" },
+            { label: "Sessions", href: "/dashboard/sessions" },
+            { label: "Browse" },
+          ]}
+          className="mt-8 -mb-12"
+        />
+        <div className="my-16">
+          <ErrorState message="We couldn't load the available sessions right now. Please try again later." />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container">

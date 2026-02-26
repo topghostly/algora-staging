@@ -110,9 +110,9 @@ export function MultiCombobox({
                   className="pr-1 text-white rounded-full"
                 >
                   {opt.label}
-                  <button
-                    type="button"
-                    className="ml-1 rounded-sm p-0.5 hover:bg-muted"
+                  <span
+                    role="button"
+                    className="ml-1 rounded-sm p-0.5 hover:bg-muted cursor-pointer"
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
@@ -120,7 +120,7 @@ export function MultiCombobox({
                     }}
                   >
                     <X className="h-3 w-3" />
-                  </button>
+                  </span>
                 </Badge>
               ))
             )}
@@ -128,17 +128,17 @@ export function MultiCombobox({
 
           <div className="ml-2 flex items-center gap-1">
             {selectedValues.length > 0 && (
-              <button
-                type="button"
+              <span
+                role="button"
                 onClick={clearAll}
                 onMouseDown={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                 }}
-                className="rounded-sm p-1 hover:bg-muted"
+                className="rounded-sm p-1 hover:bg-muted cursor-pointer"
               >
                 <X className="h-4 w-4 opacity-70" />
-              </button>
+              </span>
             )}
             {/* <ChevronsUpDown className="h-4 w-4 opacity-50" /> */}
           </div>

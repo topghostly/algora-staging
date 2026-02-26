@@ -3,6 +3,7 @@ import UserTable from "./UserTable";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { ErrorState } from "@/components/ErrorState";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +20,12 @@ export default async function AdminUsersPage() {
     redirect("/auth/signin");
   }
 
-  const users = await getUsers();
+  let users = null;
+  try {
+    users = await getUsers();
+  } catch (error) {
+    console.error("Error fetching users:", error);
+  }
 
   return (
     <div className="p-6">
@@ -34,7 +40,13 @@ export default async function AdminUsersPage() {
         <h1 style={{ fontSize: "2rem", fontWeight: 500 }}>Users</h1>
       </div>
 
-      <UserTable users={users} />
+      {!users ? (
+        <div className="card p-12">
+          <ErrorState message="We couldn't load the users at this time. Please try again." />
+        </div>
+      ) : (
+        <UserTable users={users} />
+      )}
     </div>
   );
 }

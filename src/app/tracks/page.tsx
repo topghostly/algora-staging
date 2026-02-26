@@ -13,6 +13,7 @@ import {
 import EnrollButton from "@/components/EnrollButton";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import { ErrorState } from "@/components/ErrorState";
 
 interface Track {
   id: string;
@@ -223,12 +224,12 @@ export default function TracksPage() {
   };
 
   return (
-    <main style={{ paddingBottom: "4rem" }}>
+    <main style={{ padding: "4rem 0" }}>
       <section
         style={{
-          padding: "6rem 0",
           textAlign: "center",
         }}
+        className="py-10md:py-22"
       >
         <div
           style={{
@@ -238,18 +239,14 @@ export default function TracksPage() {
             color: "var(--primary)",
             borderRadius: "99px",
             fontWeight: 600,
-            fontSize: "0.9rem",
             marginBottom: "1.5rem",
           }}
+          className="text-xs md:text-base"
         >
           Launching the next generation of African Tech Talent
         </div>
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-          <h1
-            style={{ fontSize: "3rem", fontWeight: 500, marginBottom: "1rem" }}
-          >
-            Learning Tracks
-          </h1>
+          <h1 style={{ marginBottom: "1rem" }}>Learning Tracks</h1>
           <p
             style={{
               fontSize: "1.2rem",
@@ -274,7 +271,7 @@ export default function TracksPage() {
           >
             <div style={{ position: "relative" }}>
               <Search
-                size={20}
+                size={16}
                 color="var(--muted)"
                 style={{
                   position: "absolute",
@@ -289,19 +286,7 @@ export default function TracksPage() {
                 placeholder="Search for tracks"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "1rem 2.5rem",
-                  borderRadius: "var(--radius-lg)",
-                  border: "2px solid var(--border)",
-                  fontSize: "1rem",
-                  backgroundColor: "var(--background)",
-                  color: "var(--foreground)",
-                  transition: "all 0.2s ease",
-                  outline: "none",
-                }}
-                onFocus={(e) => (e.target.style.borderColor = "var(--primary)")}
-                onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
+                className="w-full h-10 px-3 py-2 pl-10 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               />
               {query && (
                 <button
@@ -337,7 +322,7 @@ export default function TracksPage() {
           </div>
         </div>
 
-        <div className="container">
+        <div className="container hidden md:block">
           <Image
             src="/images/man_holding_binoculars_with_plants.svg"
             alt="man_holding_binoculars_with_plants"
@@ -357,7 +342,7 @@ export default function TracksPage() {
         </div>
       </section>
 
-      <section>
+      <section className="md:mt-20">
         <div className="container">
           <div
             style={{
@@ -367,55 +352,27 @@ export default function TracksPage() {
               alignItems: "center",
             }}
           >
-            <h3 style={{ fontSize: "2rem", fontWeight: 500 }}>
+            <h3>
               {debouncedQuery
                 ? `Search results for "${debouncedQuery}"`
                 : "Recommended Tracks"}
             </h3>
 
             {!debouncedQuery && (
-              <Link
-                href="/tracks"
-                className="btn btn-outline"
-                style={{
-                  padding: "0.75rem 2rem",
-                  fontSize: "0.9rem",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                }}
-              >
-                Explore All Tracks
-              </Link>
+              <div className="hidden md:block">
+                <Link
+                  href="/tracks"
+                  className="btn btn-outline px-3 py-2 text-sm"
+                >
+                  Explore All Tracks
+                </Link>
+              </div>
             )}
           </div>
 
           {error && (
-            <div
-              style={{
-                textAlign: "center",
-                padding: "4rem",
-                backgroundColor: "rgba(239, 68, 68, 0.05)",
-                borderRadius: "var(--radius)",
-                border: "1px solid rgba(239, 68, 68, 0.2)",
-                color: "#ef4444",
-              }}
-            >
-              <AlertCircle size={48} style={{ marginBottom: "1rem" }} />
-              <h3 style={{ marginBottom: "0.5rem" }}>Failed to Load Tracks</h3>
-              <p style={{ marginBottom: "1.5rem" }}>{error}</p>
-              <button
-                onClick={handleReload}
-                className="btn btn-primary"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                  margin: "0 auto",
-                }}
-              >
-                <RefreshCw size={18} /> Reload Page
-              </button>
+            <div className="my-10">
+              <ErrorState message={error} onReload={handleReload} />
             </div>
           )}
 
@@ -575,6 +532,13 @@ export default function TracksPage() {
           </div>
         </div>
       </section>
+      <div className="block md:hidden mt-15">
+        <div className="flex justify-center">
+          <Link href="/tracks" className="btn btn-outline px-3 py-2 text-sm">
+            Explore All Tracks
+          </Link>
+        </div>
+      </div>
     </main>
   );
 }

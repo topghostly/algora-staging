@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import EnrollButton from "@/components/EnrollButton";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
+import { ErrorState } from "@/components/ErrorState";
 
 export const dynamic = "force-dynamic";
 
@@ -57,7 +58,25 @@ export default async function TrackOverviewPage({
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
   const { trackId } = await params;
-  const track = await getTrackData(trackId, userId);
+  let track;
+
+  try {
+    track = await getTrackData(trackId, userId);
+  } catch (error) {
+    console.error("Error fetching track data:", error);
+    return (
+      <main className="container py-20">
+        <BreadcrumbNav
+          items={[
+            { label: "Dashboard", href: "/dashboard" },
+            { label: "Track Details" },
+          ]}
+          className="mb-8"
+        />
+        <ErrorState message="We couldn't load the track details. Please try again." />
+      </main>
+    );
+  }
 
   if (!track) {
     notFound();
@@ -84,11 +103,9 @@ export default async function TrackOverviewPage({
 
     // Try to find first incomplete
     for (const module of track.modules) {
-      const incompleteLesson = module.lessons.find(
-        (l) => l.progress.length === 0,
-      );
-      if (incompleteLesson) {
-        firstLessonUrl = `/tracks/${track.id}/lessons/${incompleteLesson.id}`;
+      const lesson = module.lessons.find((l: any) => l.progress.length === 0);
+      if (lesson) {
+        firstLessonUrl = `/tracks/${track.id}/lessons/${lesson.id}`;
         break;
       }
     }

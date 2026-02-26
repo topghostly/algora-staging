@@ -7,6 +7,7 @@ import { Info, Plus, User } from "lucide-react";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 import { toast } from "sonner";
 import SessionDelete from "@/components/sessionDelete";
+import { ErrorState } from "@/components/ErrorState";
 
 async function getSessions(userId: string) {
   return await prisma.tutorSession.findMany({
@@ -33,14 +34,23 @@ export default async function TutorSessionsPage() {
     redirect("/auth/signin");
   }
 
-  const sessions = await getSessions(session.user.id);
+  let sessions = null;
+  let pendingRequestsCount = 0;
 
-  const pendingRequestsCount = await prisma.sessionRequest.count({
-    where: {
-      tutorId: session.user.id,
-      status: "PENDING",
-    },
-  });
+  try {
+    [sessions, pendingRequestsCount] = await Promise.all([
+      getSessions(session.user.id),
+      prisma.sessionRequest.count({
+        where: {
+          tutorId: session.user.id,
+          status: "PENDING",
+        },
+      }),
+    ]);
+  } catch (error) {
+    console.error("Error fetching tutor sessions:", error);
+    // Keep them null to trigger ErrorState
+  }
 
   return (
     <div className="space-y-6">
@@ -51,17 +61,9 @@ export default async function TutorSessionsPage() {
         ]}
         className="mb-4"
       />
-      <div className="flex items-center justify-between mb-6">
-        <h1
-          style={{
-            marginBottom: "0.5rem",
-            fontSize: "2rem",
-            fontWeight: 500,
-          }}
-        >
-          Your Sessions
-        </h1>
-        <div className="flex gap-3">
+      <div className="block md:flex items-center justify-between ">
+        <h1 className="text-3xl font-medium mb-4 md:mb-0">Your Sessions</h1>
+        <div className="flex sm:flex-row flex-col sm:gap-5 gap-2">
           <Link
             href="/tutor/request"
             className="btn btn-outline flex items-center gap-2 relative"
@@ -87,7 +89,11 @@ export default async function TutorSessionsPage() {
       </div>
 
       <div className="space-y-4">
-        {sessions.length === 0 ? (
+        {!sessions ? (
+          <div className="my-10">
+            <ErrorState message="We couldn't load your sessions right now. Please try again." />
+          </div>
+        ) : sessions.length === 0 ? (
           <div className="h-[50vh] w-full flex items-center justify-center">
             <div className="text-center">
               <Info className="mx-auto h-12 w-12 text-muted-foreground mb-8" />
@@ -109,14 +115,14 @@ export default async function TutorSessionsPage() {
                 key={s.id}
                 className="card p-4 flex items-center justify-between"
               >
-                <div>
-                  <h3 className="font-semibold">{s.title}</h3>
+                <div className="flex gap-1 flex-col">
+                  <h4>{s.title}</h4>
                   <p className="text-sm text-muted-foreground">
                     {new Date(s.startTime).toLocaleString()} -{" "}
                     {new Date(s.endTime).toLocaleTimeString()}
                   </p>
                   <span
-                    className={`text-xs px-2 py-1 rounded-full ${
+                    className={`text-xs px-2 py-1 rounded-full w-fit ${
                       s.type === "ONE_ON_ONE"
                         ? "bg-blue-100 text-blue-700"
                         : "bg-purple-100 text-purple-700"

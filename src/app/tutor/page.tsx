@@ -30,15 +30,13 @@ export default function TutorDashboard() {
   return (
     <div className="space-y-6">
       <BreadcrumbNav items={[{ label: "Tutor Dashboard" }]} className="mb-4" />
-      <h1
+      <h2
         style={{
           marginBottom: "0.5rem",
-          fontSize: "2rem",
-          fontWeight: 500,
         }}
       >
         Dashboard
-      </h1>
+      </h2>
       <div className="grid gap-6 md:grid-cols-3">
         <div className="card p-6">
           <div className="flex items-center gap-4 mb-4">
@@ -46,8 +44,8 @@ export default function TutorDashboard() {
               <Calendar size={24} />
             </div>
             <div>
-              <h3 className="font-medium">Upcoming Sessions</h3>
-              <p className="text-3xl font-medium">0</p>
+              <h4 className="font-medium">Upcoming Sessions</h4>
+              <p className="text-2xl font-medium">0</p>
             </div>
           </div>
           <p className="text-sm text-muted-foreground">Next session in --</p>
@@ -59,8 +57,8 @@ export default function TutorDashboard() {
               <Users size={24} />
             </div>
             <div>
-              <h3 className="font-medium">Total Students</h3>
-              <p className="text-3xl font-medium">0</p>
+              <h4 className="font-medium">Total Students</h4>
+              <p className="text-2xl font-medium">0</p>
             </div>
           </div>
           <p className="text-sm text-muted-foreground">
@@ -74,8 +72,8 @@ export default function TutorDashboard() {
               <Clock size={24} />
             </div>
             <div>
-              <h3 className="font-medium">Hours Taught</h3>
-              <p className="text-3xl font-medium">0h</p>
+              <h4 className="font-medium">Hours Taught</h4>
+              <p className="text-2xl font-medium">0h</p>
             </div>
           </div>
           <p className="text-sm text-muted-foreground">Total session time</p>
@@ -83,16 +81,16 @@ export default function TutorDashboard() {
 
         <div className="col-span-full mt-8">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-medium">Quick Actions</h2>
+            <h4 className="text-2xl font-medium">Quick Actions</h4>
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <Link
               href="/tutor/sessions"
               className="card p-6 hover:border-primary transition-colors group"
             >
-              <h3 className="font-medium mb-2 group-hover:text-primary text-lg">
+              <h4 className="font-medium mb-2 group-hover:text-primary text-lg">
                 Manage Sessions
-              </h3>
+              </h4>
               <p className="text-sm text-muted-foreground">
                 Create, edit, or cancel your availability slots.
               </p>

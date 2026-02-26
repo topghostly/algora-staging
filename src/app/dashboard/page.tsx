@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { BookOpen, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { ErrorState } from "@/components/ErrorState";
 
 interface EnrolledTrack {
   id: string;
@@ -23,6 +24,7 @@ export default function Dashboard() {
   const { data: session } = useSession();
   const [enrollments, setEnrollments] = useState<EnrolledTrack[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -32,9 +34,15 @@ export default function Dashboard() {
         if (res.ok) {
           const data = await res.json();
           setEnrollments(data);
+          setError(null);
+        } else {
+          setError("Failed to load your learning tracks. Please try again.");
         }
       } catch (error) {
         console.error("Failed to fetch enrollments", error);
+        setError(
+          "A network error occurred. Please check your connection and try again.",
+        );
       } finally {
         setLoading(false);
       }
@@ -47,6 +55,7 @@ export default function Dashboard() {
 
   if (session?.user?.role === "TUTOR") {
     router.replace("/tutor");
+    return null;
   }
 
   return (
@@ -55,9 +64,7 @@ export default function Dashboard() {
       <div style={{ marginBottom: "3rem" }}>
         <h1
           style={{
-            marginBottom: "0.5rem",
-            fontSize: "2.5rem",
-            fontWeight: 500,
+            marginBottom: "1rem",
           }}
         >
           Dashboard
@@ -88,7 +95,7 @@ export default function Dashboard() {
               marginBottom: "1.5rem",
             }}
           >
-            <h2 style={{ fontSize: "1.5rem", fontWeight: 500 }}>My Learning</h2>
+            <h3>My Learning</h3>
             <Link
               href="/tracks"
               className="btn btn-outline"
@@ -98,7 +105,11 @@ export default function Dashboard() {
             </Link>
           </div>
 
-          {loading ? (
+          {error ? (
+            <div className="my-8">
+              <ErrorState message={error} />
+            </div>
+          ) : loading ? (
             <div
               style={{
                 padding: "3rem",

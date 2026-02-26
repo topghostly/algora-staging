@@ -33,7 +33,8 @@ export default function Navbar() {
           justifyContent: "space-between",
           alignItems: "center",
           height: "70px",
-          padding: "0 2rem",
+          paddingLeft: "clamp(1rem, 5vw, 2rem)",
+          paddingRight: "clamp(1rem, 5vw, 2rem)",
         }}
       >
         <div className="flex items-center gap-1">
@@ -218,100 +219,7 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Menu Button - Only show for non-authenticated users */}
-        {!session && (
-          <button
-            className="mobile-menu-btn"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            style={{ background: "none", border: "none", cursor: "pointer" }}
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        )}
       </div>
-
-      {/* Mobile Navigation */}
-      {isMenuOpen && (
-        <div
-          style={{
-            borderTop: "1px solid var(--border)",
-            padding: "1rem",
-            display: "flex",
-            flexDirection: "column",
-            gap: "1rem",
-            backgroundColor: "var(--background)",
-          }}
-        >
-          <Link href="/tracks" onClick={() => setIsMenuOpen(false)}>
-            Tracks
-          </Link>
-          <Link href="/pricing" onClick={() => setIsMenuOpen(false)}>
-            Pricing
-          </Link>
-          <Link href="/dashboard/sessions" onClick={() => setIsMenuOpen(false)}>
-            Sessions
-          </Link>
-          <hr
-            style={{ border: "none", borderTop: "1px solid var(--border)" }}
-          />
-          {session ? (
-            <>
-              {(session.user as any).role === "ADMIN" && (
-                <Link
-                  href="/admin"
-                  onClick={() => setIsMenuOpen(false)}
-                  style={{ color: "var(--primary)", fontWeight: 600 }}
-                >
-                  Admin
-                </Link>
-              )}
-              {((session.user as any).role === "TUTOR" ||
-                (session.user as any).role === "ADMIN") && (
-                <Link
-                  href="/tutor"
-                  onClick={() => setIsMenuOpen(false)}
-                  style={{ color: "var(--primary)", fontWeight: 600 }}
-                >
-                  Tutor
-                </Link>
-              )}
-              <Link
-                href="/dashboard/profile"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Profile
-              </Link>
-              <Link href="/dashboard" onClick={() => setIsMenuOpen(false)}>
-                Dashboard
-              </Link>
-              <button
-                onClick={() => setIsSignOutDialogOpen(true)}
-                style={{
-                  textAlign: "left",
-                  background: "none",
-                  border: "none",
-                  padding: 0,
-                }}
-              >
-                Sign Out
-              </button>
-            </>
-          ) : (
-            <>
-              <Link href="/auth/signin" onClick={() => setIsMenuOpen(false)}>
-                Sign In
-              </Link>
-              <Link
-                href="/auth/signup"
-                className="btn btn-primary"
-                style={{ textAlign: "center" }}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Get Started
-              </Link>
-            </>
-          )}
-        </div>
-      )}
 
       <ConfirmationDialog
         isOpen={isSignOutDialogOpen}
@@ -333,14 +241,14 @@ export default function Navbar() {
         .mobile-menu-btn {
           display: none;
         }
-        @media (max-width: 768px) {
-          .desktop-nav {
-            display: none !important;
-          }
-          .mobile-menu-btn {
-            display: block !important;
-          }
-        }
+        // @media (max-width: 768px) {
+        //   .desktop-nav {
+        //     display: none !important;
+        //   }
+        //   .mobile-menu-btn {
+        //     display: block !important;
+        //   }
+        // }
         .dropdown-item {
           display: flex;
           align-items: center;

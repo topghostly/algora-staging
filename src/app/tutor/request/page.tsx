@@ -6,6 +6,7 @@ import { updateRequestStatus } from "@/app/actions/request";
 import Link from "next/link";
 import { Calendar, Clock, User, Check, X, Info } from "lucide-react";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
+import { ErrorState } from "@/components/ErrorState";
 
 async function getRequests(tutorId: string) {
   return await prisma.sessionRequest.findMany({
@@ -31,7 +32,12 @@ export default async function TutorRequestsPage() {
     redirect("/auth/signin");
   }
 
-  const requests = await getRequests(session.user.id);
+  let requests = null;
+  try {
+    requests = await getRequests(session.user.id);
+  } catch (error) {
+    console.error("Error fetching tutor requests:", error);
+  }
 
   return (
     <div className="container py-10">
@@ -52,12 +58,18 @@ export default async function TutorRequestsPage() {
         >
           Session Requests
         </h1>
-        <p className="text-muted-foreground p-2 rounded-md">
-          {requests.length} pending requests
-        </p>
+        {requests && (
+          <p className="text-muted-foreground p-2 rounded-md hidden md:block">
+            {requests.length} pending requests
+          </p>
+        )}
       </div>
 
-      {requests.length === 0 ? (
+      {!requests ? (
+        <div className="my-10">
+          <ErrorState message="We couldn't load your session requests. Please try again." />
+        </div>
+      ) : requests.length === 0 ? (
         <div className="h-[60vh] text-center py-12 flex flex-col items-center justify-center">
           <Info className="mx-auto h-12 w-12 text-muted-foreground mb-8" />
           <p className="text-muted-foreground">

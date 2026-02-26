@@ -95,9 +95,9 @@ export default function OnboardingPage() {
 
   return (
     <section className="flex w-full h-full justify-center items-center">
-      <div className="max-w-3xl mx-auto py-10 px-4">
+      <div className="max-w-3xl mx-auto pb-10 ">
         <div className="text-center mb-10">
-          <h1 className="text-4xl font-medium mb-2">Welcome, Tutor!</h1>
+          <h1 className="font-medium mb-2">Welcome, Tutor!</h1>
           <p className="text-muted-foreground">
             Let's get your profile set up so you can start teaching.
           </p>
@@ -119,7 +119,7 @@ export default function OnboardingPage() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview" className="bg-card p-6 rounded-lg ">
+          <TabsContent value="overview" className="bg-card  rounded-lg ">
             <h2 className="text-xl font-medium mb-4">Platform Overview</h2>
             <div className="space-y-4 text-muted-foreground leading-relaxed">
               <p>
@@ -143,7 +143,7 @@ export default function OnboardingPage() {
             </div>
           </TabsContent>
 
-          <TabsContent value="specialties" className="bg-card p-6 rounded-lg ">
+          <TabsContent value="specialties" className="bg-card  rounded-lg ">
             <h2 className="text-xl font-medium mb-4">
               What are your specialties?
             </h2>
@@ -186,7 +186,7 @@ export default function OnboardingPage() {
             </div>
           </TabsContent>
 
-          <TabsContent value="calendar" className="bg-card p-6 rounded-lg ">
+          <TabsContent value="calendar" className="bg-card  rounded-lg ">
             <h2 className="text-xl font-medium mb-4">
               Sync with Google Calendar
             </h2>

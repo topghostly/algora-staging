@@ -62,12 +62,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={euclid.className}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={euclid.className} suppressHydrationWarning>
         <Providers>
           <div className="flex flex-col min-h-screen">
             <Navbar />
-            <main className="grow">{children}</main>
+            <main className="grow px-[clamp(1rem,5vw,2rem)]">{children}</main>
             <Toaster />
           </div>
         </Providers>

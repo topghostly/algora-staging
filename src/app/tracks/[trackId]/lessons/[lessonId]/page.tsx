@@ -13,9 +13,11 @@ import {
   MoveLeft,
 } from "lucide-react";
 import LessonCompleteButton from "@/components/LessonCompleteButton";
+import { ErrorState } from "@/components/ErrorState";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import QuizViewer from "@/components/QuizViewer";
+import LessonLayout from "@/components/LessonLayout";
 
 export const dynamic = "force-dynamic";
 
@@ -104,9 +106,21 @@ export default async function LessonPage({ params }: LessonPageProps) {
   }
 
   const { trackId, lessonId } = await params;
-  const data = await getLessonData(trackId, lessonId, session.user.id);
+  let data = null;
+  try {
+    data = await getLessonData(trackId, lessonId, session.user.id);
+  } catch (error) {
+    console.error("Error fetching lesson data:", error);
+  }
 
   if (!data || !data.currentLesson) {
+    if (data === null) {
+      return (
+        <div className="container py-20">
+          <ErrorState message="We couldn't load the lesson content. Please try again." />
+        </div>
+      );
+    }
     notFound();
   }
 
@@ -127,270 +141,122 @@ export default async function LessonPage({ params }: LessonPageProps) {
     ));
 
   return (
-    <div style={{ display: "flex", height: "calc(100vh - 64px)" }}>
-      {/* Sidebar */}
-      <aside
-        style={{
-          width: "300px",
-          borderRight: "1px solid var(--border)",
-          display: "flex",
-          flexDirection: "column",
-          backgroundColor: "var(--background)",
-          overflow: "hidden",
-        }}
-      >
-        <div
-          style={{ padding: "1.5rem", borderBottom: "1px solid var(--border)" }}
-        >
-          <h2 style={{ fontSize: "1.1rem", fontWeight: 500, lineHeight: 1.3 }}>
-            {track.title}
-          </h2>
+    <LessonLayout track={track} currentLesson={currentLesson}>
+      <div className="p-0 md:p-10 max-w-5xl mx-auto py-16">
+        <BreadcrumbNav
+          items={[
+            { label: "Dashboard", href: "/dashboard" },
+            { label: track.title, href: `/tracks/${track.id}` },
+            { label: currentLesson.title },
+          ]}
+          className="mb-6"
+        />
+
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+          <h2>{currentLesson.title}</h2>
+          {hasAccess && currentLesson.type !== "QUIZ" && isCompleted && (
+            <LessonCompleteButton
+              lessonId={currentLesson.id}
+              initialCompleted={isCompleted}
+            />
+          )}
         </div>
 
-        <div style={{ flex: 1, overflowY: "auto" }}>
-          {track.modules.map((module: any) => (
-            <div
-              key={module.id}
-              style={{ borderBottom: "1px solid var(--border)" }}
-            >
-              <div
-                style={{
-                  padding: "1rem 1.5rem",
-                  backgroundColor: "var(--muted-light)",
-                  fontWeight: 600,
-                  fontSize: "0.9rem",
-                  color: "var(--foreground)",
-                }}
-              >
-                {module.title}
+        {/* Content Viewer */}
+        <div className="mb-12">
+          {!hasAccess ? (
+            <div className="p-8 md:p-12 border border-border rounded-2xl text-center bg-muted/30">
+              <div className="mb-6">
+                <PlayCircle
+                  size={48}
+                  className="text-muted-foreground mx-auto"
+                />
               </div>
-              <div>
-                {module.lessons.map((lesson: any) => {
-                  const isActive = lesson.id === currentLesson.id;
-                  const isLessonCompleted = lesson.progress.length > 0;
-
-                  return (
-                    <Link
-                      key={lesson.id}
-                      href={`/tracks/${track.id}/lessons/${lesson.id}`}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.75rem",
-                        padding: "0.75rem 1.5rem",
-                        borderLeft: isActive
-                          ? "4px solid var(--primary)"
-                          : "4px solid transparent",
-                        backgroundColor: isActive
-                          ? "rgba(var(--primary-rgb), 0.05)"
-                          : "transparent",
-                        color: isActive
-                          ? "var(--primary)"
-                          : "var(--foreground)",
-                        textDecoration: "none",
-                        fontSize: "0.9rem",
-                      }}
-                    >
-                      {isLessonCompleted ? (
-                        <CheckCircle size={16} color="var(--primary)" />
-                      ) : (
-                        <Circle size={16} color="var(--muted)" />
-                      )}
-                      <span style={{ flex: 1 }}>{lesson.title}</span>
-                      {lesson.type === "VIDEO" ? (
-                        <PlayCircle size={14} color="var(--muted)" />
-                      ) : (
-                        <FileText size={14} color="var(--muted)" />
-                      )}
-                    </Link>
-                  );
-                })}
-              </div>
+              <h2 className="text-2xl font-medium mb-3">
+                Monthly Limit Reached
+              </h2>
+              <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+                You have reached your limit of 3 free videos this month. Upgrade
+                to Basic for unlimited access to all content.
+              </p>
+              <Link href="/pricing" className="btn btn-primary px-8">
+                Upgrade to Basic
+              </Link>
             </div>
-          ))}
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <main style={{ flex: 1, overflowY: "auto", padding: "2rem 4rem" }}>
-        <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-          <BreadcrumbNav
-            items={[
-              { label: "Dashboard", href: "/dashboard" },
-              { label: track.title, href: `/tracks/${track.id}` },
-              { label: currentLesson.title },
-            ]}
-            className="mb-4"
-          />
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "1.5rem",
-            }}
-          >
-            <h1 style={{ fontSize: "2rem", fontWeight: 500 }}>
-              {currentLesson.title}
-            </h1>
-            {hasAccess && currentLesson.type !== "QUIZ" && isCompleted && (
-              <LessonCompleteButton
-                lessonId={currentLesson.id}
-                initialCompleted={isCompleted}
-              />
-            )}
-          </div>
-
-          {/* Content Viewer */}
-          <div style={{ marginBottom: "3rem" }}>
-            {!hasAccess ? (
-              <div
-                style={{
-                  padding: "3rem",
-                  border: "1px solid var(--border)",
-                  borderRadius: "var(--radius)",
-                  textAlign: "center",
-                  backgroundColor: "var(--muted-light)",
-                }}
-              >
-                <div style={{ marginBottom: "1.5rem" }}>
-                  <PlayCircle
-                    size={48}
-                    color="var(--muted)"
-                    style={{ margin: "0 auto" }}
+          ) : (
+            <>
+              {currentLesson.type === "VIDEO" && currentLesson.contentUrl && (
+                <div className="relative aspect-video rounded-2xl overflow-hidden bg-black shadow-xl">
+                  <VideoPlayer
+                    videoId={currentLesson.contentUrl}
+                    lessonId={currentLesson.id}
+                    isCompleted={isCompleted}
+                    trackId={track.id}
                   />
                 </div>
-                <h2
-                  style={{
-                    fontSize: "1.5rem",
-                    fontWeight: 500,
-                    marginBottom: "1rem",
-                  }}
-                >
-                  Monthly Limit Reached
-                </h2>
-                <p
-                  style={{
-                    color: "var(--muted)",
-                    marginBottom: "2rem",
-                    maxWidth: "400px",
-                    margin: "0 auto 2rem",
-                  }}
-                >
-                  You have reached your limit of 3 free videos this month.
-                  Upgrade to Basic for unlimited access to all content.
-                </p>
-                <Link href="/pricing" className="btn btn-primary">
-                  Upgrade to Basic
-                </Link>
-              </div>
-            ) : (
-              <>
-                {currentLesson.type === "VIDEO" && currentLesson.contentUrl && (
-                  <div
-                    style={{
-                      position: "relative",
-                      paddingBottom: "56.25%",
-                      height: 0,
-                      overflow: "hidden",
-                      borderRadius: "var(--radius)",
-                      backgroundColor: "#000",
-                    }}
-                  >
-                    {/* <iframe
-                      src={getEmbedUrl(currentLesson.contentUrl)}
-                      style={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        width: "100%",
-                        height: "100%",
-                        border: 0,
-                      }}
-                      allowFullScreen
-                      title={currentLesson.title}
-                    /> */}
-                    <VideoPlayer
-                      videoId={currentLesson.contentUrl}
-                      lessonId={currentLesson.id}
-                      isCompleted={isCompleted}
-                      trackId={track.id}
-                    />
-                  </div>
-                )}
+              )}
 
-                {currentLesson.type === "TEXT" && currentLesson.textContent && (
-                  <div
-                    className="prose"
-                    style={{
-                      lineHeight: 1.8,
-                      fontSize: "1.1rem",
-                      maxWidth: "none",
-                    }}
-                  >
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                      {currentLesson.textContent}
-                    </ReactMarkdown>
-                  </div>
-                )}
+              {currentLesson.type === "TEXT" && currentLesson.textContent && (
+                <div className="prose prose-neutral dark:prose-invert max-w-none">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {currentLesson.textContent}
+                  </ReactMarkdown>
+                </div>
+              )}
 
-                {currentLesson.type === "QUIZ" && (
-                  <QuizViewer
-                    lessonId={currentLesson.id}
-                    initialCompleted={isCompleted}
-                    trackId={track.id}
-                    allLessons={track.modules.flatMap((m: any) =>
-                      m.lessons.map((l: any) => ({
-                        id: l.id,
-                        title: l.title,
-                        completed: l.progress.length > 0,
-                      })),
-                    )}
-                  />
-                )}
-              </>
-            )}
-          </div>
-
-          {/* Navigation Buttons */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              marginTop: "4rem",
-              borderTop: "1px solid var(--border)",
-              paddingTop: "2rem",
-            }}
-          >
-            {prevLesson ? (
-              <Link
-                href={`/tracks/${track.id}/lessons/${prevLesson.id}`}
-                className="btn btn-outline"
-                style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
-              >
-                <ChevronLeft size={16} /> Previous: {prevLesson.title}
-              </Link>
-            ) : (
-              <div />
-            )}
-
-            {nextLesson ? (
-              <Link
-                href={`/tracks/${track.id}/lessons/${nextLesson.id}`}
-                className="btn btn-primary"
-                style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
-              >
-                Next: {nextLesson.title} <ChevronRight size={16} />
-              </Link>
-            ) : (
-              <Link href="/dashboard" className="btn btn-primary">
-                Complete Track{" "}
-                <CheckCircle size={16} style={{ marginLeft: "0.5rem" }} />
-              </Link>
-            )}
-          </div>
+              {currentLesson.type === "QUIZ" && (
+                <QuizViewer
+                  lessonId={currentLesson.id}
+                  initialCompleted={isCompleted}
+                  trackId={track.id}
+                  allLessons={track.modules.flatMap((m: any) =>
+                    m.lessons.map((l: any) => ({
+                      id: l.id,
+                      title: l.title,
+                      completed: l.progress.length > 0,
+                    })),
+                  )}
+                />
+              )}
+            </>
+          )}
         </div>
-      </main>
-    </div>
+
+        {/* Navigation Buttons */}
+        <div className="flex flex-wrap justify-between gap-4 mt-12 pt-8 border-t border-border">
+          {prevLesson ? (
+            <Link
+              href={`/tracks/${track.id}/lessons/${prevLesson.id}`}
+              className="btn btn-outline flex items-center text-xs gap-2"
+            >
+              <ChevronLeft size={16} />
+              <span className="hidden sm:inline text-xs">Previous:</span>{" "}
+              {prevLesson.title}
+            </Link>
+          ) : (
+            <div />
+          )}
+
+          {nextLesson ? (
+            <Link
+              href={`/tracks/${track.id}/lessons/${nextLesson.id}`}
+              className="btn btn-primary flex items-center text-xs gap-2"
+            >
+              <span className="hidden sm:inline text-xs">Next:</span>{" "}
+              {nextLesson.title}
+              <ChevronRight size={16} />
+            </Link>
+          ) : (
+            <Link
+              href="/dashboard"
+              className="btn btn-primary flex items-center gap-2"
+            >
+              Complete Track
+              <CheckCircle size={16} />
+            </Link>
+          )}
+        </div>
+      </div>
+    </LessonLayout>
   );
 }

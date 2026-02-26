@@ -97,7 +97,7 @@ export default function NewSessionPage() {
   }
 
   return (
-    <div className="w-lg mx-auto">
+    <div className="max-w-lg mx-auto">
       <BreadcrumbNav
         items={[
           { label: "Tutor Dashboard", href: "/tutor" },
@@ -116,7 +116,7 @@ export default function NewSessionPage() {
         </Link> */}
       </div>
 
-      <div className="p-4 bg-card ">
+      <div className="bg-card ">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium mb-2">
