@@ -185,16 +185,7 @@ button {
   overflow: hidden;
 }
 
-/* Layout Utilities */
-/* .flex {
-  display: flex;
-}
-
-.flex-col {
-  flex-direction: column;
-} */
-
-.items-center {
+/* .items-center {
   align-items: center;
 }
 
@@ -204,9 +195,9 @@ button {
 
 .justify-center {
   justify-content: center;
-}
+} */
 
-.gap-2 {
+/* .gap-2 {
   gap: 0.5rem;
 }
 
@@ -220,7 +211,7 @@ button {
 
 .gap-8 {
   gap: 2rem;
-}
+} */
 
 .grid {
   display: grid;
@@ -282,7 +273,7 @@ button {
   }
 }
 /* Typography Utilities */
-.text-center {
+/* .text-center {
   text-align: center;
 }
 
@@ -308,7 +299,7 @@ button {
 
 .text-3xl {
   font-size: 1.875rem;
-}
+} */
 
 .font-bold {
   font-weight: 700;
@@ -328,14 +319,6 @@ button {
 
 .text-primary {
   color: var(--primary);
-}
-
-.text-red-500 {
-  color: var(--error);
-}
-
-.hover\:underline:hover {
-  text-decoration: underline;
 }
 
 /* Form Utilities */
@@ -452,10 +435,6 @@ uuuuuu
   height: 3rem;
 }
 
-.inline-block {
-  display: inline-block;
-}
-
 .space-y-4>*+* {
   margin-top: 1rem;
 }
@@ -468,9 +447,6 @@ uuuuuu
   white-space: nowrap;
 }
 
-/* .inline-flex {
-  display: inline-flex;
-} */
 
 /* Element styles */
 .home-spacing-p {
@@ -752,7 +728,7 @@ uuuuuu
 
 @layer base {
   h1 {
-    font-size: clamp(2.25rem, 5vw, 3.5rem);
+    font-size: clamp(2rem, 5vw, 3.5rem);
     font-weight: 500;
     line-height: 1.1;
     letter-spacing: -0.02em;
@@ -761,7 +737,7 @@ uuuuuu
   }
 
   h2 {
-    font-size: clamp(1.875rem, 4vw, 2.75rem);
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
     font-weight: 500;
     line-height: 1.2;
     letter-spacing: -0.015em;

@@ -3,7 +3,17 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useSession, signOut } from "next-auth/react";
-import { Menu, X, Layers, Video, Briefcase, User, LogOut } from "lucide-react";
+import {
+  Menu,
+  X,
+  Layers,
+  Video,
+  Briefcase,
+  User,
+  LogOut,
+  LayoutDashboard,
+  Coins,
+} from "lucide-react";
 import { useState } from "react";
 import Dropdown from "./ui/Dropdown";
 import { useRouter } from "next/navigation";
@@ -68,22 +78,25 @@ export default function Navbar() {
           style={{ display: "flex", alignItems: "center", gap: "2rem" }}
         >
           {session ? (
-            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            <div className="flex items-center gap-4">
               {session.user.role === "LEARNER" && (
-                <Link
-                  href="/dashboard"
-                  style={{ fontWeight: 500, color: "var(--muted)" }}
-                  className="btn-outline btn"
-                >
-                  Dashboard
-                </Link>
+                <div className="hidden sm:block">
+                  <Link
+                    href="/dashboard"
+                    style={{ fontWeight: 500, color: "var(--muted)" }}
+                    className="btn-outline btn "
+                  >
+                    Dashboard
+                  </Link>
+                </div>
               )}
 
               <div>
                 <Image
                   src={
-                    session.user.image! ||
-                    "https://avatar.iran.liara.run/public/40"
+                    session.user.image
+                      ? session.user.image
+                      : "https://avatar.iran.liara.run/public/40"
                   }
                   alt=""
                   width={40}
@@ -138,6 +151,14 @@ export default function Navbar() {
 
                   {session.user.role === "LEARNER" && (
                     <>
+                      <div className="block sm:hidden">
+                        <Link href="/dashboard">
+                          <div className="dropdown-item">
+                            <LayoutDashboard size={16} />
+                            <span>Dashboard</span>
+                          </div>
+                        </Link>
+                      </div>
                       <Link href="/tracks">
                         <div className="dropdown-item">
                           <Layers size={16} />
@@ -194,26 +215,92 @@ export default function Navbar() {
               </Dropdown>
             </div>
           ) : (
-            <div
-              style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
-            >
-              <Link
-                href="/tracks"
-                style={{ fontWeight: 500, color: "var(--muted)" }}
-                className="btn"
-              >
-                Tracks
-              </Link>
-              <Link
-                href="/pricing"
-                style={{ fontWeight: 500, color: "var(--muted)" }}
-                className="btn"
-              >
-                Pricing
-              </Link>
-              <Link href="/auth/signup" className="btn btn-primary">
-                Get Started
-              </Link>
+            <div>
+              <div className="items-center gap-2 hidden sm:flex">
+                <Link
+                  href="/tracks"
+                  style={{ fontWeight: 500, color: "var(--muted)" }}
+                  className="btn"
+                >
+                  Tracks
+                </Link>
+                <Link
+                  href="/pricing"
+                  style={{ fontWeight: 500, color: "var(--muted)" }}
+                  className="btn"
+                >
+                  Pricing
+                </Link>
+                <Link href="/auth/signup" className="btn btn-primary">
+                  Get Started
+                </Link>
+              </div>
+
+              <div className="block sm:hidden">
+                <Dropdown
+                  position="below"
+                  align="end"
+                  trigger={
+                    <div
+                      style={{
+                        width: "45px",
+                        height: "40px",
+                        borderRadius: "4px",
+                        overflow: "hidden",
+                        position: "relative",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        border: "1px solid var(--border)",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <Menu size={20} />
+                    </div>
+                  }
+                >
+                  <div
+                    style={{
+                      padding: "0.5rem 0",
+                      display: "flex",
+                      flexDirection: "column",
+                      minWidth: "220px",
+                      backgroundColor: "var(--background)",
+                      boxShadow:
+                        "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                      borderRadius: "12px",
+                      border: "1px solid var(--border)",
+                    }}
+                  >
+                    <Link href="/tracks">
+                      <div className="dropdown-item">
+                        <Layers size={16} />
+                        <span>Tracks</span>
+                      </div>
+                    </Link>
+                    <Link href="/pricing">
+                      <div className="dropdown-item">
+                        <Coins size={16} />
+                        <span>Pricing</span>
+                      </div>
+                    </Link>
+                    <div
+                      style={{
+                        margin: "0.5rem 0",
+                        borderTop: "1px solid var(--border)",
+                      }}
+                    />
+
+                    <button
+                      onClick={() => router.push("/auth/signup")}
+                      className="dropdown-item dropdown-item-started"
+                    >
+                      <LogOut size={16} />
+                      <span>Get Started</span>
+                    </button>
+                  </div>
+                </Dropdown>
+              </div>
             </div>
           )}
         </div>
@@ -277,6 +364,19 @@ export default function Navbar() {
         .dropdown-item-signout:hover {
           background-color: #fee2e2 !important;
           color: #dc2626 !important;
+        }
+        .dropdown-item-started {
+          width: calc(100% - 1rem);
+          text-align: left;
+          background: #00897b23;
+          border: none;
+          cursor: pointer;
+          color: #00897b;
+          margin-top: 0.25rem;
+        }
+        .dropdown-item-started:hover {
+          background-color: #00897b23 !important;
+          color: #00897b !important;
         }
       `}</style>
     </nav>

@@ -57,15 +57,9 @@ type InfoCardProps = {
 export default function Home() {
   return (
     <>
-      <main>
+      <main className="mt-6">
         {/* Hero Section */}
-        <section
-          style={{
-            padding: "6rem 0",
-            textAlign: "center",
-            // background: "linear-gradient(to bottom, var(--primary-light), white)",
-          }}
-        >
+        <section className="lg:py-23 text-center py-10">
           <div className="container">
             <div
               style={{
@@ -75,15 +69,14 @@ export default function Home() {
                 color: "var(--primary)",
                 borderRadius: "99px",
                 fontWeight: 600,
-                fontSize: "0.9rem",
                 marginBottom: "1.5rem",
               }}
+              className="text-xs md:text-base"
             >
               🚀 Launching the next generation of African Tech Talent
             </div>
             <h1
               style={{
-                fontSize: "3.6rem",
                 fontWeight: 500,
                 lineHeight: 1.2,
                 marginBottom: "1.5rem",
@@ -99,7 +92,6 @@ export default function Home() {
             </h1>
             <p
               style={{
-                fontSize: "1.25rem",
                 color: "var(--muted)",
                 maxWidth: "600px",
                 margin: "0 auto 2.5rem",
@@ -109,15 +101,13 @@ export default function Home() {
               curriculum, expert mentorship, and a portfolio that gets you
               hired.
             </p>
-            <div
-              style={{ display: "flex", gap: "1rem", justifyContent: "center" }}
-            >
+            <div className="flex gap-4 justify-center sm:flex-row flex-col">
               <Link
                 href="/auth/signup"
                 className="btn btn-primary"
                 style={{
                   padding: "0.75rem 2rem",
-                  fontSize: "1.1rem",
+                  fontSize: "0.9rem",
                   display: "flex",
                   alignItems: "center",
                   gap: "0.5rem",
@@ -131,7 +121,7 @@ export default function Home() {
                 className="btn btn-outline"
                 style={{
                   padding: "0.75rem 2rem",
-                  fontSize: "1.1rem",
+                  fontSize: "0.9rem",
                   display: "flex",
                   alignItems: "center",
                   gap: "0.5rem",
@@ -142,7 +132,7 @@ export default function Home() {
               </Link>
             </div>
           </div>
-          <div className="container flex justify-center">
+          <div className="container md:flex hidden justify-center ">
             <Image
               src="/images/three_people_holding_piece.svg"
               alt="three_people_holding_piece"
@@ -164,19 +154,11 @@ export default function Home() {
         </section>
 
         {/* Value Props */}
-        <section style={{ padding: "5rem 0" }}>
+        <section className="lg:py-20 text-center py-8">
           <div className="container">
-            <div style={{ textAlign: "center", marginBottom: "4rem" }}>
-              <h2
-                style={{
-                  fontSize: "3.3rem",
-                  fontWeight: 500,
-                  marginBottom: "1rem",
-                }}
-              >
-                Why Choose Algora?
-              </h2>
-              <p style={{ fontSize: "1.1rem" }}>
+            <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+              <h2 className="mb-2">Why Choose Algora?</h2>
+              <p className="mb-2">
                 We bridge the gap between self-learning and expensive bootcamps.
               </p>
             </div>
@@ -208,23 +190,13 @@ export default function Home() {
         </section>
 
         {/* Steps to start */}
-        <section className="home-spacing-p">
+        <section className="lg:py-20 text-center py-8">
           <div className="container">
-            <div style={{ textAlign: "center", marginBottom: "4rem" }}>
-              <p className="text-sm font-semibold mb-2">Simple</p>
-              <h2
-                style={{
-                  fontSize: "3.3rem",
-                  fontWeight: 500,
-                  marginBottom: "1rem",
-                }}
-              >
-                Four steps to start
-              </h2>
+            <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+              <p className="text-sm font-medium mb-2">Simple</p>
+              <h2 className="mb-2">Four steps to start</h2>
 
-              <p style={{ fontSize: "1.1rem" }}>
-                Pick your track, pay once a month, learn at your pace
-              </p>
+              <p>Pick your track, pay once a month, learn at your pace</p>
             </div>
 
             {/* Layout */}
@@ -253,25 +225,12 @@ export default function Home() {
         </section>
 
         {/* Testimonial section */}
-        <section
-          style={{ backgroundColor: "var(--primary-light)" }}
-          className="home-spacing-p"
-        >
+        <section className="lg:py-20 text-center py-8">
           <div className="container">
             {/* Header */}
-            <div style={{ textAlign: "center", marginBottom: "4rem" }}>
-              <h2
-                style={{
-                  fontSize: "3.3rem",
-                  fontWeight: 500,
-                  marginBottom: "1rem",
-                }}
-              >
-                Real stories
-              </h2>
-              <p style={{ fontSize: "1.1rem" }}>
-                Hear from learners across Africa
-              </p>
+            <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+              <h2 className="mb-2">Real stories</h2>
+              <p>Hear from learners across Africa</p>
             </div>
 
             {/* Testimonials */}
@@ -301,21 +260,13 @@ export default function Home() {
         </section>
 
         {/* Why Section */}
-        <section className="home-spacing-p">
+        <section className="lg:py-20 text-center py-8">
           <div className="container">
             {/* Header */}
-            <div style={{ textAlign: "center", marginBottom: "4rem" }}>
-              <p className="text-sm font-semibold mb-2">Why</p>
-              <h2
-                style={{
-                  fontSize: "3.3rem",
-                  fontWeight: 500,
-                  marginBottom: "1rem",
-                }}
-              >
-                Built for your reality
-              </h2>
-              <p style={{ fontSize: "1.1rem" }}>
+            <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+              <p className="text-sm font-medium mb-2">Why</p>
+              <h2 className="mb-2">Built for your reality</h2>
+              <p>
                 We know what works in Africa. Flexible, affordable, and human.
               </p>
             </div>
@@ -345,23 +296,8 @@ export default function Home() {
           }}
         >
           <div className="container" style={{ textAlign: "center" }}>
-            <h2
-              style={{
-                fontSize: "2.5rem",
-                fontWeight: 500,
-                marginBottom: "1.5rem",
-              }}
-            >
-              Ready to start your journey?
-            </h2>
-            <p
-              style={{
-                fontSize: "1.2rem",
-                opacity: 0.9,
-                maxWidth: "600px",
-                margin: "0 auto 2.5rem",
-              }}
-            >
+            <h2 className="mb-2">Ready to start your journey?</h2>
+            <p>
               Join hundreds of other learners building the future of African
               tech.
             </p>
@@ -408,9 +344,9 @@ const FirstStepCard = () => {
         style={{ flex: 1, padding: "1.5rem" }}
       >
         <div>
-          <p className="font-semibold mb-1">First</p>
+          <p className="font-medium mb-1">First</p>
 
-          <h3 className="font-semibold mb-2" style={{ fontSize: "2.2rem" }}>
+          <h3 className="font-medium mb-2" style={{ fontSize: "2.2rem" }}>
             Choose your track
           </h3>
 
@@ -418,10 +354,7 @@ const FirstStepCard = () => {
             Start with data analytics or explore other paths
           </p>
 
-          <Link
-            href="/tracks"
-            className="flex items-center gap-1 font-semibold"
-          >
+          <Link href="/tracks" className="flex items-center gap-1 font-medium">
             Next <ChevronRight size={16} />
           </Link>
         </div>
@@ -465,18 +398,15 @@ const VerticalStepCard = ({
         style={{ flex: 1, padding: "1.5rem" }}
       >
         <div>
-          <p className="font-semibold mb-1">{label}</p>
+          <p className="font-medium mb-1">{label}</p>
 
-          <h3 className="font-semibold mb-2" style={{ fontSize: "1.5rem" }}>
+          <h3 className="font-medium mb-2" style={{ fontSize: "1.5rem" }}>
             {title}
           </h3>
 
           <p className="mb-6">{description}</p>
 
-          <Link
-            href="/tracks"
-            className="flex items-center gap-1 font-semibold"
-          >
+          <Link href="/tracks" className="flex items-center gap-1 font-medium">
             {actionText} <ChevronRight size={16} />
           </Link>
         </div>
@@ -546,7 +476,7 @@ const TestimonialCard = ({
         </div>
 
         <div>
-          <p className="font-semibold">{name}</p>
+          <p className="font-medium">{name}</p>
           <p className="">{role}</p>
         </div>
       </div>
@@ -600,12 +530,12 @@ const TrackCard = () => (
   <div className="card track-card" style={{ padding: "0" }}>
     <div className="track-content">
       <div style={{ padding: "20px" }}>
-        <span className="font-semibold mb-1">Track</span>
-        <h3 className="font-semibold mb-2" style={{ fontSize: "1.7rem" }}>
+        <span className="font-medium mb-1">Track</span>
+        <h3 className="font-medium mb-2" style={{ fontSize: "1.7rem" }}>
           See exactly where you stand
         </h3>
         <p className="mb-6">Know your progress at every step</p>
-        <Link href="#" className="flex items-center gap-1 font-semibold">
+        <Link href="#" className="flex items-center gap-1 font-medium">
           View <ChevronRight size={16} />
         </Link>
       </div>
@@ -631,12 +561,12 @@ const PeersCard = () => (
   >
     <div>
       <PersonStanding size={38} className="mb-4" />
-      <h3 className="font-semibold mb-2" style={{ fontSize: "1.7rem" }}>
+      <h3 className="font-medium mb-2" style={{ fontSize: "1.7rem" }}>
         Learn alongside your peers
       </h3>
       <p className="mb-6">Join a community that gets it</p>
     </div>
-    <Link href="#" className="flex items-center gap-1 font-semibold">
+    <Link href="#" className="flex items-center gap-1 font-medium">
       Connect <ChevronRight size={16} />
     </Link>
   </div>
@@ -653,12 +583,12 @@ const SpeedCard = () => (
   >
     <div>
       <CircleGauge size={34} className="mb-4" />
-      <h3 className="font-semibold mb-2" style={{ fontSize: "1.7rem" }}>
+      <h3 className="font-medium mb-2" style={{ fontSize: "1.7rem" }}>
         Move at your own speed
       </h3>
       <p className="mb-6">No pressure, no rigid schedules</p>
     </div>
-    <Link href="#" className="flex items-center gap-1 font-semibold">
+    <Link href="#" className="flex items-center gap-1 font-medium">
       Learn <ChevronRight size={16} />
     </Link>
   </div>
@@ -668,11 +598,8 @@ const SidebarCombinedCard = () => (
   <div className="">
     <div className="card sidebar-container" style={{ padding: 0 }}>
       <div className="relevant-card" style={{ padding: "40px" }}>
-        <span className="font-semibold mb-1">Relevant</span>
-        <h3
-          className="font-semibold mb-2"
-          style={{ fontSize: "2.5rem", maxWidth: "500px" }}
-        >
+        <span className="font-medium mb-1">Relevant</span>
+        <h3 className="font-medium mb-2" style={{ maxWidth: "500px" }}>
           Content made for African tech careers
         </h3>
         <p className="mb-6">Real projects, real outcomes, real jobs</p>
@@ -689,7 +616,7 @@ const SidebarCombinedCard = () => (
           >
             Explore
           </Link>
-          <Link href="#" className="flex items-center gap-1 font-semibold">
+          <Link href="#" className="flex items-center gap-1 font-medium">
             Start <ChevronRight size={16} />
           </Link>
         </div>
