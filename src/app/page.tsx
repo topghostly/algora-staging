@@ -101,9 +101,7 @@ export default function Home() {
                 notchBg="#fff"
                 borderColor="#ffffff00"
               >
-                <div className="sm:w-[150px] w-[80px] aspect-square flex justify-center items-center">
-                  {/* <MoveDownRight size={50} /> */}
-                </div>
+                <div className="sm:w-[150px] w-[80px] aspect-square flex justify-center items-center"></div>
               </InvertedCornerImage>
             </div>
           </div>
