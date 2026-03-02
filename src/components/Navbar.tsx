@@ -231,7 +231,10 @@ export default function Navbar() {
                 >
                   Pricing
                 </Link>
-                <Link href="/auth/signup" className="btn btn-primary">
+                <Link
+                  href="/auth/signup"
+                  className="btn btn-primary rounded-full"
+                >
                   Get Started
                 </Link>
               </div>
