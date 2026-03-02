@@ -4,92 +4,92 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
 export async function GET(
-    req: Request,
-    { params }: { params: Promise<{ trackId: string }> }
+  req: Request,
+  { params }: { params: Promise<{ trackId: string }> },
 ) {
-    try {
-        const { trackId } = await params;
-        const track = await prisma.track.findUnique({
-            where: { id: trackId },
-            include: {
-                modules: {
-                    orderBy: { order: "asc" },
-                    include: {
-                        lessons: {
-                            orderBy: { order: "asc" },
-                        },
-                    },
-                },
+  try {
+    const { trackId } = await params;
+    const track = await prisma.track.findUnique({
+      where: { id: trackId },
+      include: {
+        modules: {
+          orderBy: { order: "asc" },
+          include: {
+            lessons: {
+              orderBy: { order: "asc" },
             },
-        });
+          },
+        },
+      },
+    });
 
-        if (!track) {
-            return NextResponse.json({ error: "Track not found" }, { status: 404 });
-        }
-
-        return NextResponse.json(track);
-    } catch (error) {
-        return NextResponse.json(
-            { error: "Internal Server Error" },
-            { status: 500 }
-        );
+    if (!track) {
+      return NextResponse.json({ error: "Track not found" }, { status: 404 });
     }
+
+    return NextResponse.json(track);
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
 }
 
 export async function PUT(
-    req: Request,
-    { params }: { params: Promise<{ trackId: string }> }
+  req: Request,
+  { params }: { params: Promise<{ trackId: string }> },
 ) {
-    try {
-        const session = await getServerSession(authOptions);
+  try {
+    const session = await getServerSession(authOptions);
 
-        if (!session || session.user.role !== "ADMIN") {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
-
-        const { trackId } = await params;
-        const { title, description, published } = await req.json();
-
-        const track = await prisma.track.update({
-            where: { id: trackId },
-            data: {
-                title,
-                description,
-                published,
-            },
-        });
-
-        return NextResponse.json(track);
-    } catch (error) {
-        return NextResponse.json(
-            { error: "Internal Server Error" },
-            { status: 500 }
-        );
+    if (!session || session.user.role !== "ADMIN") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const { trackId } = await params;
+    const { title, description, published } = await req.json();
+
+    const track = await prisma.track.update({
+      where: { id: trackId },
+      data: {
+        title,
+        description,
+        published,
+      },
+    });
+
+    return NextResponse.json(track);
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
 }
 
 export async function DELETE(
-    req: Request,
-    { params }: { params: Promise<{ trackId: string }> }
+  req: Request,
+  { params }: { params: Promise<{ trackId: string }> },
 ) {
-    try {
-        const session = await getServerSession(authOptions);
+  try {
+    const session = await getServerSession(authOptions);
 
-        if (!session || session.user.role !== "ADMIN") {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
-
-        const { trackId } = await params;
-
-        await prisma.track.delete({
-            where: { id: trackId },
-        });
-
-        return NextResponse.json({ message: "Track deleted" });
-    } catch (error) {
-        return NextResponse.json(
-            { error: "Internal Server Error" },
-            { status: 500 }
-        );
+    if (!session || session.user.role !== "ADMIN") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const { trackId } = await params;
+
+    await prisma.track.delete({
+      where: { id: trackId },
+    });
+
+    return NextResponse.json({ message: "Track deleted" });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
 }

@@ -10,7 +10,11 @@ import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 
 function SubmitButton({ loading }: { loading: boolean }) {
   return (
-    <button type="submit" className="btn btn-primary w-full" disabled={loading}>
+    <button
+      type="submit"
+      className="btn btn-primary w-full rounded-lg"
+      disabled={loading}
+    >
       {loading ? "Creating..." : "Create Session"}
     </button>
   );
@@ -19,6 +23,7 @@ function SubmitButton({ loading }: { loading: boolean }) {
 export default function NewSessionPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  console.log(searchParams);
   const [loading, setLoading] = useState(false);
 
   const initialEmail = searchParams.get("studentEmail") || "";
@@ -117,7 +122,7 @@ export default function NewSessionPage() {
       </div>
 
       <div className="bg-card ">
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
             <label className="block text-sm font-medium mb-2">
               Student Email
@@ -127,8 +132,13 @@ export default function NewSessionPage() {
               name="studentEmail"
               defaultValue={initialEmail}
               placeholder="student@example.com"
-              className="input w-full"
+              className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             />
+            {!initialEmail && (
+              <div className="text-xs text-orange-500 ml-1.5 mt-1">
+                For Group Sessions leave blank
+              </div>
+            )}
           </div>
 
           <div>
@@ -141,7 +151,7 @@ export default function NewSessionPage() {
               defaultValue={initialTitle}
               required
               placeholder="e.g., Weekly Mentorship Call"
-              className="input w-full"
+              className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             />
           </div>
 
@@ -152,7 +162,7 @@ export default function NewSessionPage() {
               </label>
               <select
                 name="type"
-                className="input w-full"
+                className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 required
                 defaultValue="ONE_ON_ONE"
               >
@@ -166,7 +176,7 @@ export default function NewSessionPage() {
               </label>
               <select
                 name="duration"
-                className="input w-full"
+                className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 required
                 defaultValue="60"
               >
@@ -187,7 +197,7 @@ export default function NewSessionPage() {
                 name="date"
                 defaultValue={initialDate}
                 required
-                className="input w-full"
+                className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 min={new Date().toISOString().split("T")[0]}
               />
             </div>
@@ -200,16 +210,18 @@ export default function NewSessionPage() {
                 name="startTime"
                 defaultValue={initialTime}
                 required
-                className="input w-full"
+                className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               />
             </div>
           </div>
 
-          <div className="text-sm text-muted-foreground">
-            The date and time can be adjusted based on your availability.
-          </div>
+          {searchParams.size > 0 && (
+            <div className="text-xs text-muted-foreground mt-[-8px]">
+              The date and time can be adjusted based on your availability.
+            </div>
+          )}
 
-          <div className="">
+          <div className="mt-2">
             <SubmitButton loading={loading} />
           </div>
         </form>
@@ -217,39 +229,3 @@ export default function NewSessionPage() {
     </div>
   );
 }
-
-// {
-//   kind: 'calendar#event',
-//   etag: '"3539222778819134"',
-//   id: '9ent3g1je2ei9v7q0mbi2vl3r0',
-//   status: 'confirmed',
-//   htmlLink: 'https://www.google.com/calendar/event?eid=OWVudDNnMWplMmVpOXY3cTBtYmkydmwzcjAgdGVtaXRvcGVhYm9sYWppMDMyN0Bt',
-//   created: '2026-01-28T14:43:08.000Z',
-//   updated: '2026-01-28T14:43:09.409Z',
-//   summary: 'Test Sessions',
-//   description: 'Private learning session on Algora',
-//   creator: { email: 'temitopeabolaji0327@gmail.com', self: true },
-//   organizer: { email: 'temitopeabolaji0327@gmail.com', self: true },
-//   start: { dateTime: '2026-01-29T05:45:00+01:00', timeZone: 'Africa/Lagos' },
-//   end: { dateTime: '2026-01-29T06:30:00+01:00', timeZone: 'Africa/Lagos' },
-//   iCalUID: '9ent3g1je2ei9v7q0mbi2vl3r0@google.com',
-//   sequence: 0,
-//   attendees: [ { email: 'td.bolaji@gmail.com', responseStatus: 'needsAction' } ],
-//   hangoutLink: 'https://meet.google.com/phw-trph-bsm',
-//   conferenceData: {
-//     createRequest: {
-//       requestId: 'algora-1on1-e2834e51-9563-44cc-b8d4-f895b41a2dab',
-//       conferenceSolutionKey: [Object],
-//       status: [Object]
-//     },
-//     entryPoints: [ [Object] ],
-//     conferenceSolution: {
-//       key: [Object],
-//       name: 'Google Meet',
-//       iconUri: 'https://fonts.gstatic.com/s/i/productlogos/meet_2020q4/v6/web-512dp/logo_meet_2020q4_color_2x_web_512dp.png'
-//     },
-//     conferenceId: 'phw-trph-bsm'
-//   },
-//   reminders: { useDefault: true },
-//   eventType: 'default'
-// }
