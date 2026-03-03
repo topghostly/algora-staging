@@ -141,11 +141,11 @@ export default function QuizEditor({ lessonId }: QuizEditorProps) {
           marginBottom: "1.5rem",
         }}
       >
-        <h3 style={{ fontSize: "1.2rem", fontWeight: 500 }}>Quiz Questions</h3>
+        <h4>Quiz Questions</h4>
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="btn btn-primary"
+          className="btn btn-primary rounded-full"
         >
           {isSaving ? "Saving..." : "Save Quiz"}
         </button>
@@ -162,37 +162,37 @@ export default function QuizEditor({ lessonId }: QuizEditorProps) {
               style={{
                 display: "flex",
                 justifyContent: "space-between",
+                alignItems: "end",
                 marginBottom: "1rem",
               }}
             >
-              <div style={{ flex: 1 }}>
-                <label className="label">Question {qIndex + 1}</label>
+              <div className="flex flex-col flex-1 gap-4">
+                <label className="font-semibold">Question {qIndex + 1}</label>
                 <input
-                  className="input"
-                  style={{ width: "100%" }}
+                  className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   value={q.text}
                   onChange={(e) =>
                     updateQuestion(qIndex, "text", e.target.value)
                   }
                 />
               </div>
-              <button
-                onClick={() => removeQuestion(qIndex)}
-                className="btn-icon"
-                style={{
-                  color: "var(--error)",
-                  marginLeft: "1rem",
-                  alignSelf: "center",
-                }}
-              >
-                <Trash2 size={18} />
-              </button>
+              <div className="w-15 h-full">
+                <button
+                  onClick={() => removeQuestion(qIndex)}
+                  className="btn btn-outline rounded-lg"
+                  style={{
+                    color: "var(--error)",
+                    marginLeft: "1rem",
+                    alignSelf: "center",
+                  }}
+                >
+                  <Trash2 size={18} />
+                </button>
+              </div>
             </div>
 
-            <div style={{ paddingLeft: "1rem" }}>
-              <label className="label" style={{ fontSize: "0.9rem" }}>
-                Options
-              </label>
+            <div className="flex flex-col gap-4">
+              <label className="font-semibold">Options</label>
               <div
                 style={{
                   display: "flex",
@@ -225,16 +225,15 @@ export default function QuizEditor({ lessonId }: QuizEditorProps) {
                       style={{ width: "1.2rem", height: "1.2rem" }}
                     />
                     <input
-                      className="input"
-                      style={{ flex: 1 }}
                       value={option.text}
                       onChange={(e) =>
                         updateOption(qIndex, oIndex, "text", e.target.value)
                       }
+                      className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     />
                     <button
                       onClick={() => removeOption(qIndex, oIndex)}
-                      className="btn-icon"
+                      className="btn btn-outline rounded-lg"
                       style={{ color: "var(--muted)" }}
                     >
                       <X size={16} />
@@ -243,7 +242,7 @@ export default function QuizEditor({ lessonId }: QuizEditorProps) {
                 ))}
                 <button
                   onClick={() => addOption(qIndex)}
-                  className="btn btn-sm btn-outline"
+                  className="btn btn-sm btn-outline rounded-full"
                   style={{ width: "fit-content", marginTop: "0.5rem" }}
                 >
                   <Plus size={14} style={{ marginRight: "0.25rem" }} /> Add
@@ -256,8 +255,10 @@ export default function QuizEditor({ lessonId }: QuizEditorProps) {
 
         <button
           onClick={addQuestion}
-          className="btn btn-outline"
-          style={{ padding: "1rem", borderStyle: "dashed" }}
+          className="btn btn-outline rounded-full"
+          style={{
+            padding: "1rem",
+          }}
         >
           <Plus size={18} style={{ marginRight: "0.5rem" }} /> Add Question
         </button>

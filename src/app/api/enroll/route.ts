@@ -45,7 +45,10 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json(enrollment, { status: 201 });
+    return NextResponse.json(
+      { success: true, enrollmentId: enrollment.id },
+      { status: 201 },
+    );
   } catch (error: any) {
     console.error("Enrollment error details:", error);
     return NextResponse.json(

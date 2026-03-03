@@ -37,6 +37,7 @@ export default async function TutorRequestsPage() {
     requests = await getRequests(session.user.id);
   } catch (error) {
     console.error("Error fetching tutor requests:", error);
+    requests = null; // Ensure it's null to trigger ErrorState
   }
 
   return (

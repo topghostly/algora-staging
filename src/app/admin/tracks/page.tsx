@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Plus, Edit, Eye, Trash2 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { ErrorState } from "@/components/ErrorState";
+import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,13 @@ export default async function AdminTracksPage() {
 
   return (
     <div>
+      <BreadcrumbNav
+        items={[
+          { label: "Admin Dashboard", href: "/admin" },
+          { label: "Tracks" },
+        ]}
+        className="mb-6"
+      />
       <div
         style={{
           display: "flex",
@@ -51,8 +59,11 @@ export default async function AdminTracksPage() {
           <ErrorState message="We couldn't load the tracks at this time. Please try again." />
         </div>
       ) : (
-        <div className="card" style={{ overflow: "hidden", padding: 0 }}>
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <div
+          className="card overflow-x-auto"
+          style={{ padding: 0, border: "none" }}
+        >
+          <table style={{ minWidth: "800px", borderCollapse: "collapse" }}>
             <thead>
               <tr
                 style={{

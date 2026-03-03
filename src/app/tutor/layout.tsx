@@ -18,12 +18,17 @@ export default async function TutorLayout({
 
   // Fetch the latest calendar connection status from the DB
   // to ensure UI updates immediately after a redirection from route.tsx
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { calendarConnected: true },
-  });
-
-  const isCalendarConnected = user?.calendarConnected || false;
+  let isCalendarConnected = false;
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { calendarConnected: true },
+    });
+    isCalendarConnected = user?.calendarConnected || false;
+  } catch (error) {
+    console.error("Error fetching user calendar status:", error);
+    // Default to false if DB is down
+  }
 
   return (
     <div className="container py-8">

@@ -218,16 +218,20 @@ export default function TrackEditor({ track }: { track: Track }) {
           style={{
             display: "flex",
             justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: "1rem",
             marginBottom: "1.5rem",
           }}
         >
-          <h2 style={{ fontSize: "1.5rem", fontWeight: 500 }}>
-            Track Settings
-          </h2>
+          <h3>Track Settings</h3>
           <button
             onClick={handleUpdateTrack}
             disabled={isLoading}
             className="btn btn-primary"
+            style={{
+              borderRadius: "200px",
+            }}
           >
             <Save size={18} style={{ marginRight: "0.5rem" }} />
             {isLoading ? "Saving..." : "Save Changes"}
@@ -240,8 +244,7 @@ export default function TrackEditor({ track }: { track: Track }) {
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="input"
-              style={{ width: "100%" }}
+              className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             />
           </div>
           <div>
@@ -249,8 +252,7 @@ export default function TrackEditor({ track }: { track: Track }) {
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="input"
-              style={{ width: "100%", minHeight: "100px" }}
+              className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             />
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
@@ -261,9 +263,7 @@ export default function TrackEditor({ track }: { track: Track }) {
               onChange={(e) => setPublished(e.target.checked)}
               style={{ width: "1.2rem", height: "1.2rem" }}
             />
-            <label htmlFor="published" style={{ fontWeight: 500 }}>
-              Published (Visible to students)
-            </label>
+            <label htmlFor="published">Published (Visible to students)</label>
           </div>
         </div>
       </div>
@@ -274,14 +274,16 @@ export default function TrackEditor({ track }: { track: Track }) {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          flexWrap: "wrap",
+          gap: "1rem",
           marginBottom: "1.5rem",
         }}
       >
-        <h2 style={{ fontSize: "1.5rem", fontWeight: 500 }}>Curriculum</h2>
+        <h3>Curriculum</h3>
         {!isAddingModule ? (
           <button
             onClick={() => setIsAddingModule(true)}
-            className="btn btn-outline"
+            className="btn btn-outline rounded-full"
           >
             <Plus size={18} style={{ marginRight: "0.5rem" }} />
             Add Module
@@ -330,6 +332,8 @@ export default function TrackEditor({ track }: { track: Track }) {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
+                flexWrap: "wrap",
+                gap: "1rem",
               }}
             >
               <div
@@ -340,14 +344,14 @@ export default function TrackEditor({ track }: { track: Track }) {
                   color="var(--muted)"
                   style={{ cursor: "grab" }}
                 />
-                <h3 style={{ fontWeight: 600, margin: 0 }}>{module.title}</h3>
+                <h4>{module.title}</h4>
               </div>
               <div
                 style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
               >
                 <button
                   onClick={() => setAddingLessonToModuleId(module.id)}
-                  className="btn btn-sm btn-outline"
+                  className="btn btn-sm btn-outline rounded-lg"
                   style={{ fontSize: "0.8rem", padding: "0.25rem 0.75rem" }}
                   disabled={addingLessonToModuleId === module.id}
                 >
@@ -401,7 +405,7 @@ export default function TrackEditor({ track }: { track: Track }) {
                     <div style={{ display: "flex", gap: "0.5rem" }}>
                       <button
                         onClick={() => startEditingLesson(lesson)}
-                        className="btn-icon"
+                        className="btn btn-outline rounded-lg"
                         style={{ color: "var(--primary)" }}
                         title="Edit Content"
                       >
@@ -409,7 +413,7 @@ export default function TrackEditor({ track }: { track: Track }) {
                       </button>
                       <button
                         onClick={() => handleDeleteLesson(lesson.id)}
-                        className="btn-icon"
+                        className="btn btn-outline rounded-lg"
                         style={{ color: "var(--error)" }}
                         title="Delete Lesson"
                       >
@@ -428,22 +432,18 @@ export default function TrackEditor({ track }: { track: Track }) {
                       }}
                     >
                       <div style={{ marginBottom: "1rem" }}>
-                        <label
-                          className="label"
-                          style={{ fontSize: "0.85rem" }}
-                        >
+                        <label className="font-semibold">
                           {lesson.type === "VIDEO"
-                            ? "Video URL (YouTube/Vimeo)"
+                            ? "Video URL (YouTube)"
                             : lesson.type === "TEXT"
                               ? "Lesson Content (Markdown)"
-                              : "Quiz Settings"}
+                              : "Quiz Editor"}
                         </label>
                         {lesson.type === "QUIZ" ? (
                           <QuizEditor lessonId={lesson.id} />
                         ) : lesson.type === "VIDEO" ? (
                           <input
-                            className="input"
-                            style={{ width: "100%" }}
+                            className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                             value={editLessonContent}
                             onChange={(e) =>
                               setEditLessonContent(e.target.value)
@@ -452,7 +452,7 @@ export default function TrackEditor({ track }: { track: Track }) {
                           />
                         ) : (
                           <textarea
-                            className="input"
+                            className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                             style={{
                               width: "100%",
                               minHeight: "150px",
@@ -475,16 +475,18 @@ export default function TrackEditor({ track }: { track: Track }) {
                       >
                         <button
                           onClick={() => setEditingLessonId(null)}
-                          className="btn btn-sm btn-outline"
+                          className="btn btn-sm btn-outline rounded-full"
                         >
                           Cancel
                         </button>
-                        <button
-                          onClick={() => handleSaveLessonContent(lesson)}
-                          className="btn btn-sm btn-primary"
-                        >
-                          Save Content
-                        </button>
+                        {lesson.type !== "QUIZ" && (
+                          <button
+                            onClick={() => handleSaveLessonContent(lesson)}
+                            className="btn btn-sm btn-primary rounded-full"
+                          >
+                            Save Content
+                          </button>
+                        )}
                       </div>
                     </div>
                   )}
@@ -517,7 +519,7 @@ export default function TrackEditor({ track }: { track: Track }) {
                   <input
                     autoFocus
                     placeholder="Lesson Title"
-                    className="input"
+                    className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     style={{ flex: 1 }}
                     value={newLessonTitle}
                     onChange={(e) => setNewLessonTitle(e.target.value)}
@@ -525,15 +527,13 @@ export default function TrackEditor({ track }: { track: Track }) {
                   />
                   <button
                     onClick={handleAddLesson}
-                    className="btn btn-primary"
-                    style={{ padding: "0.5rem" }}
+                    className="btn btn-primary rounded-lg"
                   >
                     <Check size={18} />
                   </button>
                   <button
                     onClick={() => setAddingLessonToModuleId(null)}
-                    className="btn btn-outline"
-                    style={{ padding: "0.5rem" }}
+                    className="btn btn-outline rounded-lg"
                   >
                     <X size={18} />
                   </button>

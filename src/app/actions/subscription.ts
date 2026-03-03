@@ -5,22 +5,43 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { SubscriptionTier } from "@prisma/client";
 
-export async function updateSubscription(
-  tier: SubscriptionTier,
-  subscriptionId: string,
-  creditsToAdd: number,
-  transactionDetails: {
-    reference: string;
-    paystackTransactionId: string;
-    amount: number;
-    planCode?: string;
-    status: string;
-  },
-) {
+import { verifyTransaction } from "@/lib/paystack";
+
+export async function updateSubscription(reference: string) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
     throw new Error("Unauthorized");
+  }
+
+  // 1. Verify transaction with Paystack
+  const verification = await verifyTransaction(reference);
+
+  if (verification.data.status !== "success") {
+    throw new Error("Payment verification failed");
+  }
+
+  const planCode = verification.data.plan;
+  const amount = verification.data.amount / 100;
+  const paystackTransactionId = verification.data.id.toString();
+
+  // 2. Map plan to tier and credits
+  let tier: SubscriptionTier = "FREE";
+  let creditsToAdd = 0;
+
+  if (planCode === process.env.NEXT_PUBLIC_PAYSTACK_PLAN_BASIC) {
+    tier = "BASIC";
+    creditsToAdd = 0;
+  } else if (planCode === process.env.NEXT_PUBLIC_PAYSTACK_PLAN_PRO_LITE) {
+    tier = "PRO_LITE";
+    creditsToAdd = 1;
+  } else if (planCode === process.env.NEXT_PUBLIC_PAYSTACK_PLAN_PRO_PLUS) {
+    tier = "PRO_PLUS";
+    creditsToAdd = 4;
+  }
+
+  if (tier === "FREE") {
+    throw new Error("Invalid plan code or plan not recognized");
   }
 
   // Use a transaction to ensure both user update and transaction logging succeed
@@ -29,7 +50,7 @@ export async function updateSubscription(
       where: { id: session.user.id },
       data: {
         subscriptionTier: tier,
-        subscriptionId: subscriptionId,
+        subscriptionId: verification.data.subscription_code || null,
         credits1on1: {
           increment: creditsToAdd,
         },
@@ -39,11 +60,11 @@ export async function updateSubscription(
     await tx.paymentTransaction.create({
       data: {
         userId: session.user.id,
-        reference: transactionDetails.reference,
-        paystackTransactionId: transactionDetails.paystackTransactionId,
-        amount: transactionDetails.amount,
-        status: transactionDetails.status,
-        planCode: transactionDetails.planCode,
+        reference: reference,
+        paystackTransactionId: paystackTransactionId,
+        amount: amount,
+        status: verification.data.status,
+        planCode: planCode,
       },
     });
 

@@ -33,6 +33,9 @@ const SessionDelete = ({ id }: { id: string }) => {
         className="btn btn-outline btn-sm text-red-500 hover:bg-red-50 hover:border-red-200"
         onClick={() => setIsConfirmOpen(true)}
         disabled={isDeleting}
+        style={{
+          borderRadius: "8px",
+        }}
       >
         {isDeleting ? "Deleting..." : "Delete"}
       </button>

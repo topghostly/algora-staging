@@ -15,17 +15,11 @@ export default async function AdminLayout({
   }
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh" }}>
+    <div className="flex min-h-screen overflow-x-hidden">
       <AdminSidebar />
 
       {/* Main Content */}
-      <main
-        style={{
-          flex: 1,
-          padding: "2rem",
-          backgroundColor: "var(--muted-light)",
-        }}
-      >
+      <main className="flex-1 p-4 md:p-8 bg-muted-light">
         <div style={{ maxWidth: "1000px", margin: "0 auto" }}>{children}</div>
       </main>
     </div>

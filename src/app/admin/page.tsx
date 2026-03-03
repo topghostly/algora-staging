@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
+import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 import { Users, BookOpen, PlayCircle, DollarSign } from "lucide-react";
+import { ErrorState } from "@/components/ErrorState";
 
 export const dynamic = "force-dynamic";
 
@@ -18,136 +20,148 @@ async function getAdminStats() {
 }
 
 export default async function AdminDashboardPage() {
-  const stats = await getAdminStats();
+  let stats = null;
+  try {
+    stats = await getAdminStats();
+  } catch (error) {
+    console.error("Error fetching admin stats:", error);
+  }
 
   return (
     <div>
+      <BreadcrumbNav items={[{ label: "Admin Dashboard" }]} className="mb-6" />
       <h1 style={{ fontSize: "2rem", fontWeight: 500, marginBottom: "2rem" }}>
         Dashboard
       </h1>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-          gap: "1.5rem",
-          marginBottom: "3rem",
-        }}
-      >
+      {!stats ? (
+        <div className="card p-12">
+          <ErrorState message="We couldn't load the dashboard stats. Please try again later." />
+        </div>
+      ) : (
         <div
-          className="card"
           style={{
-            padding: "1.5rem",
-            display: "flex",
-            alignItems: "center",
-            gap: "1rem",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+            gap: "1.5rem",
+            marginBottom: "3rem",
           }}
         >
           <div
+            className="card"
             style={{
-              padding: "1rem",
-              borderRadius: "50%",
-              backgroundColor: "rgba(var(--primary-rgb), 0.1)",
-              color: "var(--primary)",
+              padding: "1.5rem",
+              display: "flex",
+              alignItems: "center",
+              gap: "1rem",
             }}
           >
-            <Users size={24} />
-          </div>
-          <div>
-            <div style={{ fontSize: "0.9rem", color: "var(--muted)" }}>
-              Total Users
+            <div
+              style={{
+                padding: "1rem",
+                borderRadius: "50%",
+                backgroundColor: "rgba(var(--primary-rgb), 0.1)",
+                color: "var(--primary)",
+              }}
+            >
+              <Users size={24} />
             </div>
-            <div style={{ fontSize: "1.5rem", fontWeight: 500 }}>
-              {stats.userCount}
+            <div>
+              <div style={{ fontSize: "0.9rem", color: "var(--muted)" }}>
+                Total Users
+              </div>
+              <div style={{ fontSize: "1.5rem", fontWeight: 500 }}>
+                {stats.userCount}
+              </div>
             </div>
           </div>
-        </div>
 
-        <div
-          className="card"
-          style={{
-            padding: "1.5rem",
-            display: "flex",
-            alignItems: "center",
-            gap: "1rem",
-          }}
-        >
           <div
+            className="card"
             style={{
-              padding: "1rem",
-              borderRadius: "50%",
-              backgroundColor: "#e0f2fe",
-              color: "#0284c7",
+              padding: "1.5rem",
+              display: "flex",
+              alignItems: "center",
+              gap: "1rem",
             }}
           >
-            <BookOpen size={24} />
-          </div>
-          <div>
-            <div style={{ fontSize: "0.9rem", color: "var(--muted)" }}>
-              Active Tracks
+            <div
+              style={{
+                padding: "1rem",
+                borderRadius: "50%",
+                backgroundColor: "#e0f2fe",
+                color: "#0284c7",
+              }}
+            >
+              <BookOpen size={24} />
             </div>
-            <div style={{ fontSize: "1.5rem", fontWeight: 500 }}>
-              {stats.trackCount}
+            <div>
+              <div style={{ fontSize: "0.9rem", color: "var(--muted)" }}>
+                Active Tracks
+              </div>
+              <div style={{ fontSize: "1.5rem", fontWeight: 500 }}>
+                {stats.trackCount}
+              </div>
             </div>
           </div>
-        </div>
 
-        <div
-          className="card"
-          style={{
-            padding: "1.5rem",
-            display: "flex",
-            alignItems: "center",
-            gap: "1rem",
-          }}
-        >
           <div
+            className="card"
             style={{
-              padding: "1rem",
-              borderRadius: "50%",
-              backgroundColor: "#dcfce7",
-              color: "#16a34a",
+              padding: "1.5rem",
+              display: "flex",
+              alignItems: "center",
+              gap: "1rem",
             }}
           >
-            <PlayCircle size={24} />
-          </div>
-          <div>
-            <div style={{ fontSize: "0.9rem", color: "var(--muted)" }}>
-              Total Lessons
+            <div
+              style={{
+                padding: "1rem",
+                borderRadius: "50%",
+                backgroundColor: "#dcfce7",
+                color: "#16a34a",
+              }}
+            >
+              <PlayCircle size={24} />
             </div>
-            <div style={{ fontSize: "1.5rem", fontWeight: 500 }}>
-              {stats.lessonCount}
+            <div>
+              <div style={{ fontSize: "0.9rem", color: "var(--muted)" }}>
+                Total Lessons
+              </div>
+              <div style={{ fontSize: "1.5rem", fontWeight: 500 }}>
+                {stats.lessonCount}
+              </div>
             </div>
           </div>
-        </div>
 
-        <div
-          className="card"
-          style={{
-            padding: "1.5rem",
-            display: "flex",
-            alignItems: "center",
-            gap: "1rem",
-          }}
-        >
           <div
+            className="card"
             style={{
-              padding: "1rem",
-              borderRadius: "50%",
-              backgroundColor: "#fef9c3",
-              color: "#ca8a04",
+              padding: "1.5rem",
+              display: "flex",
+              alignItems: "center",
+              gap: "1rem",
             }}
           >
-            <DollarSign size={24} />
-          </div>
-          <div>
-            <div style={{ fontSize: "0.9rem", color: "var(--muted)" }}>
-              Revenue
+            <div
+              style={{
+                padding: "1rem",
+                borderRadius: "50%",
+                backgroundColor: "#fef9c3",
+                color: "#ca8a04",
+              }}
+            >
+              <DollarSign size={24} />
             </div>
-            <div style={{ fontSize: "1.5rem", fontWeight: 500 }}>$0.00</div>
+            <div>
+              <div style={{ fontSize: "0.9rem", color: "var(--muted)" }}>
+                Revenue
+              </div>
+              <div style={{ fontSize: "1.5rem", fontWeight: 500 }}>$0.00</div>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <div
         className="card"

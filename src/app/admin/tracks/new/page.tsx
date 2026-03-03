@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, Save, Loader2 } from "lucide-react";
+import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 
 export default function NewTrackPage() {
   const router = useRouter();
@@ -43,19 +44,14 @@ export default function NewTrackPage() {
   return (
     <div style={{ maxWidth: "800px", margin: "0 auto" }}>
       <div style={{ marginBottom: "2rem" }}>
-        <Link
-          href="/admin/tracks"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            color: "var(--muted)",
-            marginBottom: "1rem",
-            fontSize: "0.9rem",
-          }}
-        >
-          <ChevronLeft size={16} /> Back to Tracks
-        </Link>
+        <BreadcrumbNav
+          items={[
+            { label: "Admin Dashboard", href: "/admin" },
+            { label: "Tracks", href: "/admin/tracks" },
+            { label: "New Track" },
+          ]}
+          className="mb-6"
+        />
         <h1 style={{ fontSize: "2rem", fontWeight: 500 }}>Create New Track</h1>
       </div>
 
@@ -95,8 +91,7 @@ export default function NewTrackPage() {
               name="title"
               required
               placeholder="e.g. Frontend Development Mastery"
-              className="input"
-              style={{ width: "100%" }}
+              className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             />
           </div>
 
@@ -116,9 +111,8 @@ export default function NewTrackPage() {
               name="description"
               required
               placeholder="A brief overview of what students will learn..."
-              className="input"
+              className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               style={{
-                width: "100%",
                 minHeight: "120px",
                 fontFamily: "inherit",
               }}
@@ -133,15 +127,15 @@ export default function NewTrackPage() {
               marginTop: "1rem",
             }}
           >
-            <Link href="/admin/tracks" className="btn btn-outline">
+            <Link href="/admin/tracks" className="btn btn-outline rounded-full">
               Cancel
             </Link>
             <button
               type="submit"
-              className="btn btn-primary"
+              className="btn btn-primary rounded-full"
               disabled={isLoading}
               style={{
-                minWidth: "120px",
+                minWidth: "140px",
                 display: "flex",
                 justifyContent: "center",
               }}

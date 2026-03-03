@@ -7,6 +7,7 @@ import Link from "next/link";
 import { ArrowLeft, Calendar, Diameter } from "lucide-react";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 import { SessionRequestForm } from "@/components/SessionRequestForm";
+import { ErrorState } from "@/components/ErrorState";
 
 async function getTutors() {
   return await prisma.user.findMany({
@@ -29,12 +30,23 @@ export default async function RequestSessionPage() {
     redirect("/auth/signin");
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { subscriptionTier: true, credits1on1: true },
-  });
+  let user = null;
+  let tutors = [];
+  try {
+    user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { subscriptionTier: true, credits1on1: true },
+    });
+    tutors = await getTutors();
+  } catch (error) {
+    console.error("Error fetching request data:", error);
+    return (
+      <div className="container py-10">
+        <ErrorState message="We couldn't load the request form. Please try again later." />
+      </div>
+    );
+  }
 
-  const tutors = await getTutors();
   if (!user) redirect("/auth/signin");
 
   if (user.credits1on1 < 1) {

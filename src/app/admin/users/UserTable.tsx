@@ -102,8 +102,11 @@ export default function UserTable({ users }: UserTableProps) {
   };
 
   return (
-    <div className="card" style={{ overflow: "hidden", padding: 0 }}>
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+    <div
+      className="card overflow-x-auto"
+      style={{ padding: 0, border: "none" }}
+    >
+      <table style={{ minWidth: "900px", borderCollapse: "collapse" }}>
         <thead>
           <tr
             style={{

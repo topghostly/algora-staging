@@ -28,7 +28,7 @@ export function SessionRequestForm({ tutors }: SessionRequestFormProps) {
   const router = useRouter();
 
   const filteredTutors = useMemo(() => {
-    if (!selectedSpecialty) return tutors;
+    // if (!selectedSpecialty) return tutors;
     setSelectedTutorId("");
     return tutors.filter((tutor) =>
       tutor.specialties.includes(selectedSpecialty),
@@ -55,7 +55,7 @@ export function SessionRequestForm({ tutors }: SessionRequestFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-6 space-y-6">
+    <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-6">
       <div className="space-y-2">
         <label className="text-sm font-semibold" htmlFor="specialty">
           Select Specialty
@@ -66,7 +66,7 @@ export function SessionRequestForm({ tutors }: SessionRequestFormProps) {
           onChange={(e) => setSelectedSpecialty(e.target.value)}
           className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <option value="">All Specialties</option>
+          <option value="">Select Specialty</option>
           {SPECIALTY_OPTIONS.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}

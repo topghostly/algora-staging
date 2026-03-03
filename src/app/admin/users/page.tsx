@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { ErrorState } from "@/components/ErrorState";
+import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 
 export const dynamic = "force-dynamic";
 
@@ -29,6 +30,13 @@ export default async function AdminUsersPage() {
 
   return (
     <div className="p-6">
+      <BreadcrumbNav
+        items={[
+          { label: "Admin Dashboard", href: "/admin" },
+          { label: "Users" },
+        ]}
+        className="mb-6"
+      />
       <div
         style={{
           display: "flex",

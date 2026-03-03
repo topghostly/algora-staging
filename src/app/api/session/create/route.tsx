@@ -268,7 +268,14 @@ export async function POST(req: Request) {
     revalidatePath("/tutor/sessions");
 
     return NextResponse.json(
-      { session: newSession, accessToken },
+      {
+        success: true,
+        session: {
+          id: newSession.id,
+          title: newSession.title,
+          meetingLink: newSession.meetingLink,
+        },
+      },
       { status: 201 },
     );
   } catch (error: any) {

@@ -60,13 +60,7 @@ export default function PricingCard({
     // console.log("Payment successful", reference);
     try {
       if (tier) {
-        await updateSubscription(tier, reference.reference, creditsToAdd, {
-          reference: reference.reference,
-          paystackTransactionId: reference.transaction,
-          amount: amount || 0,
-          planCode: planCode,
-          status: reference.status,
-        });
+        await updateSubscription(reference.reference);
         toast.success(
           `Payment successful! Your subscription has been updated to ${title}.`,
           {

@@ -8,7 +8,7 @@ import React from "react";
 
 export async function PATCH(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -29,6 +29,7 @@ export async function PATCH(
       const updatedUser = await prisma.user.update({
         where: { id },
         data: { role },
+        select: { id: true, email: true, role: true, name: true },
       });
 
       return NextResponse.json(updatedUser);
@@ -46,6 +47,7 @@ export async function PATCH(
       const updatedUser = await prisma.user.update({
         where: { id },
         data: { disabled: true },
+        select: { id: true, email: true, disabled: true },
       });
 
       // Send email notification
@@ -64,6 +66,7 @@ export async function PATCH(
       const updatedUser = await prisma.user.update({
         where: { id },
         data: { suspended: true },
+        select: { id: true, email: true, suspended: true },
       });
       return NextResponse.json(updatedUser);
     }
@@ -72,6 +75,7 @@ export async function PATCH(
       const updatedUser = await prisma.user.update({
         where: { id },
         data: { suspended: false },
+        select: { id: true, email: true, suspended: true },
       });
       return NextResponse.json(updatedUser);
     }
@@ -81,7 +85,7 @@ export async function PATCH(
     console.error("Error updating user:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

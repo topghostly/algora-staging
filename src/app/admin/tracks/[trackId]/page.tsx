@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import TrackEditor from "@/components/admin/TrackEditor";
 import { ErrorState } from "@/components/ErrorState";
+import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 
 export const dynamic = "force-dynamic";
 
@@ -42,20 +43,15 @@ export default async function AdminTrackPage({ params }: AdminTrackPageProps) {
     return (
       <div>
         <div style={{ marginBottom: "2rem" }}>
-          <Link
-            href="/admin/tracks"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              color: "var(--muted)",
-              marginBottom: "1rem",
-              fontSize: "0.9rem",
-            }}
-          >
-            <ChevronLeft size={16} /> Back to Tracks
-          </Link>
-          <h1 style={{ fontSize: "2rem", fontWeight: 500 }}>Edit Track</h1>
+          <BreadcrumbNav
+            items={[
+              { label: "Admin Dashboard", href: "/admin" },
+              { label: "Tracks", href: "/admin/tracks" },
+              { label: "Edit Track" },
+            ]}
+            className="mb-6"
+          />
+          <h2>Edit Track</h2>
         </div>
         <div className="card p-12">
           <ErrorState message="We couldn't load the track data for editing. Please try again." />
@@ -71,20 +67,15 @@ export default async function AdminTrackPage({ params }: AdminTrackPageProps) {
   return (
     <div>
       <div style={{ marginBottom: "2rem" }}>
-        <Link
-          href="/admin/tracks"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            color: "var(--muted)",
-            marginBottom: "1rem",
-            fontSize: "0.9rem",
-          }}
-        >
-          <ChevronLeft size={16} /> Back to Tracks
-        </Link>
-        <h1 style={{ fontSize: "2rem", fontWeight: 500 }}>Edit Track</h1>
+        <BreadcrumbNav
+          items={[
+            { label: "Admin Dashboard", href: "/admin" },
+            { label: "Tracks", href: "/admin/tracks" },
+            { label: "Edit Track" },
+          ]}
+          className="mb-6"
+        />
+        <h2>Edit Track</h2>
       </div>
 
       <TrackEditor track={track as any} />

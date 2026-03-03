@@ -53,7 +53,7 @@ export default async function TutorSessionsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       <BreadcrumbNav
         items={[
           { label: "Tutor Dashboard", href: "/tutor" },
@@ -67,10 +67,13 @@ export default async function TutorSessionsPage() {
           <Link
             href="/tutor/request"
             className="btn btn-outline flex items-center gap-2 relative"
+            style={{
+              borderRadius: "200px",
+            }}
           >
             <User size={16} strokeWidth={3} />
             1-on-1 Request
-            <div className="absolute -top-2 -right-2">
+            <div className="absolute -top-2 right-0">
               {pendingRequestsCount > 0 && (
                 <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[12px] font-bold text-primary-foreground">
                   {pendingRequestsCount}
@@ -81,6 +84,9 @@ export default async function TutorSessionsPage() {
           <Link
             href="/tutor/sessions/new"
             className="btn btn-primary flex items-center gap-2"
+            style={{
+              borderRadius: "200px",
+            }}
           >
             <Plus size={16} strokeWidth={3} />
             Create Session
@@ -137,7 +143,14 @@ export default async function TutorSessionsPage() {
                     Booked
                   </p>
                   <div className="flex gap-2 mt-2">
-                    <button className="btn btn-outline btn-sm">Edit</button>
+                    <button
+                      className="btn btn-outline btn-sm"
+                      style={{
+                        borderRadius: "8px",
+                      }}
+                    >
+                      Edit
+                    </button>
                     <SessionDelete id={s.id} />
                   </div>
                 </div>
