@@ -84,7 +84,7 @@ export default function Navbar() {
                   <Link
                     href="/dashboard"
                     style={{ fontWeight: 500, color: "var(--muted)" }}
-                    className="btn-outline btn "
+                    className="btn-outline btn rounded-full"
                   >
                     Dashboard
                   </Link>

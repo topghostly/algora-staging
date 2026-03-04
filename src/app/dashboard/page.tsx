@@ -98,8 +98,8 @@ export default function Dashboard() {
             <h3>My Learning</h3>
             <Link
               href="/tracks"
-              className="btn btn-outline"
-              style={{ fontSize: "0.9rem", padding: "0.5rem 1rem" }}
+              className="btn btn-outline rounded-full"
+              // style={{ fontSize: "0.9rem", padding: "0.5rem 1rem" }}
             >
               Browse All Tracks
             </Link>
