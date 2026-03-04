@@ -223,7 +223,7 @@ export default async function TrackOverviewPage({
                 </div>
                 <Link
                   href={firstLessonUrl}
-                  className="btn btn-primary"
+                  className="btn btn-primary rounded-full"
                   style={{
                     width: "100%",
                     justifyContent: "center",
@@ -329,7 +329,7 @@ export default async function TrackOverviewPage({
                       {isEnrolled && (
                         <Link
                           href={`/tracks/${track.id}/lessons/${lesson.id}`}
-                          className="btn btn-outline"
+                          className="btn btn-outline rounded-lg"
                           style={{
                             fontSize: "0.8rem",
                             padding: "0.25rem 0.75rem",

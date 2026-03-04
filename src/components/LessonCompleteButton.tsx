@@ -43,7 +43,7 @@ export default function LessonCompleteButton({
     <button
       // onClick={toggleCompletion}
       disabled={loading}
-      className={`btn btn-outline`}
+      className={`btn btn-outline rounded-lg`}
       style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
     >
       {loading ? (
