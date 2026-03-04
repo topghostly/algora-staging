@@ -30,7 +30,7 @@ export default function LessonLayout({
   }, [currentLesson.id]);
 
   return (
-    <div className="flex h-[calc(100vh-64px)] overflow-hidden relative">
+    <div className="flex h-[calc(100vh-68px)] overflow-hidden relative">
       {/* Mobile Sidebar Toggle */}
       <button
         onClick={() => setIsSidebarOpen(true)}
@@ -122,7 +122,7 @@ export default function LessonLayout({
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto relative bg-background">
+      <main className="flex-1 overflow-y-auto scrollbar-hide relative bg-background">
         {children}
       </main>
     </div>

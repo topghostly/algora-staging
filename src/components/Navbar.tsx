@@ -42,7 +42,7 @@ export default function Navbar() {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          height: "70px",
+          height: "64px",
           paddingLeft: "clamp(1rem, 5vw, 2rem)",
           paddingRight: "clamp(1rem, 5vw, 2rem)",
         }}

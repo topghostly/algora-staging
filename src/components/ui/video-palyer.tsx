@@ -24,7 +24,6 @@ export default function VideoPlayer({
   const router = useRouter();
 
   const updateProgesss = async () => {
-    console.log("Starting progess update");
     try {
       const res = await fetch("/api/progress", {
         method: "POST",

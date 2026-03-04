@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { deleteFromS3 } from "@/lib/s3";
 
 export async function GET(
   req: Request,
@@ -80,6 +81,30 @@ export async function DELETE(
     }
 
     const { trackId } = await params;
+
+    // Cleanup all S3 assets for lessons in this track
+    const trackWithLessons = await prisma.track.findUnique({
+      where: { id: trackId },
+      include: {
+        modules: {
+          include: {
+            lessons: {
+              select: { contentUrl: true, type: true },
+            },
+          },
+        },
+      },
+    });
+
+    if (trackWithLessons) {
+      for (const module of trackWithLessons.modules) {
+        for (const lesson of module.lessons) {
+          if (lesson.contentUrl && lesson.type === "TEXT") {
+            await deleteFromS3(lesson.contentUrl);
+          }
+        }
+      }
+    }
 
     await prisma.track.delete({
       where: { id: trackId },

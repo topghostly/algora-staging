@@ -29,7 +29,7 @@ export default async function AdminDashboardPage() {
 
   return (
     <div>
-      <BreadcrumbNav items={[{ label: "Admin Dashboard" }]} className="mb-6" />
+      {/* <BreadcrumbNav items={[{ label: "Admin Dashboard" }]} className="mb-6" /> */}
       <h1 style={{ fontSize: "2rem", fontWeight: 500, marginBottom: "2rem" }}>
         Dashboard
       </h1>

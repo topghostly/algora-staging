@@ -44,6 +44,7 @@ interface Track {
 export default function TrackEditor({ track }: { track: Track }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   // Form State
   const [title, setTitle] = useState(track.title);
@@ -182,7 +183,8 @@ export default function TrackEditor({ track }: { track: Track }) {
       if (lesson.type === "VIDEO") {
         body.contentUrl = editLessonContent;
       } else if (lesson.type === "TEXT") {
-        body.textContent = editLessonContent;
+        body.contentUrl = editLessonContent;
+        // We keep textContent as is in case they want to revert or keep it
       }
 
       const res = await fetch(`/api/lessons/${lesson.id}`, {
@@ -201,10 +203,61 @@ export default function TrackEditor({ track }: { track: Track }) {
     }
   }
 
+  async function handleFileUpload(
+    e: React.ChangeEvent<HTMLInputElement>,
+    lesson: Lesson,
+  ) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== "application/pdf") {
+      toast.error("Please upload a PDF file");
+      return;
+    }
+
+    if (file.size > 3 * 1024 * 1024) {
+      toast.error("File is too large (max 3MB)");
+      return;
+    }
+
+    setIsUploading(true);
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = async () => {
+      try {
+        const res = await fetch("/api/admin/lessons/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            file: reader.result,
+            contentType: file.type,
+            fileName: file.name,
+          }),
+        });
+
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.message || "Upload failed");
+        }
+
+        const data = await res.json();
+        setEditLessonContent(data.url);
+        toast.success(
+          "PDF uploaded successfully! Click Save Content to persist.",
+        );
+      } catch (error: any) {
+        console.error(error);
+        toast.error("Upload failed: " + error.message);
+      } finally {
+        setIsUploading(false);
+      }
+    };
+  }
+
   function startEditingLesson(lesson: Lesson) {
     setEditingLessonId(lesson.id);
     setEditLessonContent(
-      lesson.type === "VIDEO"
+      lesson.type === "VIDEO" || lesson.type === "TEXT"
         ? lesson.contentUrl || ""
         : lesson.textContent || "",
     );
@@ -431,12 +484,15 @@ export default function TrackEditor({ track }: { track: Track }) {
                         backgroundColor: "var(--background)",
                       }}
                     >
-                      <div style={{ marginBottom: "1rem" }}>
+                      <div
+                        style={{ marginBottom: "1rem" }}
+                        className="flex flex-col gap-2"
+                      >
                         <label className="font-semibold">
                           {lesson.type === "VIDEO"
                             ? "Video URL (YouTube)"
                             : lesson.type === "TEXT"
-                              ? "Lesson Content (Markdown)"
+                              ? "Upload Lesson PDF"
                               : "Quiz Editor"}
                         </label>
                         {lesson.type === "QUIZ" ? (
@@ -451,19 +507,41 @@ export default function TrackEditor({ track }: { track: Track }) {
                             placeholder="https://youtube.com/..."
                           />
                         ) : (
-                          <textarea
-                            className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                            style={{
-                              width: "100%",
-                              minHeight: "150px",
-                              fontFamily: "monospace",
-                            }}
-                            value={editLessonContent}
-                            onChange={(e) =>
-                              setEditLessonContent(e.target.value)
-                            }
-                            placeholder="# Lesson Title..."
-                          />
+                          <div className="flex flex-col gap-4">
+                            <div className="flex flex-col gap-3">
+                              <input
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => handleFileUpload(e, lesson)}
+                                disabled={isUploading}
+                                className="w-full h-fit px-1 py-1 bg-background rounded-lg text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-2 file:border-gray-300 file:text-sm file:font-semibold file:bg-transparent file:text-gray-600 hover:file:bg-gray-100"
+                              />
+                              {isUploading && (
+                                <p className="text-sm text-muted">
+                                  Uploading PDF...
+                                </p>
+                              )}
+                              {editLessonContent && (
+                                <div className="p-3 bg-muted-light rounded-lg border border-border flex items-center justify-between">
+                                  <span
+                                    className="text-sm truncate mr-2"
+                                    title={editLessonContent}
+                                  >
+                                    Currently attached:{" "}
+                                    {editLessonContent.split("/").pop()}
+                                  </span>
+                                  <a
+                                    href={editLessonContent}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="text-primary text-xs font-semibold hover:underline"
+                                  >
+                                    View PDF
+                                  </a>
+                                </div>
+                              )}
+                            </div>
+                          </div>
                         )}
                       </div>
                       <div

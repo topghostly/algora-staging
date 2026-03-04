@@ -46,7 +46,7 @@ export default async function AdminTracksPage() {
         <h1 style={{ fontSize: "2rem", fontWeight: 500 }}>Tracks</h1>
         <Link
           href="/admin/tracks/new"
-          className="btn btn-primary"
+          className="btn btn-primary rounded-full"
           style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
         >
           <Plus size={18} />
@@ -63,7 +63,10 @@ export default async function AdminTracksPage() {
           className="card overflow-x-auto"
           style={{ padding: 0, border: "none" }}
         >
-          <table style={{ minWidth: "800px", borderCollapse: "collapse" }}>
+          <table
+            style={{ minWidth: "800px", borderCollapse: "collapse" }}
+            className="w-full"
+          >
             <thead>
               <tr
                 style={{
@@ -192,16 +195,16 @@ export default async function AdminTracksPage() {
                         <Link
                           href={`/tracks/${track.id}`}
                           target="_blank"
-                          className="btn btn-outline"
-                          style={{ padding: "0.4rem", height: "auto" }}
+                          className="btn btn-outline rounded-lg"
+                          style={{ padding: "0.6rem", height: "auto" }}
                           title="View Public Page"
                         >
                           <Eye size={16} />
                         </Link>
                         <Link
                           href={`/admin/tracks/${track.id}`}
-                          className="btn btn-outline"
-                          style={{ padding: "0.4rem", height: "auto" }}
+                          className="btn btn-outline rounded-lg"
+                          style={{ padding: "0.6rem", height: "auto" }}
                           title="Edit Content"
                         >
                           <Edit size={16} />

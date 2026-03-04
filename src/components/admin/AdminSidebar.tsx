@@ -63,12 +63,9 @@ export default function AdminSidebar() {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-[250px] bg-background border-r border-border transition-transform duration-300 transform lg:relative lg:translate-x-0 lg:z-auto flex flex-col h-screen ${
+        className={`fixed inset-y-0 left-0 z-50 w-[250px] p-3 bg-background border-r border-border transition-transform duration-300 transform lg:relative lg:translate-x-0 lg:z-auto flex flex-col h-screen ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
-        style={{
-          padding: "1.5rem",
-        }}
       >
         <div
           style={{

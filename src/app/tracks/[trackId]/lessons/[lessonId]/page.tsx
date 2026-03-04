@@ -14,10 +14,9 @@ import {
 } from "lucide-react";
 import LessonCompleteButton from "@/components/LessonCompleteButton";
 import { ErrorState } from "@/components/ErrorState";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import QuizViewer from "@/components/QuizViewer";
 import LessonLayout from "@/components/LessonLayout";
+import TextLessonContent from "@/components/TextLessonContent";
+import QuizViewer from "@/components/QuizViewer";
 
 export const dynamic = "force-dynamic";
 
@@ -196,12 +195,14 @@ export default async function LessonPage({ params }: LessonPageProps) {
                 </div>
               )}
 
-              {currentLesson.type === "TEXT" && currentLesson.textContent && (
-                <div className="prose prose-neutral dark:prose-invert max-w-none">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {currentLesson.textContent}
-                  </ReactMarkdown>
-                </div>
+              {currentLesson.type === "TEXT" && (
+                <TextLessonContent
+                  lessonId={currentLesson.id}
+                  isCompleted={isCompleted}
+                  contentUrl={currentLesson.contentUrl}
+                  textContent={currentLesson.textContent}
+                  title={currentLesson.title}
+                />
               )}
 
               {currentLesson.type === "QUIZ" && (
@@ -227,7 +228,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
           {prevLesson ? (
             <Link
               href={`/tracks/${track.id}/lessons/${prevLesson.id}`}
-              className="btn btn-outline flex items-center text-xs gap-2"
+              className="btn btn-outline flex items-center text-xs gap-2 rounded-full"
             >
               <ChevronLeft size={16} />
               <span className="hidden sm:inline text-xs">Previous:</span>{" "}
@@ -240,7 +241,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
           {nextLesson ? (
             <Link
               href={`/tracks/${track.id}/lessons/${nextLesson.id}`}
-              className="btn btn-primary flex items-center text-xs gap-2"
+              className="btn btn-primary flex items-center text-xs gap-2 rounded-full"
             >
               <span className="hidden sm:inline text-xs">Next:</span>{" "}
               {nextLesson.title}
