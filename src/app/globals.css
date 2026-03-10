@@ -55,7 +55,7 @@
   --radius-lg: 12px;
   --radius-sm: 4px;
 
-  --container-width: 1300px;
+  --container-width: 1100px;
   --header-height: 64px;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -546,7 +546,7 @@ uuuuuu
 
 @layer base {
   h1 {
-    font-size: clamp(2rem, 5vw, 3.4rem);
+    font-size: clamp(1.875rem, 4.5vw, 3rem);
     font-weight: 500;
     line-height: 1.1;
     letter-spacing: -0.02em;
@@ -555,7 +555,7 @@ uuuuuu
   }
 
   h2 {
-    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    font-size: clamp(1.625rem, 3.5vw, 2.5rem);
     font-weight: 500;
     line-height: 1.2;
     letter-spacing: -0.015em;
@@ -564,7 +564,7 @@ uuuuuu
   }
 
   h3 {
-    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-size: clamp(1.375rem, 2.5vw, 1.75rem);
     font-weight: 500;
     line-height: 1.3;
     letter-spacing: -0.01em;
@@ -573,7 +573,7 @@ uuuuuu
   }
 
   h4 {
-    font-size: clamp(1.25rem, 2vw, 1.5rem);
+    font-size: clamp(1.125rem, 2vw, 1.375rem);
     font-weight: 500;
     line-height: 1.4;
     margin-bottom: 0.5em;
@@ -581,7 +581,7 @@ uuuuuu
   }
 
   h5 {
-    font-size: clamp(1.1rem, 1.5vw, 1.25rem);
+    font-size: clamp(1rem, 1.5vw, 1.125rem);
     font-weight: 500;
     line-height: 1.5;
     margin-bottom: 0.5em;
@@ -589,7 +589,7 @@ uuuuuu
   }
 
   p {
-    font-size: clamp(0.95rem, 1vw, 1.05rem);
+    font-size: clamp(0.88rem, 1vw, 0.96rem);
     line-height: 1.625;
     color: var(--foreground);
     margin-bottom: 1.25em;
@@ -609,6 +609,10 @@ uuuuuu
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+img{
+  pointer-events: none;
 }
 
 .dark {
