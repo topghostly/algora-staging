@@ -32,7 +32,7 @@ async function getTrackData(trackId: string, userId?: string) {
         orderBy: { order: "asc" },
         include: {
           lessons: {
-            orderBy: { order: "asc" },
+            orderBy: { createdAt: "asc" },
             include: {
               progress: {
                 where: { userId: userId || "no-user" },
@@ -223,12 +223,7 @@ export default async function TrackOverviewPage({
                 </div>
                 <Link
                   href={firstLessonUrl}
-                  className="btn btn-primary rounded-full"
-                  style={{
-                    width: "100%",
-                    justifyContent: "center",
-                    textAlign: "center",
-                  }}
+                  className="btn btn-primary rounded-full w-full justify-center text-center"
                 >
                   {progressPercentage > 0
                     ? "Continue Learning"

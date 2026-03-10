@@ -52,7 +52,7 @@ export default function LessonLayout({
       <aside
         className={`
           fixed inset-y-0 left-0 z-50 w-[300px] bg-background border-r border-border transition-transform duration-300 transform
-          lg:relative lg:translate-x-0 lg:z-auto py-16
+          lg:relative lg:translate-x-0 lg:z-auto py-3 
           ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
@@ -76,15 +76,21 @@ export default function LessonLayout({
                   {module.title}
                 </div>
                 <div>
-                  {module.lessons.map((lesson: any) => {
-                    const isActive = lesson.id === currentLesson.id;
-                    const isLessonCompleted = lesson.progress.length > 0;
+                  {module.lessons
+                    .sort(
+                      (a: any, b: any) =>
+                        new Date(a.createdAt).getTime() -
+                        new Date(b.createdAt).getTime(),
+                    )
+                    .map((lesson: any) => {
+                      const isActive = lesson.id === currentLesson.id;
+                      const isLessonCompleted = lesson.progress.length > 0;
 
-                    return (
-                      <Link
-                        key={lesson.id}
-                        href={`/tracks/${track.id}/lessons/${lesson.id}`}
-                        className={`
+                      return (
+                        <Link
+                          key={lesson.id}
+                          href={`/tracks/${track.id}/lessons/${lesson.id}`}
+                          className={`
                           flex items-center gap-3 px-6 py-3 text-sm transition-all
                           border-l-4 
                           ${
@@ -93,27 +99,30 @@ export default function LessonLayout({
                               : "border-transparent text-foreground hover:bg-muted/50"
                           }
                         `}
-                      >
-                        {isLessonCompleted ? (
-                          <CheckCircle size={16} className="text-primary" />
-                        ) : (
-                          <Circle size={16} className="text-muted-foreground" />
-                        )}
-                        <span className="flex-1">{lesson.title}</span>
-                        {lesson.type === "VIDEO" ? (
-                          <PlayCircle
-                            size={14}
-                            className="text-muted-foreground"
-                          />
-                        ) : (
-                          <FileText
-                            size={14}
-                            className="text-muted-foreground"
-                          />
-                        )}
-                      </Link>
-                    );
-                  })}
+                        >
+                          {isLessonCompleted ? (
+                            <CheckCircle size={16} className="text-primary" />
+                          ) : (
+                            <Circle
+                              size={16}
+                              className="text-muted-foreground"
+                            />
+                          )}
+                          <span className="flex-1">{lesson.title}</span>
+                          {lesson.type === "VIDEO" ? (
+                            <PlayCircle
+                              size={14}
+                              className="text-muted-foreground"
+                            />
+                          ) : (
+                            <FileText
+                              size={14}
+                              className="text-muted-foreground"
+                            />
+                          )}
+                        </Link>
+                      );
+                    })}
                 </div>
               </div>
             ))}
