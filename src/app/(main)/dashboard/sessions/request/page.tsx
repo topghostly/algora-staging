@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { createSessionRequest } from "@/app/actions/request";
+import { createSessionRequest } from "@/app/(main)/actions/request";
 import Link from "next/link";
 import { ArrowLeft, Calendar, Diameter } from "lucide-react";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";

@@ -1,0 +1,7 @@
+@tailwind utilities;
+
+@plugin "tailwindcss-animate";
+
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));

@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { bookSession } from "@/app/actions/booking";
+import { bookSession } from "@/app/(main)/actions/booking";
 import Link from "next/link";
 import { Calendar, CircleAlert, Clock, User } from "lucide-react";
 import { toast } from "sonner";

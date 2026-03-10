@@ -3,8 +3,8 @@
 import { useState, useMemo, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { createSessionRequest } from "@/app/actions/request";
-import { SPECIALTY_OPTIONS } from "@/app/tutor/onboarding/page";
+import { createSessionRequest } from "@/app/(main)/actions/request";
+import { SPECIALTY_OPTIONS } from "@/app/(main)/tutor/onboarding/page";
 import { Badge } from "@/components/ui/badge";
 import { User, CheckCircle2 } from "lucide-react";
 

@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import {
   updateSubscription,
   recordTransaction,
-} from "@/app/actions/subscription";
+} from "@/app/(main)/actions/subscription";
 import { SubscriptionTier } from "@prisma/client";
 import { toast } from "sonner";
 import { revalidatePath } from "next/cache";

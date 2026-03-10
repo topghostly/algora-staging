@@ -64,12 +64,15 @@ export default function Navbar() {
             </div>
           </Link>
           {session && (
-            <div>
+            <div className="mr-4">
               <Badge variant="outline" className="rounded-full">
                 {session?.user.role}
               </Badge>
             </div>
           )}
+          <Link href={"/playground"} className="glowing-button">
+            Playground
+          </Link>
         </div>
 
         {/* Desktop Navigation */}

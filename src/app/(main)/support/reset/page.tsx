@@ -1,6 +1,6 @@
 "use client";
 
-import { resetPassword } from "@/app/actions/support";
+import { resetPassword } from "@/app/(main)/actions/support";
 import { useState } from "react";
 
 export default function ResetPasswordPage() {
