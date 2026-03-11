@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation";
 import { ConfirmationDialog } from "./ui/alert-dialog";
 
 import { Badge } from "@/components/ui/badge";
+import GlowingButton from "./GlowingButton";
 
 export default function Navbar() {
   const { data: session } = useSession();
@@ -64,15 +65,13 @@ export default function Navbar() {
             </div>
           </Link>
           {session && (
-            <div className="mr-4">
+            <div className="mr-2">
               <Badge variant="outline" className="rounded-full">
                 {session?.user.role}
               </Badge>
             </div>
           )}
-          <Link href={"/playground"} className="glowing-button">
-            Playground
-          </Link>
+          <GlowingButton href={"/playground"}>Playground</GlowingButton>
         </div>
 
         {/* Desktop Navigation */}
