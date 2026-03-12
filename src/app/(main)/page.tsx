@@ -53,7 +53,7 @@ export default function Home() {
       <main className="py-6">
         {/* Hero Section */}
         <section className="lg:py-15 py-10">
-          <div className="container flex flex-col lg:grid lg:grid-cols-[1fr_1.1fr] gap-10">
+          <div className="container flex flex-col lg:grid lg:grid-cols-[1fr_1.2fr] gap-10">
             {/* Hero Text */}
             <div className="flex flex-col justify-center items-center lg:items-start ">
               <div className="w-fit md:text-base px-3 py-1 bg-primary/10 font-semibold rounded-full mb-6">
@@ -67,7 +67,7 @@ export default function Home() {
                 </p>
               </div>
               <h1 className="mb-6 max-w-[800px] text-center lg:text-left">
-                Master Tech Skills in Data and AI with Structured Mentorship
+                Master Data and AI Skills with Structured Mentorship
               </h1>
               <p className="mb-6 max-w-[550px] text-muted-foreground text-center lg:text-left">
                 Stop wasting time on scattered tutorials. Get a structured
