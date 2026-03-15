@@ -55,7 +55,7 @@ export default function PlaygroundNav() {
           src={
             session.user.image
               ? session.user.image
-              : "https://avatar.iran.liara.run/public/40"
+              : "/images/default_profile.png"
           }
           alt=""
           width={30}
