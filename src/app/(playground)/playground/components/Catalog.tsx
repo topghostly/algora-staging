@@ -260,7 +260,7 @@ export function CourseCatalog({
     <div
       style={{
         minHeight: "100vh",
-        background: `radial-gradient(ellipse at 15% 0%, #0a1628 0%, ${T.ink} 65%)`,
+        // background: `radial-gradient(ellipse at 15% 0%, #0a1628 0%, ${T.ink} 65%)`,
         color: "#f1f5f9",
         fontFamily: "'Onest',sans-serif",
       }}
@@ -276,7 +276,7 @@ export function CourseCatalog({
         }}
       >
         {/* teal glow behind hero */}
-        <div
+        {/* <div
           style={{
             position: "absolute",
             top: -80,
@@ -287,7 +287,7 @@ export function CourseCatalog({
             background: `radial-gradient(ellipse, ${T.teal}18 0%, transparent 70%)`,
             pointerEvents: "none",
           }}
-        />
+        /> */}
         <div
           style={{
             display: "inline-flex",

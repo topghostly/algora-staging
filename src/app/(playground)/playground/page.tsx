@@ -65,7 +65,7 @@ export default function PlaygroundPage() {
         <div
           style={{
             minHeight: "100vh",
-            background: `radial-gradient(ellipse at 10% 0%, #0c1525 0%, ${T.ink} 65%)`,
+            // background: `radial-gradient(ellipse at 10% 0%, #0c1525 0%, ${T.ink} 65%)`,
             color: "#f1f5f9",
             fontFamily: "'Onest',sans-serif",
             display: "flex",
@@ -77,11 +77,11 @@ export default function PlaygroundPage() {
           <div
             style={{
               padding: "12px 24px",
-              borderBottom: "1px solid rgba(255,255,255,0.05)",
+              // borderBottom: "1px solid rgba(255,255,255,0.05)",
               display: "flex",
               alignItems: "center",
               gap: 12,
-              background: "rgba(0,0,0,0.3)",
+              // background: "rgba(0,0,0,0.3)",
               backdropFilter: "blur(12px)",
               position: "sticky",
               top: 0,

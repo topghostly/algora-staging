@@ -71,7 +71,6 @@ export default function Navbar() {
               </Badge>
             </div>
           )}
-          <GlowingButton href={"/playground"}>Playground</GlowingButton>
         </div>
 
         {/* Desktop Navigation */}
@@ -80,17 +79,11 @@ export default function Navbar() {
           style={{ display: "flex", alignItems: "center", gap: "2rem" }}
         >
           {session ? (
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               {session.user.role === "LEARNER" && (
-                <div className="hidden sm:block">
-                  <Link
-                    href="/dashboard"
-                    style={{ fontWeight: 500, color: "var(--muted)" }}
-                    className="btn-outline btn rounded-full"
-                  >
-                    Dashboard
-                  </Link>
-                </div>
+                <GlowingButton href={"/playground"} initialAnimation={true}>
+                  Playground
+                </GlowingButton>
               )}
 
               <div>
@@ -101,8 +94,8 @@ export default function Navbar() {
                       : "https://avatar.iran.liara.run/public/40"
                   }
                   alt=""
-                  width={40}
-                  height={40}
+                  width={35}
+                  height={35}
                   className="rounded-full"
                 />
               </div>
@@ -113,8 +106,8 @@ export default function Navbar() {
                 trigger={
                   <div
                     style={{
-                      width: "45px",
-                      height: "40px",
+                      width: "40px",
+                      height: "35px",
                       borderRadius: "4px",
                       overflow: "hidden",
                       position: "relative",
@@ -153,14 +146,14 @@ export default function Navbar() {
 
                   {session.user.role === "LEARNER" && (
                     <>
-                      <div className="block sm:hidden">
-                        <Link href="/dashboard">
-                          <div className="dropdown-item">
-                            <LayoutDashboard size={16} />
-                            <span>Dashboard</span>
-                          </div>
-                        </Link>
-                      </div>
+                      {/* <div className="block sm:hidden"> */}
+                      <Link href="/dashboard">
+                        <div className="dropdown-item">
+                          <LayoutDashboard size={16} />
+                          <span>Dashboard</span>
+                        </div>
+                      </Link>
+                      {/* </div> */}
                       <Link href="/tracks">
                         <div className="dropdown-item">
                           <Layers size={16} />

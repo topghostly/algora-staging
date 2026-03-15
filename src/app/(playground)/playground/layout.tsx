@@ -3,6 +3,8 @@ import localFont from "next/font/local";
 import "./global.css";
 import { Providers } from "@/components/Providers";
 import { Toaster } from "@/components/ui/Toaster";
+import PlaygroundNav from "./components/playground-nav";
+import { T } from "./components/constants";
 
 // const outfit = Nata_Sans({ subsets: ["latin"] });
 
@@ -69,7 +71,13 @@ export default function RootLayout({
       >
         {/* <body className={euclid.className} suppressHydrationWarning> */}
         <Providers>
-          <div className="flex flex-col min-h-screen">
+          <div
+            className="flex flex-col min-h-screen"
+            style={{
+              background: `radial-gradient(ellipse at 15% 0%, #0a1628 0%, ${T.ink} 65%)`,
+            }}
+          >
+            <PlaygroundNav />
             <main className="grow ">{children}</main>
             <Toaster />
           </div>

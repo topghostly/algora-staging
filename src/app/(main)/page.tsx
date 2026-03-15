@@ -2,6 +2,7 @@ import Link from "next/link";
 import { LibraryBig, ListChecks } from "lucide-react";
 import Footer from "@/components/Footer";
 import { InvertedCornerImage } from "@/components/ui/inverted-border";
+import GlowingButton from "@/components/GlowingButton";
 
 export default function Home() {
   const learnEverything = [
