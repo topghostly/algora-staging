@@ -10,7 +10,7 @@ const Footer = () => {
           {/* Logo Section */}
           <Link href="/" className="inline-block">
             <Image
-              src="/logo.png"
+              src="/logo-n.png"
               alt="Algora Logo"
               width={50}
               height={50}

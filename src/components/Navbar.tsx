@@ -57,7 +57,7 @@ export default function Navbar() {
               style={{ position: "relative", width: "50px", height: "50px" }}
             >
               <Image
-                src="/logo.png"
+                src="/logo-n.png"
                 alt="Algora Logo"
                 fill
                 style={{ objectFit: "contain" }}
@@ -91,7 +91,7 @@ export default function Navbar() {
                   src={
                     session.user.image
                       ? session.user.image
-                      : "https://avatar.iran.liara.run/public/40"
+                      : "/images/default_profile.png"
                   }
                   alt=""
                   width={35}
