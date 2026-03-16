@@ -1,4 +1,4 @@
-import { Calendar, Clock } from "lucide-react";
+import { Calendar, CalendarCheck2, Clock } from "lucide-react";
 
 interface Booking {
   id: string;
@@ -19,7 +19,10 @@ interface BookingHistoryProps {
 export default function BookingHistory({ bookings }: BookingHistoryProps) {
   return (
     <div className="card p-6">
-      <h2 className="text-xl font-bold mb-4">Booking History</h2>
+      <div className="flex items-center gap-2 mb-4">
+        <CalendarCheck2 size={30} />
+        <h3 className="font-medium">Booking History</h3>
+      </div>
 
       {bookings.length === 0 ? (
         <p className="text-muted-foreground">No bookings found.</p>

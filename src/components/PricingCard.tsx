@@ -1,16 +1,18 @@
 "use client";
 
-import { Check } from "lucide-react";
+import { useState } from "react";
+import { Check, Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { usePaystackPayment } from "react-paystack";
 import { useRouter } from "next/navigation";
 import {
   updateSubscription,
   recordTransaction,
+  cancelSubscription,
 } from "@/app/(main)/actions/subscription";
 import { SubscriptionTier } from "@prisma/client";
 import { toast } from "sonner";
-import { revalidatePath } from "next/cache";
+import { ConfirmationDialog } from "@/components/ui/alert-dialog";
 
 export default function PricingCard({
   title,
@@ -45,6 +47,8 @@ export default function PricingCard({
 }) {
   const { data: session, update } = useSession();
   const router = useRouter();
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   const config = {
     reference: new Date().getTime().toString(),
@@ -109,9 +113,25 @@ export default function PricingCard({
 
   const onClose = async () => {
     console.log("Payment modal closed by user");
-    // Optionally log closure as cancelled
-    // But we don't have a transaction reference yet unless we use one we generated
-    // Paystack doesn't provide the reference in onClose usually if it wasn't successful
+  };
+
+  const handleCancelClick = () => {
+    setShowCancelDialog(true);
+  };
+
+  const confirmCancel = async () => {
+    setShowCancelDialog(false);
+    setIsCancelling(true);
+    try {
+      await cancelSubscription();
+      toast.success("Subscription cancelled successfully.");
+      await update();
+    } catch (error) {
+      console.error("Failed to cancel subscription:", error);
+      toast.error("Failed to cancel subscription. Please try again.");
+    } finally {
+      setIsCancelling(false);
+    }
   };
 
   const handleClick = () => {
@@ -290,24 +310,46 @@ export default function PricingCard({
       </ul>
 
       <button
-        onClick={handleClick}
-        disabled={isCurrentPlan}
-        className={`btn ${variant === "primary" ? "btn-primary" : "btn-outline"}`}
+        onClick={isCurrentPlan ? handleCancelClick : handleClick}
+        disabled={isCancelling}
+        className={`btn rounded-lg ${variant === "primary" ? "btn-primary" : "btn-outline"} `}
         style={{
           width: "100%",
           textAlign: "center",
           justifyContent: "center",
           padding: "0.75rem",
           marginTop: "auto",
-          opacity: isCurrentPlan ? 0.7 : 1,
-          cursor: isCurrentPlan ? "default" : "pointer",
-          backgroundColor: isCurrentPlan ? "var(--muted-light)" : undefined,
-          color: isCurrentPlan ? "var(--muted)" : undefined,
-          borderColor: isCurrentPlan ? "transparent" : undefined,
+          opacity: isCancelling ? 0.7 : 1,
+          cursor: isCancelling ? "not-allowed" : "pointer",
+          display: "flex",
+          alignItems: "center",
+          gap: "0.5rem",
+          border: isCurrentPlan ? "1px solid red" : "",
+          backgroundColor: isCurrentPlan ? "#fff7f7" : "",
         }}
       >
-        {isCurrentPlan ? "Current Plan" : buttonText}
+        {isCancelling ? (
+          <span className="text-red-500 flex items-center gap-2">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            Cancelling...
+          </span>
+        ) : isCurrentPlan ? (
+          <span className="text-red-500">Cancel Subscription</span>
+        ) : (
+          buttonText
+        )}
       </button>
+
+      <ConfirmationDialog
+        isOpen={showCancelDialog}
+        onOpenChange={setShowCancelDialog}
+        title="Cancel Subscription"
+        description="Are you sure you want to cancel your subscription? Your current plan will be downgraded to Free at the end of the billing period."
+        confirmText="Yes, Cancel Subscription"
+        cancelText="No, Keep It"
+        onConfirm={confirmCancel}
+        onCancel={() => setShowCancelDialog(false)}
+      />
     </div>
   );
 }

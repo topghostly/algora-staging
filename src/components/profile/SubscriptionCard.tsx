@@ -12,12 +12,12 @@ export default function SubscriptionCard({
 }: SubscriptionCardProps) {
   return (
     <div className="card p-6">
-      <div className="flex items-center gap-3 mb-4">
-        <CreditCard className="text-primary" size={24} />
-        <h2 className="text-xl font-bold">Subscription</h2>
+      <div className="flex items-center gap-2 mb-4">
+        <CreditCard className="" size={30} />
+        <h3 className="font-medium">Subscription</h3>
       </div>
 
-      <div className="space-y-4">
+      <div className="flex flex-col gap-4">
         <div>
           <p className="text-sm text-muted-foreground">Current Plan</p>
           <p className="text-lg font-semibold">{subscriptionTier}</p>
@@ -26,13 +26,13 @@ export default function SubscriptionCard({
         <div>
           <p className="text-sm text-muted-foreground">1-on-1 Credits</p>
           <div className="flex items-center gap-2">
-            <Zap size={16} className="text-yellow-500" />
+            {/* <Zap size={16} className="text-yellow-500" /> */}
             <span className="text-lg font-semibold">{credits1on1}</span>
           </div>
         </div>
 
         <div className="pt-4">
-          <Link href="/pricing" className="btn btn-outline w-full">
+          <Link href="/pricing" className="btn btn-outline rounded-lg w-full">
             Manage Subscription
           </Link>
         </div>

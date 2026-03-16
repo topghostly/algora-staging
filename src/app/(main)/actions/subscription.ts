@@ -5,8 +5,12 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { SubscriptionTier } from "@prisma/client";
 
-import { verifyTransaction } from "@/lib/paystack";
-
+import {
+  verifyTransaction,
+  getSubscription,
+  disableSubscription,
+} from "@/lib/paystack";
+import { revalidatePath } from "next/cache";
 export async function updateSubscription(reference: string) {
   const session = await getServerSession(authOptions);
 
@@ -99,4 +103,49 @@ export async function recordTransaction(details: {
   });
 
   return { success: true };
+}
+
+export async function cancelSubscription() {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { subscriptionId: true },
+  });
+
+  if (!user?.subscriptionId) {
+    throw new Error("No active subscription found");
+  }
+
+  // 1. Fetch subscription to get the email token
+  const subscription = await getSubscription(user.subscriptionId);
+
+  if (subscription.status && subscription.data?.email_token) {
+    // 2. Disable subscription in Paystack
+    await disableSubscription(
+      user.subscriptionId,
+      subscription.data.email_token,
+    );
+  } else {
+    console.warn(
+      "Could not retrieve email_token for subscription, might already be disabled or invalid.",
+    );
+  }
+
+  // 3. Update user record in database to FREE
+  const updatedUser = await prisma.user.update({
+    where: { id: session.user.id },
+    data: {
+      subscriptionTier: "FREE",
+      subscriptionId: null,
+    },
+  });
+
+  revalidatePath("/pricing");
+
+  return { success: true, user: updatedUser };
 }

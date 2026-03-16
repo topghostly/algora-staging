@@ -37,38 +37,32 @@ export default function PricingPage() {
   return (
     <main className="container" style={{ padding: "6rem 0 10rem 0" }}>
       <div style={{ textAlign: "center", marginBottom: "5rem" }}>
-        <h1 style={{ fontSize: "3rem", fontWeight: 500, marginBottom: "1rem" }}>
-          Simple, Transparent Pricing
-        </h1>
-        <p
-          style={{
-            fontSize: "1.2rem",
-            color: "var(--muted)",
-            maxWidth: "600px",
-            margin: "0 auto 1rem",
-          }}
-        >
+        <h1 className="mb-4">Simple, Transparent Pricing</h1>
+        <p className="mb-4">
           Invest in your future for less than the cost of a daily coffee.
         </p>
-        <p
+        <div
+          className="w-fit md:text-base px-3 py-1 font-semibold rounded-full mb-6 mx-auto"
           style={{
-            fontSize: "0.9rem",
-            color: "var(--muted)",
             backgroundColor: "var(--muted-light)",
-            display: "inline-block",
-            padding: "0.5rem 1rem",
-            borderRadius: "2rem",
           }}
         >
-          ℹ️ <strong>Note:</strong> "Session Credits" are used to book 1-on-1
-          mentorship sessions.
-        </p>
+          <p
+            style={{
+              fontSize: "12px",
+              color: "var(--muted)",
+            }}
+          >
+            ℹ️ <strong>Note:</strong> "Session Credits" are used to book 1-on-1
+            mentorship sessions.
+          </p>
+        </div>
       </div>
 
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
           gap: "1.5rem",
           alignItems: "stretch",
         }}
