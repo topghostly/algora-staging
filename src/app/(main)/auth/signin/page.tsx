@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Suspense } from "react";
 import { useSession } from "next-auth/react";
 
 function SignInForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -20,12 +22,17 @@ function SignInForm() {
   useEffect(() => {
     if (status !== "authenticated") return;
 
+    if (callbackUrl) {
+      router.replace(callbackUrl);
+      return;
+    }
+
     const role = session?.user?.role;
 
     if (role === "TUTOR") router.replace("/tutor");
     else if (role === "LEARNER") router.replace("/dashboard");
     else if (role === "ADMIN") router.replace("/admin");
-  }, [status, session, router]);
+  }, [status, session, router, callbackUrl]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +53,7 @@ function SignInForm() {
 
   const handleGoogleSignIn = async () => {
     await signIn("google", {
-      callbackUrl: "/auth/redirect",
+      callbackUrl: callbackUrl || "/auth/redirect",
     });
   };
 

@@ -20,9 +20,11 @@ function SignUpForm() {
   const [loading, setLoading] = useState(false);
   const [isSocialHovered, setIsSocialHovered] = useState(false);
 
+  const callbackUrl = searchParams.get("callbackUrl");
+
   const handleGoogleSignIn = async () => {
     await signIn("google", {
-      callbackUrl: "/auth/redirect",
+      callbackUrl: callbackUrl || "/auth/redirect",
     });
   };
 

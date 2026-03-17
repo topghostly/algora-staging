@@ -141,7 +141,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
 
   return (
     <LessonLayout track={track} currentLesson={currentLesson}>
-      <div className="p-0 md:p-10 max-w-5xl mx-auto py-16">
+      <div className="p-0 md:p-10 max-w-7xl mx-auto py-16">
         <BreadcrumbNav
           items={[
             { label: "Dashboard", href: "/dashboard" },

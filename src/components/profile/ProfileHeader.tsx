@@ -54,7 +54,7 @@ export default function ProfileHeader({ user }: ProfileHeaderProps) {
               />
             )}
           </div>
-          <div
+          {/* <div
             style={{
               position: "absolute",
               bottom: "0",
@@ -68,7 +68,7 @@ export default function ProfileHeader({ user }: ProfileHeaderProps) {
               boxShadow: "0 0 10px rgba(34, 197, 94, 0.6)",
               transform: "translate(25%, 25%)",
             }}
-          ></div>
+          ></div> */}
         </div>
         <div>
           <h2 className="font-semibold">{user.name || "User"}</h2>

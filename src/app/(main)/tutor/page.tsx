@@ -12,6 +12,16 @@ export default function TutorDashboard() {
   const router = useRouter();
 
   useEffect(() => {
+    if (status === "authenticated" && session?.user?.role !== "TUTOR") {
+      router.replace("/auth/redirect");
+    }
+  }, [session, status, router]);
+
+  if (status === "authenticated" && session?.user?.role !== "TUTOR") {
+    return null;
+  }
+
+  useEffect(() => {
     if (
       status === "authenticated" &&
       session?.user?.role === "TUTOR" &&

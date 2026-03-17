@@ -1,6 +1,6 @@
 "use client";
 
-import { Worker, Viewer } from "@react-pdf-viewer/core";
+import { Worker, Viewer, SpecialZoomLevel } from "@react-pdf-viewer/core";
 import { zoomPlugin } from "@react-pdf-viewer/zoom";
 import { pageNavigationPlugin } from "@react-pdf-viewer/page-navigation";
 import { fullScreenPlugin } from "@react-pdf-viewer/full-screen";
@@ -61,9 +61,9 @@ export default function PDFViewer({
   };
 
   return (
-    <div className="flex flex-col w-full h-[85vh] border border-border rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-950">
+    <div className="flex flex-col w-full h-[85vh] rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-950">
       {/* Custom Minimal Toolbar */}
-      <div className="flex items-center justify-between w-full px-4 py-0 md:py-2 bg-white dark:bg-zinc-900 border-b border-border z-10">
+      {/* <div className="flex items-center justify-between w-full px-4 py-0 md:py-2 bg-white dark:bg-zinc-900 z-10">
         <div className="flex items-center gap-1">
           <div className="p-1 hover:bg-muted-light rounded-lg transition-colors">
             <GoToPreviousPage />
@@ -97,18 +97,19 @@ export default function PDFViewer({
             <EnterFullScreen />
           </div>
         </div>
-      </div>
+      </div> */}
 
       <div className="flex-1 overflow-hidden relative">
         <Worker workerUrl="https://unpkg.com/pdfjs-dist@3/build/pdf.worker.min.js">
           <Viewer
-            fileUrl={url}
+            fileUrl={"/one.pdf"}
+            // fileUrl={url}
             plugins={[
               zoomPluginInstance,
               pageNavigationPluginInstance,
               fullScreenPluginInstance,
             ]}
-            defaultScale={1.0}
+            defaultScale={SpecialZoomLevel.PageFit}
             onPageChange={handlePageChange}
           />
         </Worker>

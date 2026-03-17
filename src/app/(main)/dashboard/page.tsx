@@ -53,8 +53,13 @@ export default function Dashboard() {
     }
   }, [session]);
 
-  if (session?.user?.role === "TUTOR") {
-    router.replace("/tutor");
+  useEffect(() => {
+    if (session && session.user?.role !== "LEARNER") {
+      router.replace("/auth/redirect");
+    }
+  }, [session, router]);
+
+  if (session && session.user?.role !== "LEARNER") {
     return null;
   }
 

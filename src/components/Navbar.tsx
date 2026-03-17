@@ -80,11 +80,11 @@ export default function Navbar() {
         >
           {session ? (
             <div className="flex items-center gap-3">
-              {session.user.role === "LEARNER" && (
-                <GlowingButton href={"/playground"} initialAnimation={true}>
-                  Playground
-                </GlowingButton>
-              )}
+              {/* {session.user.role === "LEARNER" && ( */}
+              <GlowingButton href={"/playground"} initialAnimation={true}>
+                Playground
+              </GlowingButton>
+              {/* )} */}
 
               <div>
                 <Image
@@ -146,7 +146,6 @@ export default function Navbar() {
 
                   {session.user.role === "LEARNER" && (
                     <>
-                      {/* <div className="block sm:hidden"> */}
                       <Link href="/dashboard">
                         <div className="dropdown-item">
                           <LayoutDashboard size={16} />
@@ -211,24 +210,28 @@ export default function Navbar() {
             </div>
           ) : (
             <div>
-              <div className="items-center gap-2 hidden sm:flex">
+              <div className="items-center gap-3 hidden sm:flex">
                 <Link
                   href="/tracks"
-                  style={{ fontWeight: 500, color: "var(--muted)" }}
-                  className="btn"
+                  className="text-muted text-sm transition-all duration-300 hover:text-primary px-3 py-1.5 rounded-lg"
                 >
                   Tracks
                 </Link>
                 <Link
                   href="/pricing"
-                  style={{ fontWeight: 500, color: "var(--muted)" }}
-                  className="btn"
+                  className="text-muted text-sm transition-all duration-300 hover:text-primary px-3 py-1.5 rounded-lg"
                 >
                   Pricing
                 </Link>
+                <GlowingButton
+                  href={"/auth/signin?callbackUrl=/playground"}
+                  initialAnimation={true}
+                >
+                  Playground
+                </GlowingButton>
                 <Link
                   href="/auth/signup"
-                  className="btn btn-primary rounded-full"
+                  className="btn btn-primary rounded-full transition-all duration-300"
                 >
                   Get Started
                 </Link>
@@ -302,8 +305,6 @@ export default function Navbar() {
             </div>
           )}
         </div>
-
-        {/* Mobile Menu Button - Only show for non-authenticated users */}
       </div>
 
       <ConfirmationDialog
