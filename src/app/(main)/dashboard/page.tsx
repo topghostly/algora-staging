@@ -53,6 +53,8 @@ export default function Dashboard() {
     }
   }, [session]);
 
+  console.log(session);
+
   useEffect(() => {
     if (session && session.user?.role !== "LEARNER") {
       router.replace("/auth/redirect");
@@ -212,7 +214,7 @@ export default function Dashboard() {
                 <p className="text-muted-foreground mb-3">
                   Start your journey by choosing a learning path.
                 </p>
-                <Link href="/tracks" className="btn btn-primary">
+                <Link href="/tracks" className="btn btn-primary rounded-full">
                   Explore Tracks
                 </Link>
               </div>

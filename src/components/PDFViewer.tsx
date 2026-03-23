@@ -102,8 +102,7 @@ export default function PDFViewer({
       <div className="flex-1 overflow-hidden relative">
         <Worker workerUrl="https://unpkg.com/pdfjs-dist@3/build/pdf.worker.min.js">
           <Viewer
-            fileUrl={"/one.pdf"}
-            // fileUrl={url}
+            fileUrl={url}
             plugins={[
               zoomPluginInstance,
               pageNavigationPluginInstance,

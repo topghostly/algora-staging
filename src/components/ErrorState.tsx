@@ -30,7 +30,7 @@ export function ErrorState({
       </p>
       <button
         onClick={handleReload}
-        className="btn btn-outline flex items-center gap-2 px-6 py-2 text-sm h-auto"
+        className="btn btn-outline flex rounded-lg items-center gap-2 px-6 py-2 text-sm h-auto"
       >
         <RefreshCcw size={16} />
         Retry

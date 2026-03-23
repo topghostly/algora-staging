@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Suspense } from "react";
 import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 
 function SignInForm() {
   const router = useRouter();
@@ -18,6 +19,15 @@ function SignInForm() {
   const [isSocialHovered, setIsSocialHovered] = useState(false);
 
   const { data: session, status } = useSession();
+
+  useEffect(() => {
+    const errorParam = searchParams.get("error");
+    if (errorParam === "OAuthAccountNotLinked") {
+      toast.error(
+        "Account already exists. Please sign in with your email and password.",
+      );
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (status !== "authenticated") return;

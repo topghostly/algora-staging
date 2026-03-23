@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import QuizEditor from "./QuizEditor";
+import MarkdownEditor from "./MarkdownEditor";
 
 interface Lesson {
   id: string;
@@ -64,6 +65,10 @@ export default function TrackEditor({ track }: { track: Track }) {
   // UI State for editing content
   const [editingLessonId, setEditingLessonId] = useState<string | null>(null);
   const [editLessonContent, setEditLessonContent] = useState("");
+  const [editLessonTextContent, setEditLessonTextContent] = useState("");
+  const [textLessonMode, setTextLessonMode] = useState<"PDF" | "MARKDOWN">(
+    "MARKDOWN",
+  );
 
   async function handleUpdateTrack() {
     setIsLoading(true);
@@ -183,8 +188,13 @@ export default function TrackEditor({ track }: { track: Track }) {
       if (lesson.type === "VIDEO") {
         body.contentUrl = editLessonContent;
       } else if (lesson.type === "TEXT") {
-        body.contentUrl = editLessonContent;
-        // We keep textContent as is in case they want to revert or keep it
+        if (textLessonMode === "PDF") {
+          body.contentUrl = editLessonContent;
+          body.textContent = "";
+        } else {
+          body.contentUrl = "";
+          body.textContent = editLessonTextContent;
+        }
       }
 
       const res = await fetch(`/api/lessons/${lesson.id}`, {
@@ -256,11 +266,19 @@ export default function TrackEditor({ track }: { track: Track }) {
 
   function startEditingLesson(lesson: Lesson) {
     setEditingLessonId(lesson.id);
-    setEditLessonContent(
-      lesson.type === "VIDEO" || lesson.type === "TEXT"
-        ? lesson.contentUrl || ""
-        : lesson.textContent || "",
-    );
+    if (lesson.type === "TEXT") {
+      setEditLessonContent(lesson.contentUrl || "");
+      setEditLessonTextContent(lesson.textContent || "");
+      setTextLessonMode(
+        lesson.contentUrl && !lesson.textContent ? "PDF" : "MARKDOWN",
+      );
+    } else {
+      setEditLessonContent(
+        lesson.type === "VIDEO"
+          ? lesson.contentUrl || ""
+          : lesson.textContent || "",
+      );
+    }
   }
 
   return (
@@ -508,39 +526,62 @@ export default function TrackEditor({ track }: { track: Track }) {
                           />
                         ) : (
                           <div className="flex flex-col gap-4">
-                            <div className="flex flex-col gap-3">
-                              <input
-                                type="file"
-                                accept=".pdf"
-                                onChange={(e) => handleFileUpload(e, lesson)}
-                                disabled={isUploading}
-                                className="w-full h-fit px-1 py-1 bg-background rounded-lg text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-2 file:border-gray-300 file:text-sm file:font-semibold file:bg-transparent file:text-gray-600 hover:file:bg-gray-100"
-                              />
-                              {isUploading && (
-                                <p className="text-sm text-muted">
-                                  Uploading PDF...
-                                </p>
-                              )}
-                              {editLessonContent && (
-                                <div className="p-3 bg-muted-light rounded-lg border border-border flex items-center justify-between">
-                                  <span
-                                    className="text-sm truncate mr-2"
-                                    title={editLessonContent}
-                                  >
-                                    Currently attached:{" "}
-                                    {editLessonContent.split("/").pop()}
-                                  </span>
-                                  <a
-                                    href={editLessonContent}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="text-primary text-xs font-semibold hover:underline"
-                                  >
-                                    View PDF
-                                  </a>
-                                </div>
-                              )}
+                            <div className="flex bg-muted/10 p-1 rounded-lg w-fit border border-border">
+                              <button
+                                onClick={() => setTextLessonMode("MARKDOWN")}
+                                className={`px-4 py-1.5 text-sm rounded-md font-medium transition-colors ${textLessonMode === "MARKDOWN" ? "bg-background shadow-sm text-foreground" : "text-foreground hover:text-secondary"}`}
+                              >
+                                Markdown
+                              </button>
+                              <button
+                                onClick={() => setTextLessonMode("PDF")}
+                                className={`px-4 py-1.5 text-sm rounded-md font-medium transition-colors ${textLessonMode === "PDF" ? "bg-background shadow-sm text-foreground" : "text-foreground hover:text-secondary"}`}
+                              >
+                                PDF Upload
+                              </button>
                             </div>
+
+                            {textLessonMode === "MARKDOWN" ? (
+                              <MarkdownEditor
+                                value={editLessonTextContent}
+                                onChange={setEditLessonTextContent}
+                                placeholder="Type markdown content here..."
+                              />
+                            ) : (
+                              <div className="flex flex-col gap-3">
+                                <input
+                                  type="file"
+                                  accept=".pdf"
+                                  onChange={(e) => handleFileUpload(e, lesson)}
+                                  disabled={isUploading}
+                                  className="w-full h-fit px-1 py-1 bg-background rounded-lg text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-2 file:border-gray-300 file:text-sm file:font-semibold file:bg-transparent file:text-gray-600 hover:file:bg-gray-100"
+                                />
+                                {isUploading && (
+                                  <p className="text-sm text-muted">
+                                    Uploading PDF...
+                                  </p>
+                                )}
+                                {editLessonContent && (
+                                  <div className="p-3 bg-muted-light rounded-lg border border-border flex items-center justify-between">
+                                    <span
+                                      className="text-sm truncate mr-2"
+                                      title={editLessonContent}
+                                    >
+                                      Currently attached:{" "}
+                                      {editLessonContent.split("/").pop()}
+                                    </span>
+                                    <a
+                                      href={editLessonContent}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="text-primary text-xs font-semibold hover:underline"
+                                    >
+                                      View PDF
+                                    </a>
+                                  </div>
+                                )}
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>

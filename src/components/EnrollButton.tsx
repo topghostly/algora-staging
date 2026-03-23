@@ -54,12 +54,13 @@ export default function EnrollButton({ trackId }: { trackId: string }) {
     <button
       onClick={handleEnroll}
       disabled={loading}
-      className="btn btn-primary"
+      className="btn btn-primary rounded-lg "
       style={{
-        width: "100%",
+        width: "fit-content",
         justifyContent: "center",
         cursor: loading ? "not-allowed" : "pointer",
         opacity: loading ? 0.7 : 1,
+        padding: "10px 20px",
       }}
     >
       {loading ? (

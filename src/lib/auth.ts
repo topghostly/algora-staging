@@ -133,6 +133,7 @@ export const authOptions: NextAuthOptions = {
           const dataToUpdate: any = {
             emailVerified: new Date(),
           };
+          token.emailVerified = dataToUpdate.emailVerified;
 
           if (pendingRole === "TUTOR") {
             dataToUpdate.role = "TUTOR";

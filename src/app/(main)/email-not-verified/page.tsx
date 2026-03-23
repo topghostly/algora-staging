@@ -1,20 +1,28 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Mail, Loader2, ArrowRight, MoveLeft } from "lucide-react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function EmailNotVerifiedPage() {
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!session?.user?.emailVerified) {
+      router.push("/dashboard");
+    }
+  }, [session, router]);
 
   const handleResendEmail = async () => {
-    if (!session?.user?.email) return;
-
     setLoading(true);
     try {
+      if (!session?.user?.email) return;
+
       const res = await fetch("/api/auth/resend-verification", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -79,9 +87,11 @@ export default function EmailNotVerifiedPage() {
           <button
             onClick={handleResendEmail}
             disabled={loading}
-            className="btn btn-primary w-full"
+            className="btn btn-primary rounded-lg"
             style={{
-              padding: "1rem 0",
+              padding: "10px 20px",
+              width: "fit-content",
+              justifyContent: "center",
             }}
           >
             {loading ? <>Sending...</> : "Resend Verification Email"}

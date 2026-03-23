@@ -57,7 +57,7 @@ export default function Home() {
           <div className="container flex flex-col lg:grid lg:grid-cols-[1fr_1.2fr] gap-10">
             {/* Hero Text */}
             <div className="flex flex-col justify-center items-center lg:items-start ">
-              <div className="w-fit md:text-base px-3 py-1 bg-primary/10 font-semibold rounded-full mb-6">
+              <div className="w-fit md:text-base px-3 py-1 bg-primary/10 font-semibold rounded-full mb-6 text-center">
                 <p
                   style={{
                     fontSize: "12px",
@@ -123,28 +123,15 @@ export default function Home() {
             <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-x-6 gap-y-12 w-full">
               {learnEverything.map((item, index) => (
                 <div key={index} className="grid grid-rows-[fit_fit] gap-2">
-                  {/* <div key={index} className="grid grid-rows-[1fr_fit] gap-10"> */}
                   <div className="w-full flex flex-col gap-4">
-                    {/* <div className="w-full h-[260px]"> */}
-                    {/* <InvertedCornerImage
-                      width={"inherit"}
-                      height={"inherit"}
-                      imageUrl={item.image}
-                      radius={15}
-                      notchBg="#fff"
-                      borderColor="#ffffff00"
-                      position="bottom-left"
-                    >
-                      <div className="px-4">
-                        <h4 className="mt-4 mb-2">{item.title}</h4>
-                      </div>
-                    </InvertedCornerImage> */}
                     <img
                       src={item.image}
                       style={{
                         width: "inherit",
                         borderRadius: "15px",
                         height: "260px",
+                        objectFit: "cover",
+                        objectPosition: "center",
                       }}
                     />
 

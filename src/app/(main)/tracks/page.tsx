@@ -241,7 +241,7 @@ export default function TracksPage() {
             fontWeight: 600,
             marginBottom: "1.5rem",
           }}
-          className="text-xs md:text-base"
+          className="text-xs md:text-base text-center"
         >
           Launching the next generation of African Tech Talent
         </div>
@@ -249,7 +249,7 @@ export default function TracksPage() {
           <h1 style={{ marginBottom: "1rem" }}>Learning Tracks</h1>
           <p
             style={{
-              fontSize: "1.2rem",
+              // fontSize: "1.2rem",
               color: "var(--muted)",
               maxWidth: "600px",
               margin: "0 auto",
@@ -362,7 +362,8 @@ export default function TracksPage() {
               <div className="hidden md:block">
                 <Link
                   href="/tracks"
-                  className="btn btn-outline px-3 py-2 text-sm"
+                  className="btn btn-outline px-3 py-2 text-sm rounded-full
+                  "
                 >
                   Explore All Tracks
                 </Link>
@@ -409,9 +410,10 @@ export default function TracksPage() {
                         flexDirection: "column",
                         justifyContent: "space-between",
                         height: "100%",
+                        gap: "20px",
                       }}
                     >
-                      <div
+                      {/* <div
                         style={{
                           height: "200px",
                           borderRadius: "var(--radius) var(--radius) 0 0",
@@ -427,45 +429,59 @@ export default function TracksPage() {
                           color="var(--primary)"
                           opacity={0.5}
                         />
+                      </div> */}
+
+                      <div className="h-16">
+                        <h3
+                          // className="text-2xl md:text-3xl"
+                          style={{
+                            fontWeight: 500,
+                            marginBottom: "0.75rem",
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {track.title}
+                        </h3>
                       </div>
-
-                      <h2
+                      <div
                         style={{
-                          fontSize: "1.5rem",
-                          fontWeight: 500,
-                          marginBottom: "0.75rem",
-                          height: "4.4  rem",
-                          display: "-webkit-box",
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: "vertical",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
+                          height: "6rem",
                         }}
                       >
-                        {track.title}
-                      </h2>
-                      <p
-                        style={{
-                          color: "var(--muted)",
-                          marginBottom: "1.5rem",
-                          lineHeight: 1.6,
-                          height: "6.4rem",
-                          display: "-webkit-box",
-                          WebkitLineClamp: 4,
-                          WebkitBoxOrient: "vertical",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
-                      >
-                        {track.description}
-                      </p>
+                        <p
+                          style={{
+                            color: "var(--muted)",
 
+                            lineHeight: 1.6,
+                            display: "-webkit-box",
+                            WebkitLineClamp: 4,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {/* {track.description} */}
+                          Lorem ipsum dolor sit, amet consectetur adipisicing
+                          elit. Asperiores, provident. In qui, dicta saepe,
+                          sequi possimus quod rem, tempore expedita vitae
+                          corrupti facilis. Fugiat eum unde autem ea, ut nihil.
+                          Nesciunt doloribus quaerat inventore nisi perspiciatis
+                          vel labore. Molestiae explicabo recusandae deleniti
+                          rerum vero aut nam voluptate. Suscipit eum id,
+                          laudantium laboriosam placeat necessitatibus
+                          excepturi, doloremque, tempora aliquam esse culpa!
+                        </p>
+                      </div>
                       <div
                         style={{
                           display: "flex",
                           alignItems: "center",
                           gap: "1.5rem",
-                          marginBottom: "1.5rem",
+                          // marginBottom: "1rem",
                           fontSize: "0.9rem",
                           color: "var(--muted)",
                         }}
