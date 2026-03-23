@@ -32,7 +32,7 @@ async function getTrackData(trackId: string, userId?: string) {
         orderBy: { order: "asc" },
         include: {
           lessons: {
-            orderBy: { createdAt: "asc" },
+            orderBy: { order: "asc" },
             include: {
               progress: {
                 where: { userId: userId || "no-user" },
@@ -134,7 +134,6 @@ export default async function TrackOverviewPage({
             />
             <h1
               style={{
-                fontSize: "3rem",
                 fontWeight: 500,
                 marginBottom: "1rem",
                 lineHeight: 1.2,
@@ -144,11 +143,10 @@ export default async function TrackOverviewPage({
             </h1>
             <p
               style={{
-                fontSize: "1.2rem",
                 color: "var(--muted)",
                 lineHeight: 1.6,
                 marginBottom: "2rem",
-                maxWidth: 780,
+                maxWidth: 700,
               }}
             >
               {track.description}

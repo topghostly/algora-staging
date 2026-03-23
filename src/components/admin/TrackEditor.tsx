@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
   Save,
@@ -14,6 +14,7 @@ import {
   Edit2,
   HelpCircle,
 } from "lucide-react";
+import { Reorder, useDragControls } from "framer-motion";
 import { toast } from "sonner";
 import QuizEditor from "./QuizEditor";
 import MarkdownEditor from "./MarkdownEditor";
@@ -42,6 +43,220 @@ interface Track {
   modules: Module[];
 }
 
+interface LessonItemProps {
+  lesson: Lesson;
+  moduleId: string;
+  editingLessonId: string | null;
+  startEditingLesson: (lesson: Lesson) => void;
+  handleDeleteLesson: (lessonId: string) => void;
+  editLessonContent: string;
+  setEditLessonContent: (val: string) => void;
+  editLessonTextContent: string;
+  setEditLessonTextContent: (val: string) => void;
+  textLessonMode: "PDF" | "MARKDOWN";
+  setTextLessonMode: (val: "PDF" | "MARKDOWN") => void;
+  handleFileUpload: (
+    e: React.ChangeEvent<HTMLInputElement>,
+    lesson: Lesson,
+  ) => void;
+  isUploading: boolean;
+  setEditingLessonId: (id: string | null) => void;
+  handleSaveLessonContent: (lesson: Lesson) => void;
+}
+
+function LessonItem({
+  lesson,
+  moduleId,
+  editingLessonId,
+  startEditingLesson,
+  handleDeleteLesson,
+  editLessonContent,
+  setEditLessonContent,
+  editLessonTextContent,
+  setEditLessonTextContent,
+  textLessonMode,
+  setTextLessonMode,
+  handleFileUpload,
+  isUploading,
+  setEditingLessonId,
+  handleSaveLessonContent,
+}: LessonItemProps) {
+  const controls = useDragControls();
+
+  return (
+    <Reorder.Item
+      value={lesson}
+      dragListener={false}
+      dragControls={controls}
+      style={{ listStyle: "none" }}
+    >
+      <div
+        style={{
+          padding: "0.75rem 1.5rem",
+          display: "flex",
+          alignItems: "center",
+          gap: "1rem",
+          borderBottom: "1px solid var(--border-light)",
+          backgroundColor:
+            editingLessonId === lesson.id
+              ? "rgba(var(--primary-rgb), 0.05)"
+              : "var(--background)",
+        }}
+      >
+        <div
+          onPointerDown={(e) => controls.start(e)}
+          style={{ cursor: "grab", display: "flex", alignItems: "center" }}
+          className="p-2 rounded-lg bg-muted/50"
+        >
+          <GripVertical size={16} color="var(--muted)" />
+        </div>
+        {lesson.type === "VIDEO" ? (
+          <Video size={16} color="var(--primary)" />
+        ) : lesson.type === "QUIZ" ? (
+          <HelpCircle size={16} color="var(--primary)" />
+        ) : (
+          <FileText size={16} color="var(--muted)" />
+        )}
+        <span
+          style={{ flex: 1, fontWeight: 500, pointerEvents: "none" }}
+          className="select-none"
+        >
+          {lesson.title}
+        </span>
+
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          <button
+            onClick={() => startEditingLesson(lesson)}
+            className="btn btn-outline rounded-lg"
+            style={{ color: "var(--primary)" }}
+            title="Edit Content"
+          >
+            <Edit2 size={16} />
+          </button>
+          <button
+            onClick={() => handleDeleteLesson(lesson.id)}
+            className="btn btn-outline rounded-lg"
+            style={{ color: "var(--error)" }}
+            title="Delete Lesson"
+          >
+            <Trash2 size={16} />
+          </button>
+        </div>
+      </div>
+
+      {/* Inline Content Editor */}
+      {editingLessonId === lesson.id && (
+        <div
+          style={{
+            padding: "1rem 1.5rem",
+            borderBottom: "1px solid var(--border-light)",
+            backgroundColor: "var(--background)",
+          }}
+        >
+          <div style={{ marginBottom: "1rem" }} className="flex flex-col gap-2">
+            <label className="font-semibold">
+              {lesson.type === "VIDEO"
+                ? "Video URL (YouTube)"
+                : lesson.type === "TEXT"
+                  ? "Upload Lesson PDF"
+                  : "Quiz Editor"}
+            </label>
+            {lesson.type === "QUIZ" ? (
+              <QuizEditor lessonId={lesson.id} />
+            ) : lesson.type === "VIDEO" ? (
+              <input
+                className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                value={editLessonContent}
+                onChange={(e) => setEditLessonContent(e.target.value)}
+                placeholder="https://youtube.com/..."
+              />
+            ) : (
+              <div className="flex flex-col gap-4">
+                <div className="flex bg-muted/10 p-1 rounded-lg w-fit border border-border">
+                  <button
+                    onClick={() => setTextLessonMode("MARKDOWN")}
+                    className={`px-4 py-1.5 text-sm rounded-md font-medium transition-colors ${textLessonMode === "MARKDOWN" ? "bg-background shadow-sm text-foreground" : "text-foreground hover:text-secondary"}`}
+                  >
+                    Markdown
+                  </button>
+                  <button
+                    onClick={() => setTextLessonMode("PDF")}
+                    className={`px-4 py-1.5 text-sm rounded-md font-medium transition-colors ${textLessonMode === "PDF" ? "bg-background shadow-sm text-foreground" : "text-foreground hover:text-secondary"}`}
+                  >
+                    PDF Upload
+                  </button>
+                </div>
+
+                {textLessonMode === "MARKDOWN" ? (
+                  <MarkdownEditor
+                    value={editLessonTextContent}
+                    onChange={setEditLessonTextContent}
+                    placeholder="Type markdown content here..."
+                  />
+                ) : (
+                  <div className="flex flex-col gap-3">
+                    <input
+                      type="file"
+                      accept=".pdf"
+                      onChange={(e) => handleFileUpload(e, lesson)}
+                      disabled={isUploading}
+                      className="w-full h-fit px-1 py-1 bg-background rounded-lg text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-2 file:border-gray-300 file:text-sm file:font-semibold file:bg-transparent file:text-gray-600 hover:file:bg-gray-100"
+                    />
+                    {isUploading && (
+                      <p className="text-sm text-muted">Uploading PDF...</p>
+                    )}
+                    {editLessonContent && (
+                      <div className="p-3 bg-muted-light rounded-lg border border-border flex items-center justify-between">
+                        <span
+                          className="text-sm truncate mr-2"
+                          title={editLessonContent}
+                        >
+                          Currently attached:{" "}
+                          {editLessonContent.split("/").pop()}
+                        </span>
+                        <a
+                          href={editLessonContent}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-primary text-xs font-semibold hover:underline"
+                        >
+                          View PDF
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: "0.5rem",
+            }}
+          >
+            <button
+              onClick={() => setEditingLessonId(null)}
+              className="btn btn-sm btn-outline rounded-full"
+            >
+              Cancel
+            </button>
+            {lesson.type !== "QUIZ" && (
+              <button
+                onClick={() => handleSaveLessonContent(lesson)}
+                className="btn btn-sm btn-primary rounded-full"
+              >
+                Save Content
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+    </Reorder.Item>
+  );
+}
+
 export default function TrackEditor({ track }: { track: Track }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -51,6 +266,12 @@ export default function TrackEditor({ track }: { track: Track }) {
   const [title, setTitle] = useState(track.title);
   const [description, setDescription] = useState(track.description);
   const [published, setPublished] = useState(track.published);
+  const [modules, setModules] = useState<Module[]>(track.modules);
+
+  // Sync state when track updates from router.refresh()
+  useEffect(() => {
+    setModules(track.modules);
+  }, [track.modules]);
 
   // UI State for adding items
   const [isAddingModule, setIsAddingModule] = useState(false);
@@ -105,7 +326,7 @@ export default function TrackEditor({ track }: { track: Track }) {
       });
 
       if (!res.ok) throw new Error("Failed to create module");
-
+      toast.success("Module created successfully");
       setNewModuleTitle("");
       setIsAddingModule(false);
       router.refresh();
@@ -125,6 +346,7 @@ export default function TrackEditor({ track }: { track: Track }) {
       });
 
       if (!res.ok) throw new Error("Failed to delete module");
+      toast.success("Module deleted successfully");
       router.refresh();
     } catch (error) {
       console.error(error);
@@ -151,6 +373,7 @@ export default function TrackEditor({ track }: { track: Track }) {
       });
 
       if (!res.ok) throw new Error("Failed to create lesson");
+      toast.success("Lesson created successfully");
 
       setNewLessonTitle("");
       setAddingLessonToModuleId(null);
@@ -170,6 +393,7 @@ export default function TrackEditor({ track }: { track: Track }) {
       });
 
       if (!res.ok) throw new Error("Failed to delete lesson");
+      toast.success("Lesson deleted successfully");
       router.refresh();
     } catch (error) {
       console.error(error);
@@ -204,6 +428,7 @@ export default function TrackEditor({ track }: { track: Track }) {
       });
 
       if (!res.ok) throw new Error("Failed to update lesson");
+      toast.success("Lesson updated successfully");
 
       setEditingLessonId(null);
       router.refresh();
@@ -212,6 +437,38 @@ export default function TrackEditor({ track }: { track: Track }) {
       toast.error("Error updating lesson content");
     }
   }
+
+  const syncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  async function syncLessonOrder(lessons: Lesson[]) {
+    try {
+      const res = await fetch("/api/lessons/reorder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          lessons: lessons.map((l, index) => ({ id: l.id, order: index })),
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to sync order");
+      toast.success("Lesson order synced successfully");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to sync lesson order to database");
+    }
+  }
+
+  const handleReorderLessons = (moduleId: string, newLessons: Lesson[]) => {
+    setModules((prev) =>
+      prev.map((m) => (m.id === moduleId ? { ...m, lessons: newLessons } : m)),
+    );
+
+    // Debounce syncing to database
+    if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
+    syncTimeoutRef.current = setTimeout(() => {
+      syncLessonOrder(newLessons);
+    }, 1000);
+  };
 
   async function handleFileUpload(
     e: React.ChangeEvent<HTMLInputElement>,
@@ -388,7 +645,7 @@ export default function TrackEditor({ track }: { track: Track }) {
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-        {track.modules.map((module) => (
+        {modules.map((module) => (
           <div
             key={module.id}
             className="card"
@@ -442,175 +699,34 @@ export default function TrackEditor({ track }: { track: Track }) {
 
             {/* Lessons List */}
             <div style={{ padding: "0.5rem 0" }}>
-              {module.lessons.map((lesson) => (
-                <div key={lesson.id}>
-                  <div
-                    style={{
-                      padding: "0.75rem 1.5rem",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "1rem",
-                      borderBottom: "1px solid var(--border-light)",
-                      backgroundColor:
-                        editingLessonId === lesson.id
-                          ? "rgba(var(--primary-rgb), 0.05)"
-                          : "transparent",
-                    }}
-                  >
-                    <GripVertical
-                      size={16}
-                      color="var(--muted)"
-                      style={{ cursor: "grab" }}
-                    />
-                    {lesson.type === "VIDEO" ? (
-                      <Video size={16} color="var(--primary)" />
-                    ) : lesson.type === "QUIZ" ? (
-                      <HelpCircle size={16} color="var(--primary)" />
-                    ) : (
-                      <FileText size={16} color="var(--muted)" />
-                    )}
-                    <span style={{ flex: 1, fontWeight: 500 }}>
-                      {lesson.title}
-                    </span>
-
-                    <div style={{ display: "flex", gap: "0.5rem" }}>
-                      <button
-                        onClick={() => startEditingLesson(lesson)}
-                        className="btn btn-outline rounded-lg"
-                        style={{ color: "var(--primary)" }}
-                        title="Edit Content"
-                      >
-                        <Edit2 size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteLesson(lesson.id)}
-                        className="btn btn-outline rounded-lg"
-                        style={{ color: "var(--error)" }}
-                        title="Delete Lesson"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Inline Content Editor */}
-                  {editingLessonId === lesson.id && (
-                    <div
-                      style={{
-                        padding: "1rem 1.5rem",
-                        borderBottom: "1px solid var(--border-light)",
-                        backgroundColor: "var(--background)",
-                      }}
-                    >
-                      <div
-                        style={{ marginBottom: "1rem" }}
-                        className="flex flex-col gap-2"
-                      >
-                        <label className="font-semibold">
-                          {lesson.type === "VIDEO"
-                            ? "Video URL (YouTube)"
-                            : lesson.type === "TEXT"
-                              ? "Upload Lesson PDF"
-                              : "Quiz Editor"}
-                        </label>
-                        {lesson.type === "QUIZ" ? (
-                          <QuizEditor lessonId={lesson.id} />
-                        ) : lesson.type === "VIDEO" ? (
-                          <input
-                            className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                            value={editLessonContent}
-                            onChange={(e) =>
-                              setEditLessonContent(e.target.value)
-                            }
-                            placeholder="https://youtube.com/..."
-                          />
-                        ) : (
-                          <div className="flex flex-col gap-4">
-                            <div className="flex bg-muted/10 p-1 rounded-lg w-fit border border-border">
-                              <button
-                                onClick={() => setTextLessonMode("MARKDOWN")}
-                                className={`px-4 py-1.5 text-sm rounded-md font-medium transition-colors ${textLessonMode === "MARKDOWN" ? "bg-background shadow-sm text-foreground" : "text-foreground hover:text-secondary"}`}
-                              >
-                                Markdown
-                              </button>
-                              <button
-                                onClick={() => setTextLessonMode("PDF")}
-                                className={`px-4 py-1.5 text-sm rounded-md font-medium transition-colors ${textLessonMode === "PDF" ? "bg-background shadow-sm text-foreground" : "text-foreground hover:text-secondary"}`}
-                              >
-                                PDF Upload
-                              </button>
-                            </div>
-
-                            {textLessonMode === "MARKDOWN" ? (
-                              <MarkdownEditor
-                                value={editLessonTextContent}
-                                onChange={setEditLessonTextContent}
-                                placeholder="Type markdown content here..."
-                              />
-                            ) : (
-                              <div className="flex flex-col gap-3">
-                                <input
-                                  type="file"
-                                  accept=".pdf"
-                                  onChange={(e) => handleFileUpload(e, lesson)}
-                                  disabled={isUploading}
-                                  className="w-full h-fit px-1 py-1 bg-background rounded-lg text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-2 file:border-gray-300 file:text-sm file:font-semibold file:bg-transparent file:text-gray-600 hover:file:bg-gray-100"
-                                />
-                                {isUploading && (
-                                  <p className="text-sm text-muted">
-                                    Uploading PDF...
-                                  </p>
-                                )}
-                                {editLessonContent && (
-                                  <div className="p-3 bg-muted-light rounded-lg border border-border flex items-center justify-between">
-                                    <span
-                                      className="text-sm truncate mr-2"
-                                      title={editLessonContent}
-                                    >
-                                      Currently attached:{" "}
-                                      {editLessonContent.split("/").pop()}
-                                    </span>
-                                    <a
-                                      href={editLessonContent}
-                                      target="_blank"
-                                      rel="noreferrer"
-                                      className="text-primary text-xs font-semibold hover:underline"
-                                    >
-                                      View PDF
-                                    </a>
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "flex-end",
-                          gap: "0.5rem",
-                        }}
-                      >
-                        <button
-                          onClick={() => setEditingLessonId(null)}
-                          className="btn btn-sm btn-outline rounded-full"
-                        >
-                          Cancel
-                        </button>
-                        {lesson.type !== "QUIZ" && (
-                          <button
-                            onClick={() => handleSaveLessonContent(lesson)}
-                            className="btn btn-sm btn-primary rounded-full"
-                          >
-                            Save Content
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
+              <Reorder.Group
+                axis="y"
+                values={module.lessons}
+                onReorder={(newLessons) =>
+                  handleReorderLessons(module.id, newLessons)
+                }
+              >
+                {module.lessons.map((lesson) => (
+                  <LessonItem
+                    key={lesson.id}
+                    lesson={lesson}
+                    moduleId={module.id}
+                    editingLessonId={editingLessonId}
+                    startEditingLesson={startEditingLesson}
+                    handleDeleteLesson={handleDeleteLesson}
+                    editLessonContent={editLessonContent}
+                    setEditLessonContent={setEditLessonContent}
+                    editLessonTextContent={editLessonTextContent}
+                    setEditLessonTextContent={setEditLessonTextContent}
+                    textLessonMode={textLessonMode}
+                    setTextLessonMode={setTextLessonMode}
+                    handleFileUpload={handleFileUpload}
+                    isUploading={isUploading}
+                    setEditingLessonId={setEditingLessonId}
+                    handleSaveLessonContent={handleSaveLessonContent}
+                  />
+                ))}
+              </Reorder.Group>
 
               {/* Add Lesson Form */}
               {addingLessonToModuleId === module.id && (
