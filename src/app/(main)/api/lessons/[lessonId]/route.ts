@@ -75,6 +75,11 @@ export async function DELETE(
       await deleteFromS3(lesson.contentUrl);
     }
 
+    // Delete related progress records first
+    await prisma.progress.deleteMany({
+      where: { lessonId },
+    });
+
     await prisma.lesson.delete({
       where: { id: lessonId },
     });

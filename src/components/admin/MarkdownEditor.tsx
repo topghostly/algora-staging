@@ -22,6 +22,7 @@ import {
   AlignLeft,
   AlignCenter,
   AlignRight,
+  CornerDownLeft,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -70,7 +71,7 @@ const ToolbarButton = ({
     }}
     title={title}
     aria-label={ariaLabel}
-    className="bg-muted/10 data-[state=on]:bg-accent data-[state=on]:text-accent-foreground"
+    className="bg-muted/10 data-[state=on]:bg-muted/30 data-[state=on]:text-accent-foreground hover:bg-muted/60"
   >
     {children}
   </Toggle>
@@ -101,15 +102,11 @@ export default function MarkdownEditor({
           class: "text-primary underline underline-offset-4",
         },
       }),
-      Markdown.configure({
-        html: false,
-        transformPastedText: true,
-      }),
     ],
     content: value,
     immediatelyRender: false,
     onUpdate: ({ editor }) => {
-      onChange((editor.storage as any).markdown.getMarkdown());
+      onChange(editor.getHTML());
     },
     editorProps: {
       attributes: {
@@ -121,7 +118,7 @@ export default function MarkdownEditor({
 
   // Sync external value changes to editor
   useEffect(() => {
-    if (editor && value !== (editor.storage as any).markdown.getMarkdown()) {
+    if (editor && value !== editor.getHTML()) {
       editor.commands.setContent(value);
     }
   }, [value, editor]);
@@ -153,7 +150,7 @@ export default function MarkdownEditor({
 
   return (
     <div className="flex flex-col rounded-md border border-input bg-transparent shadow-sm focus-within:ring-1 focus-within:ring-ring overflow-hidden">
-      <div className="flex flex-wrap items-center gap-1 p-1 border-b bg-muted/50">
+      <div className="flex flex-wrap items-center gap-1 p-1">
         <ToolbarButton
           onClick={() => editor.chain().focus().setParagraph().run()}
           isActive={editor.isActive("paragraph") && !editor.isActive("heading")}
@@ -274,6 +271,17 @@ export default function MarkdownEditor({
           ariaLabel="Toggle ordered list"
         >
           <ListOrderedIcon className="h-4 w-4" />
+        </ToolbarButton>
+
+        <div className="w-px h-4 bg-border mx-1" />
+
+        <ToolbarButton
+          onClick={() => editor.chain().focus().setHardBreak().run()}
+          isActive={false}
+          title="Line Break"
+          ariaLabel="Insert line break"
+        >
+          <CornerDownLeft className="h-4 w-4" />
         </ToolbarButton>
 
         <div className="w-px h-4 bg-border mx-1" />

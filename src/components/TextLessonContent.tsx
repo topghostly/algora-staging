@@ -1,8 +1,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 
 const PDFViewer = dynamic(() => import("./PDFViewer"), {
   ssr: false,
@@ -43,9 +41,10 @@ export default function TextLessonContent({
 
   if (textContent) {
     return (
-      <div className="prose prose-neutral dark:prose-invert max-w-none">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{textContent}</ReactMarkdown>
-      </div>
+      <div
+        className="prose prose-neutral dark:prose-invert max-w-none"
+        dangerouslySetInnerHTML={{ __html: textContent }}
+      />
     );
   }
 

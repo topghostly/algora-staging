@@ -16,6 +16,16 @@ import {
 } from "lucide-react";
 import { Reorder, useDragControls } from "framer-motion";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import QuizEditor from "./QuizEditor";
 import MarkdownEditor from "./MarkdownEditor";
 
@@ -172,26 +182,33 @@ function LessonItem({
               />
             ) : (
               <div className="flex flex-col gap-4">
-                <div className="flex bg-muted/10 p-1 rounded-lg w-fit border border-border">
-                  <button
-                    onClick={() => setTextLessonMode("MARKDOWN")}
-                    className={`px-4 py-1.5 text-sm rounded-md font-medium transition-colors ${textLessonMode === "MARKDOWN" ? "bg-background shadow-sm text-foreground" : "text-foreground hover:text-secondary"}`}
-                  >
-                    Markdown
-                  </button>
-                  <button
-                    onClick={() => setTextLessonMode("PDF")}
-                    className={`px-4 py-1.5 text-sm rounded-md font-medium transition-colors ${textLessonMode === "PDF" ? "bg-background shadow-sm text-foreground" : "text-foreground hover:text-secondary"}`}
-                  >
-                    PDF Upload
-                  </button>
+                <div className="flex flex-col gap-1">
+                  <div className="flex bg-muted/10 p-1 rounded-lg w-fit border border-border">
+                    <button
+                      onClick={() => setTextLessonMode("MARKDOWN")}
+                      className={`px-4 py-1.5 text-sm rounded-md font-medium transition-colors ${textLessonMode === "MARKDOWN" ? "bg-background shadow-sm text-foreground" : "text-foreground hover:text-secondary"}`}
+                    >
+                      Text Editor
+                    </button>
+                    <button
+                      onClick={() => setTextLessonMode("PDF")}
+                      className={`px-4 py-1.5 text-sm rounded-md font-medium transition-colors ${textLessonMode === "PDF" ? "bg-background shadow-sm text-foreground" : "text-foreground hover:text-secondary"}`}
+                    >
+                      PDF Upload
+                    </button>
+                  </div>
+                  <div>
+                    <p className="text-[12px] text-[#f59e0b]">
+                      Uploaded PDFs will be given priority over the text
+                      content.
+                    </p>
+                  </div>
                 </div>
-
                 {textLessonMode === "MARKDOWN" ? (
                   <MarkdownEditor
                     value={editLessonTextContent}
                     onChange={setEditLessonTextContent}
-                    placeholder="Type markdown content here..."
+                    placeholder="Type content here..."
                   />
                 ) : (
                   <div className="flex flex-col gap-3">
@@ -261,6 +278,8 @@ export default function TrackEditor({ track }: { track: Track }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [lessonToDeleteId, setLessonToDeleteId] = useState<string | null>(null);
 
   // Form State
   const [title, setTitle] = useState(track.title);
@@ -385,10 +404,15 @@ export default function TrackEditor({ track }: { track: Track }) {
   }
 
   async function handleDeleteLesson(lessonId: string) {
-    if (!confirm("Are you sure you want to delete this lesson?")) return;
+    setLessonToDeleteId(lessonId);
+    setIsDeleteDialogOpen(true);
+  }
+
+  async function confirmDeleteLesson() {
+    if (!lessonToDeleteId) return;
 
     try {
-      const res = await fetch(`/api/lessons/${lessonId}`, {
+      const res = await fetch(`/api/lessons/${lessonToDeleteId}`, {
         method: "DELETE",
       });
 
@@ -398,6 +422,9 @@ export default function TrackEditor({ track }: { track: Track }) {
     } catch (error) {
       console.error(error);
       toast.error("Error deleting lesson");
+    } finally {
+      setIsDeleteDialogOpen(false);
+      setLessonToDeleteId(null);
     }
   }
 
@@ -792,6 +819,29 @@ export default function TrackEditor({ track }: { track: Track }) {
           </div>
         ))}
       </div>
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the
+              lesson and all associated student progress.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeleteLesson}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete Lesson
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
