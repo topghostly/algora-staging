@@ -97,7 +97,7 @@ export default function OnboardingPage() {
     <section className="flex w-full h-full justify-center items-center">
       <div className="max-w-3xl mx-auto pb-10 ">
         <div className="text-center mb-10">
-          <h1 className="font-medium mb-2">Welcome, Tutor!</h1>
+          <h2 className="font-medium mb-2">Welcome, Tutor!</h2>
           <p className="text-muted-foreground">
             Let's get your profile set up so you can start teaching.
           </p>
@@ -120,7 +120,7 @@ export default function OnboardingPage() {
           </TabsList>
 
           <TabsContent value="overview" className="bg-card  rounded-lg ">
-            <h2 className="text-xl font-medium mb-4">Platform Overview</h2>
+            <h3 className="mb-4">Platform Overview</h3>
             <div className="space-y-4 text-muted-foreground leading-relaxed">
               <p>
                 Algora is a premium tutoring platform that connects expert
@@ -129,11 +129,19 @@ export default function OnboardingPage() {
                 and track your earnings.
               </p>
               <p>Once you complete this onboarding, you'll be able to:</p>
-              <ul className="list-disc pl-5 space-y-2">
-                <li>Manage your 1-on-1 tutoring sessions</li>
-                <li>View and accept session requests from students</li>
-                <li>Sync your sessions with Google Calendar automatically</li>
-                <li>Track your statistics and student progress</li>
+              <ul className="list-disc pl-5 flex flex-col gap-1 mt-2">
+                <li>
+                  <p>Manage your 1-on-1 tutoring sessions and group sessions</p>
+                </li>
+                <li>
+                  <p>View and accept session requests from students</p>
+                </li>
+                <li>
+                  <p>Sync your sessions with Google Calendar automatically</p>
+                </li>
+                <li>
+                  <p>Track your statistics and student progress</p>
+                </li>
               </ul>
             </div>
             <div className="mt-8 flex justify-end">
@@ -144,9 +152,7 @@ export default function OnboardingPage() {
           </TabsContent>
 
           <TabsContent value="specialties" className="bg-card  rounded-lg ">
-            <h2 className="text-xl font-medium mb-4">
-              What are your specialties?
-            </h2>
+            <h3 className="mb-4">What are your specialties?</h3>
             <p className="text-muted-foreground mb-6">
               Select the areas you are most proficient in. This helps students
               find the right tutor for their needs.
@@ -187,10 +193,8 @@ export default function OnboardingPage() {
           </TabsContent>
 
           <TabsContent value="calendar" className="bg-card  rounded-lg ">
-            <h2 className="text-xl font-medium mb-4">
-              Sync with Google Calendar
-            </h2>
-            <div className="space-y-4 text-muted-foreground mb-8">
+            <h3 className="mb-4">Sync with Google Calendar</h3>
+            <div className="flex flex-col gap-4 text-muted-foreground mb-8">
               <p>
                 To provide a seamless experience for both you and your students,
                 we integrate directly with Google Calendar.
@@ -220,9 +224,9 @@ export default function OnboardingPage() {
 
             <div className="flex flex-col items-center justify-center gap-2">
               <ConnectCalendarButton email={session.user.email!} />
-              <p className="text-xs text-muted-foreground mt-4 italic">
+              {/* <p className="text-xs text-muted-foreground mt-4 italic">
                 After connecting, your onboarding will be complete!
-              </p>
+              </p> */}
             </div>
 
             {/* <div className="flex justify-start mt-8">

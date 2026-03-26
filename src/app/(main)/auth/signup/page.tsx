@@ -198,7 +198,9 @@ function SignUpForm() {
             </label>
             <input
               type="text"
-              placeholder="John Doe"
+              placeholder="Morenikeji Ajayi Samuel"
+              autoComplete="off"
+              data-lpignore="true"
               className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               required
               value={formData.name}
@@ -212,6 +214,8 @@ function SignUpForm() {
             <input
               type="email"
               placeholder="m@example.com"
+              autoComplete="off"
+              data-lpignore="true"
               className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               required
               value={formData.email}
@@ -226,6 +230,8 @@ function SignUpForm() {
             </label>
             <input
               type="password"
+              autoComplete="new-password"
+              data-lpignore="true"
               className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               required
               value={formData.password}

@@ -109,7 +109,10 @@ export default async function TutorSessionsPage() {
               <p className="text-muted-foreground mb-3">
                 Start your journey by creating a learning path.
               </p>
-              <Link href="/tutor/sessions/new" className="btn btn-primary">
+              <Link
+                href="/tutor/sessions/new"
+                className="btn btn-primary rounded-full"
+              >
                 Create your first session
               </Link>
             </div>

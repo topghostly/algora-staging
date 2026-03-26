@@ -41,10 +41,11 @@ export default async function TutorRequestsPage() {
   }
 
   return (
-    <div className="container py-10">
+    <div className="flex flex-col gap-6">
       <BreadcrumbNav
         items={[
           { label: "Tutor Dashboard", href: "/tutor" },
+          { label: "Sessions", href: "/tutor/sessions" },
           { label: "Session Requests" },
         ]}
         className="mb-6"
