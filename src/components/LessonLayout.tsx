@@ -9,7 +9,9 @@ import {
   FileText,
   Menu,
   X,
+  MoveLeft,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface LessonLayoutProps {
   track: any;
@@ -23,6 +25,7 @@ export default function LessonLayout({
   children,
 }: LessonLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const router = useRouter();
 
   // Close sidebar on navigation (on mobile)
   useEffect(() => {
@@ -57,10 +60,10 @@ export default function LessonLayout({
         `}
       >
         <div className="flex flex-col h-full">
-          <div className="p-6 border-b border-border flex items-center justify-between">
-            <h2 className="text-lg font-medium leading-tight line-clamp-2">
+          <div className="px-2 pt-4 pb-6 border-b border-border flex items-center justify-between">
+            <h4 className="font-medium leading-tight line-clamp-2">
               {track.title}
-            </h2>
+            </h4>
             <button
               onClick={() => setIsSidebarOpen(false)}
               className="lg:hidden p-1 hover:bg-muted rounded-md transition-colors"
@@ -123,6 +126,16 @@ export default function LessonLayout({
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto scrollbar-hide relative bg-background">
+        {/* Top Bar */}
+        <div className="h-12 flex items-center justify-end border-b border-border">
+          <button
+            className="flex gap-1.5 text-sm font-semibold items-center hover:bg-muted/10 transition-all duration-150 px-4 py-1 rounded-lg"
+            onClick={() => router.push(`/tracks/${track.id}`)}
+          >
+            <MoveLeft />
+            Back to Catalogue
+          </button>
+        </div>
         {children}
       </main>
     </div>

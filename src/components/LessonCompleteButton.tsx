@@ -44,7 +44,12 @@ export default function LessonCompleteButton({
       // onClick={toggleCompletion}
       disabled={loading}
       className={`btn btn-outline rounded-lg`}
-      style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "0.5rem",
+        backgroundColor: "white",
+      }}
     >
       {loading ? (
         <Loader2 size={18} className="animate-spin" />

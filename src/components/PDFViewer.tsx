@@ -49,16 +49,16 @@ export default function PDFViewer({
     }
   };
 
-  const handlePageChange = (e: { currentPage: number; doc: any }) => {
-    if (isCompleted) return;
+  // const handlePageChange = (e: { currentPage: number; doc: any }) => {
+  //   if (isCompleted) return;
 
-    const totalPages = e.doc.numPages;
-    const progress = (e.currentPage + 1) / totalPages;
+  //   const totalPages = e.doc.numPages;
+  //   const progress = (e.currentPage + 1) / totalPages;
 
-    if (progress >= 0.7) {
-      updateProgress();
-    }
-  };
+  //   if (progress >= 0.7) {
+  //     updateProgress();
+  //   }
+  // };
 
   return (
     <div className="flex flex-col w-full h-[85vh] rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-950">
@@ -109,7 +109,7 @@ export default function PDFViewer({
               fullScreenPluginInstance,
             ]}
             defaultScale={SpecialZoomLevel.PageFit}
-            onPageChange={handlePageChange}
+            // onPageChange={handlePageChange}
           />
         </Worker>
       </div>

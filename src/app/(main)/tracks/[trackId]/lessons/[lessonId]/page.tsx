@@ -11,12 +11,15 @@ import {
   PlayCircle,
   FileText,
   MoveLeft,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 import LessonCompleteButton from "@/components/LessonCompleteButton";
 import { ErrorState } from "@/components/ErrorState";
 import LessonLayout from "@/components/LessonLayout";
 import TextLessonContent from "@/components/TextLessonContent";
 import QuizViewer from "@/components/QuizViewer";
+import ProgressTrigger from "@/components/ProgressTrigger";
 
 export const dynamic = "force-dynamic";
 
@@ -141,28 +144,45 @@ export default async function LessonPage({ params }: LessonPageProps) {
 
   return (
     <LessonLayout track={track} currentLesson={currentLesson}>
-      <div className="p-0 md:p-10 max-w-7xl mx-auto py-16">
-        <BreadcrumbNav
-          items={[
-            { label: "Dashboard", href: "/dashboard" },
-            { label: track.title, href: `/tracks/${track.id}` },
-            { label: currentLesson.title },
-          ]}
-          className="mb-6"
-        />
+      <div>
+        {prevLesson && (
+          <Link href={`/tracks/${track.id}/lessons/${prevLesson.id}`}>
+            <div className="py-2 bg-linear-to-r from-gray-500 via-green-500 to-emerald-400 flex flex-col gap-0 justify-center items-center cursor-pointer">
+              <ChevronUp color="white" />
+              <p
+                className="text-md underline"
+                style={{
+                  color: "white",
+                }}
+              >
+                {/* <span className="hidden sm:inline">Previous:</span>{" "} */}
+                {prevLesson.title}
+              </p>
+            </div>
+          </Link>
+        )}
 
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-          <h2>{currentLesson.title}</h2>
-          {hasAccess && currentLesson.type !== "QUIZ" && isCompleted && (
-            <LessonCompleteButton
-              lessonId={currentLesson.id}
-              initialCompleted={isCompleted}
-            />
-          )}
+        <div className="mb-8 bg-white md:bg-linear-to-r from-zinc-500 via-stone-600 to-zinc-900 py-8 md:py-24">
+          <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <h1
+              className="text-black md:text-white"
+              style={{
+                fontSize: "clamp(2.4rem, 4vw, 3.4rem)",
+              }}
+            >
+              {currentLesson.title}
+            </h1>
+            {hasAccess && currentLesson.type !== "QUIZ" && isCompleted && (
+              <LessonCompleteButton
+                lessonId={currentLesson.id}
+                initialCompleted={isCompleted}
+              />
+            )}
+          </div>
         </div>
 
         {/* Content Viewer */}
-        <div className="mb-12">
+        <div className="mb-12 max-w-6xl min-h-[60vh] mx-auto">
           {!hasAccess ? (
             <div className="p-8 md:p-12 border border-border rounded-2xl text-center bg-muted/30">
               <div className="mb-6">
@@ -223,40 +243,46 @@ export default async function LessonPage({ params }: LessonPageProps) {
           )}
         </div>
 
-        {/* Navigation Buttons */}
-        <div className="flex flex-wrap justify-between gap-4 mt-12 pt-8 border-t border-border">
-          {prevLesson ? (
-            <Link
-              href={`/tracks/${track.id}/lessons/${prevLesson.id}`}
-              className="btn btn-outline flex items-center text-xs gap-2 rounded-full"
-            >
-              <ChevronLeft size={16} />
-              <span className="hidden sm:inline text-xs">Previous:</span>{" "}
-              {prevLesson.title}
-            </Link>
-          ) : (
-            <div />
-          )}
-
-          {nextLesson ? (
-            <Link
-              href={`/tracks/${track.id}/lessons/${nextLesson.id}`}
-              className="btn btn-primary flex items-center text-xs gap-2 rounded-full"
-            >
-              <span className="hidden sm:inline text-xs">Next:</span>{" "}
-              {nextLesson.title}
-              <ChevronRight size={16} />
-            </Link>
-          ) : (
-            <Link
-              href="/dashboard"
-              className="btn btn-primary flex items-center gap-2"
-            >
-              Complete Track
-              <CheckCircle size={16} />
-            </Link>
-          )}
-        </div>
+        <ProgressTrigger
+          lessonId={currentLesson.id}
+          isCompleted={isCompleted}
+          lessonType={currentLesson.type}
+        >
+          <div>
+            {nextLesson ? (
+              <Link href={`/tracks/${track.id}/lessons/${nextLesson.id}`}>
+                <div className="py-2 bg-linear-to-r from-gray-500 via-green-500 to-emerald-400 flex flex-col gap-0 justify-center items-center cursor-pointer">
+                  <p
+                    className="text-md underline"
+                    style={{
+                      color: "white",
+                    }}
+                  >
+                    {nextLesson.title}
+                  </p>
+                  <ChevronDown color="white" />
+                </div>
+              </Link>
+            ) : (
+              <Link
+                href="/dashboard"
+                // className="btn btn-primary flex items-center gap-2"
+              >
+                <div className="py-4 bg-linear-to-r from-gray-500 via-green-500 to-emerald-400 flex flex-col gap-0 justify-center items-center cursor-pointer">
+                  <p
+                    className="text-md underline"
+                    style={{
+                      color: "white",
+                    }}
+                  >
+                    Complete Track
+                  </p>
+                  {/* <CheckCircle color="white" /> */}
+                </div>
+              </Link>
+            )}
+          </div>
+        </ProgressTrigger>
       </div>
     </LessonLayout>
   );
