@@ -3,6 +3,7 @@ import { LibraryBig, ListChecks } from "lucide-react";
 import Footer from "@/components/Footer";
 import { InvertedCornerImage } from "@/components/ui/inverted-border";
 import GlowingButton from "@/components/GlowingButton";
+import LoadingScreen from "@/components/LoadingScreen";
 
 export default function Home() {
   const learnEverything = [
@@ -51,6 +52,7 @@ export default function Home() {
   ];
   return (
     <>
+      <LoadingScreen />
       <main className="py-6">
         {/* Hero Section */}
         <section className="lg:py-15 py-10">

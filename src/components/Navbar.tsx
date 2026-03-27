@@ -57,7 +57,7 @@ export default function Navbar() {
               style={{ position: "relative", width: "50px", height: "50px" }}
             >
               <Image
-                src="/logo-n.png"
+                src="/images/svg/Algora-image.svg"
                 alt="Algora Logo"
                 fill
                 style={{ objectFit: "contain" }}
