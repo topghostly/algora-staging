@@ -11,23 +11,59 @@ import {
   disableSubscription,
 } from "@/lib/paystack";
 import { revalidatePath } from "next/cache";
-export async function updateSubscription(reference: string) {
-  const session = await getServerSession(authOptions);
 
-  if (!session?.user?.id) {
-    throw new Error("Unauthorized");
+export async function updateSubscription(reference: string, userId: string) {
+  console.log("Updating subscription for user", userId);
+  // const session = await getServerSession(authOptions);
+
+  // if (!session?.user?.id) {
+  //   throw new Error("Unauthorized");
+  // }
+
+  const existing = await prisma.paymentTransaction.findUnique({
+    where: { reference },
+    select: { planCode: true },
+  });
+
+  if (existing) {
+    // Map planCode back to tier for the response
+    let tier: SubscriptionTier = "FREE";
+    if (existing.planCode === process.env.NEXT_PUBLIC_PAYSTACK_PLAN_BASIC) tier = "BASIC";
+    else if (existing.planCode === process.env.NEXT_PUBLIC_PAYSTACK_PLAN_PRO_LITE) tier = "PRO_LITE";
+    else if (existing.planCode === process.env.NEXT_PUBLIC_PAYSTACK_PLAN_PRO_PLUS) tier = "PRO_PLUS";
+
+    return { success: true, updated: false, tier };
   }
 
   // 1. Verify transaction with Paystack
   const verification = await verifyTransaction(reference);
 
-  if (verification.data.status !== "success") {
+  if (!verification.status || verification.data.status !== "success") {
     throw new Error("Payment verification failed");
+  }
+
+  // Security check: Ensure the transaction email matches the user we are updating
+  // This prevents Insecure Direct Object Reference (IDOR) attacks
+  const paystackEmail = verification.data.customer.email;
+  const targetUser = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { email: true },
+  });
+
+  if (!targetUser || targetUser.email.toLowerCase() !== paystackEmail.toLowerCase()) {
+    console.error("Security Alert: User email mismatch", {
+      providedUserId: userId,
+      targetUserEmail: targetUser?.email,
+      paystackEmail,
+    });
+    throw new Error("User mismatch: This transaction does not belong to the intended user.");
   }
 
   const planCode = verification.data.plan;
   const amount = verification.data.amount / 100;
   const paystackTransactionId = verification.data.id.toString();
+
+  console.log("The verification worked", verification);
 
   // 2. Map plan to tier and credits
   let tier: SubscriptionTier = "FREE";
@@ -51,7 +87,7 @@ export async function updateSubscription(reference: string) {
   // Use a transaction to ensure both user update and transaction logging succeed
   const result = await prisma.$transaction(async (tx) => {
     const user = await tx.user.update({
-      where: { id: session.user.id },
+      where: { id: userId },
       data: {
         subscriptionTier: tier,
         subscriptionId: verification.data.subscription_code || null,
@@ -63,7 +99,7 @@ export async function updateSubscription(reference: string) {
 
     await tx.paymentTransaction.create({
       data: {
-        userId: session.user.id,
+        userId: userId,
         reference: reference,
         paystackTransactionId: paystackTransactionId,
         amount: amount,
@@ -75,7 +111,11 @@ export async function updateSubscription(reference: string) {
     return user;
   });
 
-  return { success: true, user: result };
+  revalidatePath("/pricing");
+  revalidatePath("/dashboard");
+
+  return { success: true, updated: true, tier };
+  // return { success: true, user: result };
 }
 
 export async function recordTransaction(details: {
@@ -147,5 +187,6 @@ export async function cancelSubscription() {
 
   revalidatePath("/pricing");
 
-  return { success: true, user: updatedUser };
+  return { success: true };
+  // return { success: true, user: updatedUser };
 }

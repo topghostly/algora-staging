@@ -53,6 +53,8 @@ export default function Dashboard() {
     }
   }, [session]);
 
+  console.log(session);
+
   useEffect(() => {
     if (session && session.user?.role !== "LEARNER") {
       router.replace("/auth/redirect");

@@ -10,6 +10,7 @@ export default function SubscriptionCard({
   subscriptionTier,
   credits1on1,
 }: SubscriptionCardProps) {
+  console.log(subscriptionTier);
   return (
     <div className="card p-6">
       <div className="flex items-center gap-2 mb-4">

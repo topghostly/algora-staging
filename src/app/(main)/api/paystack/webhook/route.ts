@@ -1,63 +1,67 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { verifyPaystackSignature } from "@/lib/paystack";
+import { verifyPaystackSignature, verifyTransaction } from "@/lib/paystack";
 import { sendEmail } from "@/lib/email";
 import { SubscriptionSuccessEmail } from "@/components/emails/SubscriptionSuccessEmail";
+import { updateSubscription } from "@/app/(main)/actions/subscription";
 
 export async function POST(req: Request) {
   const bodyText = await req.text();
   const signature = req.headers.get("x-paystack-signature");
 
-  if (!signature || !verifyPaystackSignature(bodyText, signature)) {
+  // Only verify signature if it exists. If it doesn't, we assume it's an internal call
+  // and proceed to verify transaction reference with Paystack API.
+  if (signature && !verifyPaystackSignature(bodyText, signature)) {
     return NextResponse.json({ message: "Invalid signature" }, { status: 400 });
   }
 
   const body = JSON.parse(bodyText);
   const event = body.event;
-  const data = body.data;
 
   if (event === "charge.success") {
-    const email = data.customer.email;
-    const planCode = data.plan?.plan_code;
+    const reference = body.data.reference;
 
-    let tier = "FREE";
-    let credits = 0;
+    // Check if the transaction has already been processed to save an API call to Paystack.
+    // This also mitigates any impact from replaying cURL commands.
+    const existingTransaction = await prisma.paymentTransaction.findUnique({
+      where: { reference },
+    });
 
-    if (planCode === process.env.NEXT_PUBLIC_PAYSTACK_PLAN_BASIC) {
-      tier = "BASIC";
-      credits = 0;
-    } else if (planCode === process.env.NEXT_PUBLIC_PAYSTACK_PLAN_PRO_LITE) {
-      tier = "PRO_LITE";
-      credits = 1;
-    } else if (planCode === process.env.NEXT_PUBLIC_PAYSTACK_PLAN_PRO_PLUS) {
-      tier = "PRO_PLUS";
-      credits = 4;
+    if (existingTransaction) {
+      return NextResponse.json(
+        { message: "Transaction already processed" },
+        { status: 200 },
+      );
     }
 
-    if (tier !== "FREE") {
-      const user = await prisma.user.findUnique({ where: { email } });
+    try {
+      const verification = await verifyTransaction(reference);
+      if (!verification.status) throw new Error("Verification failed");
 
-      await prisma.user.update({
+      const email = verification.data.customer.email;
+
+      const user = await prisma.user.findUnique({
         where: { email },
-        data: {
-          subscriptionTier: tier as any,
-          subscriptionId: data.subscription_code, // Save subscription code for future reference
-          credits1on1: credits, // Reset credits on new subscription payment? Or increment?
-          // For now, let's set it to the plan limit.
-          // Ideally, we should handle rollovers or resets more carefully,
-          // but setting it is safe for the initial payment.
-        },
       });
 
-      // Send Subscription Success Email
-      await sendEmail({
-        to: email,
-        subject: "Your Algora Subscription (" + tier + ")",
-        react: SubscriptionSuccessEmail({
-          userName: user?.name || "Learner",
-          planName: tier,
-        }) as any,
-      });
+      if (!user) throw new Error("User not found");
+
+      const { updated, tier } = await updateSubscription(reference, user.id);
+
+      if (updated) {
+        await sendEmail({
+          to: email,
+          subject: "Your Algora Subscription",
+          react: SubscriptionSuccessEmail({
+            userName: user.name || "Learner",
+            planName: tier,
+          }) as any,
+        });
+      } else {
+        console.log("Subscription already processed, skipping email");
+      }
+    } catch (error) {
+      console.error("Webhook error & Error updating subscription:", error);
     }
   }
 

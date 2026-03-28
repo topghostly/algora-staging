@@ -5,6 +5,8 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { SubscriptionTier } from "@prisma/client";
+import { useState } from "react";
+import { Loader } from "lucide-react";
 
 const PricingCard = dynamic(() => import("@/components/PricingCard"), {
   ssr: false,
@@ -13,29 +15,37 @@ const PricingCard = dynamic(() => import("@/components/PricingCard"), {
 export default function PricingPage() {
   const { data: session } = useSession();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubscribe = (planCode: string, amount: number) => {
-    if (!session?.user?.email) {
-      router.push(`/auth/signup?plan=${planCode}`); // Redirect to signup if not logged in
-      return;
-    }
+  // const handleSubscribe = (planCode: string, amount: number) => {
+  //   if (!session?.user?.email) {
+  //     router.push(`/auth/signup?plan=${planCode}`); // Redirect to signup if not logged in
+  //     return;
+  //   }
 
-    const config = {
-      reference: new Date().getTime().toString(),
-      email: session.user.email,
-      amount: amount * 100, // Paystack expects amount in kobo
-      publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
-      plan: planCode,
-    };
+  //   const config = {
+  //     reference: new Date().getTime().toString(),
+  //     email: session.user.email,
+  //     amount: amount * 100, // Paystack expects amount in kobo
+  //     publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
+  //     plan: planCode,
+  //   };
 
-    // We can't use the hook directly in the callback, so we need a component or a different approach.
-    // Actually, usePaystackPayment returns a function 'initializePayment'.
-    // But we need to call the hook at the top level.
-    // Let's make PricingCard handle the hook.
-  };
+  //   // We can't use the hook directly in the callback, so we need a component or a different approach.
+  //   // Actually, usePaystackPayment returns a function 'initializePayment'.
+  //   // But we need to call the hook at the top level.
+  //   // Let's make PricingCard handle the hook.
+  // };
 
   return (
     <main className="container" style={{ padding: "6rem 0 10rem 0" }}>
+      {isLoading && (
+        <div className="fixed w-full h-full top-0 left-0 bg-background/90 z-60">
+          <div className="w-full h-full flex justify-center items-center flex-col gap-2">
+            <Loader className="animate-spin" size={30} />
+          </div>
+        </div>
+      )}
       <div style={{ textAlign: "center", marginBottom: "5rem" }}>
         <h1 className="mb-4">Simple, Transparent Pricing</h1>
         <p className="mb-4">
@@ -70,6 +80,7 @@ export default function PricingPage() {
         {/* Free Tier */}
         <PricingCard
           title="Free"
+          setIsLoading={setIsLoading}
           price="₦0"
           description="Get a taste of our structured learning path."
           features={[
@@ -91,6 +102,7 @@ export default function PricingPage() {
         <PricingCard
           title="Basic"
           price="₦4,999"
+          setIsLoading={setIsLoading}
           period="/month"
           description="Full access to all course content and community events."
           features={[
@@ -112,6 +124,7 @@ export default function PricingPage() {
         <PricingCard
           title="Pro Lite"
           price="₦9,499"
+          setIsLoading={setIsLoading}
           period="/month"
           description="Add personal mentorship to accelerate your growth."
           features={[
@@ -134,6 +147,7 @@ export default function PricingPage() {
         <PricingCard
           title="Pro Plus"
           price="₦14,999"
+          setIsLoading={setIsLoading}
           period="/month"
           description="Maximum mentorship for serious career switchers."
           features={[

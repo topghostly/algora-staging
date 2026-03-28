@@ -29,6 +29,7 @@ export default function PricingCard({
   variant = "outline",
   popular = false,
   isCurrentPlan = false,
+  setIsLoading,
 }: {
   title: string;
   price: string;
@@ -44,10 +45,12 @@ export default function PricingCard({
   variant?: "primary" | "outline";
   popular?: boolean;
   isCurrentPlan?: boolean;
+  setIsLoading: (loading: boolean) => void;
 }) {
   const { data: session, update } = useSession();
   const router = useRouter();
   const [isCancelling, setIsCancelling] = useState(false);
+
   const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   const config = {
@@ -61,10 +64,33 @@ export default function PricingCard({
   const initializePayment = usePaystackPayment(config);
 
   const onSuccess = async (reference: any) => {
-    // console.log("Payment successful", reference);
     try {
       if (tier) {
-        await updateSubscription(reference.reference);
+        try {
+          await fetch("/api/paystack/webhook", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              event: "charge.success",
+              data: {
+                reference: reference.reference,
+              },
+            }),
+          });
+        } catch (error) {
+          console.error("Failed to update subscription:", error);
+          toast.error(
+            "Payment was successful, but we encountered an error updating your account. Please contact support.",
+            {
+              duration: 5000,
+            },
+          );
+          return;
+        } finally {
+          setIsLoading(false);
+        }
         toast.success(
           `Payment successful! Your subscription has been updated to ${title}.`,
           {
@@ -72,7 +98,7 @@ export default function PricingCard({
           },
         );
         await update();
-        router.push("/dashboard");
+        // router.push("/dashboard");
       } else {
         // Record non-tier transaction (if any)
         await recordTransaction({
@@ -136,24 +162,15 @@ export default function PricingCard({
 
   const handleClick = () => {
     if (isCurrentPlan) return;
-
-    console.log("PricingCard clicked", {
-      planCode,
-      buttonLink,
-      session: !!session,
-    });
-
     if (!session) {
-      console.log("No session, redirecting to signup");
       router.push(buttonLink || "/auth/signup");
       return;
     }
 
     if (planCode) {
-      console.log("Initializing payment with config:", config);
+      setIsLoading(true);
       initializePayment({ onSuccess, onClose });
     } else if (buttonLink) {
-      console.log("Navigating to buttonLink:", buttonLink);
       router.push(buttonLink);
     }
   };
@@ -167,7 +184,7 @@ export default function PricingCard({
     isCurrentPlan || popular
       ? "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
       : "none";
-  const scale = isCurrentPlan || popular ? "scale(1.02)" : "none"; // Reduced scale slightly
+  const scale = isCurrentPlan || popular ? "scale(1.02)" : "none";
   const zIndex = isCurrentPlan ? 20 : popular ? 10 : 1;
 
   return (

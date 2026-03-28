@@ -112,7 +112,7 @@ export const authOptions: NextAuthOptions = {
     // ─────────────────────────────────────────
     // JWT CALLBACK
     // ─────────────────────────────────────────
-    async jwt({ token, user, account, session }) {
+    async jwt({ token, user, account, trigger, session }) {
       // Initial login - runs after user is created/linked by adapter
       if (user && account) {
         token.id = user.id;
@@ -188,8 +188,10 @@ export const authOptions: NextAuthOptions = {
         token.provider = "credentials";
       }
 
-      // Forced refresh / session update
-      if (session) {
+      // ─────────────────────────────────────────
+      // SESSION UPDATE (From useSession().update())
+      // ─────────────────────────────────────────
+      if (trigger === "update" || (trigger === undefined && session)) {
         const userId = (token.id || token.sub) as string;
 
         if (userId) {
