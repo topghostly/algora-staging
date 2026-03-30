@@ -195,11 +195,30 @@ export const authOptions: NextAuthOptions = {
         const userId = (token.id || token.sub) as string;
 
         if (userId) {
-          const freshUser = await prisma.user.findUnique({
+          let freshUser = await prisma.user.findUnique({
             where: { id: userId },
           });
 
           if (freshUser) {
+            // Lazy Downgrade Logic: 
+            // If user cancelled but period ended, downgrade them now
+            if (
+              freshUser.cancelAtPeriodEnd &&
+              freshUser.subscriptionPeriodEnd &&
+              new Date() > freshUser.subscriptionPeriodEnd &&
+              freshUser.subscriptionTier !== "FREE"
+            ) {
+              console.log("Lazy Downgrade: Period ended for user", userId);
+              freshUser = await prisma.user.update({
+                where: { id: userId },
+                data: {
+                  subscriptionTier: "FREE",
+                  subscriptionId: null,
+                  cancelAtPeriodEnd: false,
+                },
+              });
+            }
+
             token.emailVerified = freshUser.emailVerified as any;
             token.calendarConnected = freshUser.calendarConnected;
             token.role = freshUser.role;
@@ -209,6 +228,10 @@ export const authOptions: NextAuthOptions = {
             token.hasCompletedOnboarding = freshUser.hasCompletedOnboarding;
             token.specialties = freshUser.specialties;
             token.tutorBio = freshUser.tutorBio;
+
+            // Include grace period info in token
+            token.subscriptionPeriodEnd = freshUser.subscriptionPeriodEnd;
+            token.cancelAtPeriodEnd = freshUser.cancelAtPeriodEnd;
           }
         }
       }
@@ -229,6 +252,8 @@ export const authOptions: NextAuthOptions = {
         session.user.hasCompletedOnboarding = token.hasCompletedOnboarding;
         session.user.specialties = token.specialties;
         session.user.tutorBio = token.tutorBio;
+        session.user.subscriptionPeriodEnd = token.subscriptionPeriodEnd as Date | null;
+        session.user.cancelAtPeriodEnd = token.cancelAtPeriodEnd as boolean | null;
         (session.user as any).provider = token.provider;
       }
 

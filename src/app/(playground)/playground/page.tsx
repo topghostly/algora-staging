@@ -1,213 +1,259 @@
 "use client";
 import React, { useState } from "react";
-import { T, GLOBAL_STYLES, DIFF_COLOR } from "./components/constants";
-import { Tag } from "./components/shared-ui";
-import { COURSES, CourseCatalog } from "./components/Catalog";
+import Link from "next/link";
+import { T, GLOBAL_STYLES } from "./components/constants";
 
-// Import course components
-import { FundamentalsSlides } from "./components/Fundamentals";
-import { JinjaSlides } from "./components/Jinja";
-import { IncrementalCourse } from "./components/Incremental";
-import { SnapshotsSlides } from "./components/Snapshots";
-import { SeedsSlides } from "./components/Seeds";
-import { ExposuresSlides } from "./components/Exposures";
-import { StateSlides } from "./components/StateManagement";
-import { RetrySlides } from "./components/Retry";
-import { MeshSlides } from "./components/Mesh";
-import { TestingSlides } from "./components/Testing";
-import { DeploymentSlides } from "./components/Deployment";
-import { CloneSlides } from "./components/Clone";
-import { GrantsSlides } from "./components/Grants";
-import { PythonSlides } from "./components/PythonModels";
+const TECHNOLOGIES = [
+  {
+    id: "dbt",
+    name: "dbt (Data Build Tool)",
+    description: "Learn dbt from scratch with interactive courses.",
+    icon: "🏗️",
+    color: T.teal,
+    href: "/playground/dbt",
+    active: true,
+  },
+  {
+    id: "sql",
+    name: "SQL Analytics",
+    description: "Master advanced SQL querying for data analysis.",
+    icon: "🐘",
+    color: T.orange,
+    href: "/playground/sql",
+    active: true,
+  },
+  {
+    id: "python",
+    name: "Data with Python",
+    description: "Pandas, PySpark, and data engineering in Python.",
+    icon: "🐍",
+    color: T.yellow,
+    href: "/playground/python",
+    active: false,
+  },
+  {
+    id: "airflow",
+    name: "Apache Airflow",
+    description: "Orchestrate complex data pipelines step by step.",
+    icon: "💨",
+    color: T.pink,
+    href: "/playground/airflow",
+    active: false,
+  },
+];
 
-const COURSE_COMPONENTS: Record<string, React.ComponentType> = {
-  fundamentals: FundamentalsSlides,
-  jinja: JinjaSlides,
-  incremental: IncrementalCourse,
-  snapshots: SnapshotsSlides,
-  seeds: SeedsSlides,
-  exposures: ExposuresSlides,
-  state: StateSlides,
-  retry: RetrySlides,
-  mesh: MeshSlides,
-  testing: TestingSlides,
-  deployment: DeploymentSlides,
-  clone: CloneSlides,
-  grants: GrantsSlides,
-  python: PythonSlides,
-};
-
-export default function PlaygroundPage() {
-  const [view, setView] = useState("home");
-  const [activeCourseId, setActiveCourseId] = useState<string | null>(null);
-
-  const openCourse = (id: string) => {
-    setActiveCourseId(id);
-    setView("course");
-  };
-
-  const goHome = () => {
-    setView("home");
-    setActiveCourseId(null);
-  };
-
-  const course = COURSES.find((c) => c.id === activeCourseId);
-  const CourseComponent = activeCourseId
-    ? COURSE_COMPONENTS[activeCourseId]
-    : null;
+export default function TechSelectorPage() {
+  const [hovered, setHovered] = useState<string | null>(null);
 
   return (
     <>
       <style>{GLOBAL_STYLES}</style>
-      {view === "home" ? (
-        <CourseCatalog onSelect={openCourse} />
-      ) : (
+      <div
+        style={{
+          minHeight: "100vh",
+          color: "#f1f5f9",
+          fontFamily: "'Onest',sans-serif",
+        }}
+      >
+        {/* Hero */}
         <div
           style={{
-            minHeight: "100vh",
-            // background: `radial-gradient(ellipse at 10% 0%, #0c1525 0%, ${T.ink} 65%)`,
-            color: "#f1f5f9",
-            fontFamily: "'Onest',sans-serif",
-            display: "flex",
-            flexDirection: "column",
+            padding: "56px 32px 40px",
+            textAlign: "center",
+            borderBottom: "1px solid rgba(255,255,255,0.05)",
+            position: "relative",
+            overflow: "hidden",
           }}
-          // className="px-[clamp(1rem,5vw,2rem)]"
         >
-          {/* Header */}
           <div
             style={{
-              padding: "12px 24px",
-              // borderBottom: "1px solid rgba(255,255,255,0.05)",
-              display: "flex",
+              display: "inline-flex",
               alignItems: "center",
-              gap: 12,
-              // background: "rgba(0,0,0,0.3)",
-              backdropFilter: "blur(12px)",
-              position: "sticky",
-              top: 0,
-              zIndex: 10,
+              gap: 8,
+              background: T.tealBg,
+              border: T.tealBorder,
+              borderRadius: 20,
+              padding: "5px 16px",
+              marginBottom: 20,
             }}
           >
-            <button
-              onClick={goHome}
+            <span
               style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                padding: "5px 12px",
-                borderRadius: 8,
-                border: `1px solid ${T.slate}`,
-                background: "rgba(255,255,255,0.04)",
-                color: T.grey,
+                width: 7,
+                height: 7,
+                borderRadius: "50%",
+                background: T.teal,
+                display: "inline-block",
+              }}
+            />
+            <span
+              style={{
                 fontSize: 11,
-                cursor: "pointer",
+                color: T.teal,
                 fontFamily: "'JetBrains Mono',monospace",
-                transition: "all 0.18s",
+                letterSpacing: 0.5,
               }}
             >
-              ← All Courses
-            </button>
-            <div style={{ width: 1, height: 18, background: T.slate }} />
-            <div
-              style={{
-                width: 28,
-                height: 28,
-                borderRadius: 8,
-                background: `${course?.color}15`,
-                border: `1px solid ${course?.color}30`,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: 15,
-              }}
-            >
-              {course?.icon}
-            </div>
-            <div>
-              <div
-                style={{
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: "#f1f5f9",
-                  fontFamily: "'Bricolage Grotesque',sans-serif",
-                }}
-              >
-                {course?.title}
-              </div>
-              <div
-                style={{
-                  fontSize: 10,
-                  color: T.greyDark,
-                  fontFamily: "monospace",
-                }}
-              >
-                {course?.subtitle}
-              </div>
-            </div>
-            <div style={{ marginLeft: "auto", display: "flex", gap: 6 }}>
-              {course && course.difficulty && (
-                <Tag
-                  label={course.difficulty}
-                  color={DIFF_COLOR[course.difficulty]}
-                />
-              )}
-              <span
-                style={{
-                  fontSize: 9,
-                  padding: "2px 8px",
-                  borderRadius: 10,
-                  background: "rgba(255,255,255,0.04)",
-                  color: T.greyDark,
-                  border: "1px solid rgba(255,255,255,0.06)",
-                  fontFamily: "monospace",
-                }}
-              >
-                ⏱ {course?.duration}
-              </span>
-            </div>
+              Interactive Playgrounds
+            </span>
           </div>
-
-          {/* Course title */}
-          <div
+          <h1
             style={{
-              textAlign: "center",
-              padding: "24px 20px 12px",
-              borderBottom: `1px solid ${T.slate}30`,
-              background: `linear-gradient(to bottom, ${course?.color}08, transparent)`,
+              fontFamily: "'Bricolage Grotesque',sans-serif",
+              fontSize: "clamp(30px,5vw,50px)",
+              fontWeight: 800,
+              margin: "0 0 14px",
+              lineHeight: 1.1,
+              letterSpacing: -1,
             }}
           >
-            <div style={{ fontSize: 22, marginBottom: 6 }}>{course?.icon}</div>
-            <h1
+            Choose your{" "}
+            <span
               style={{
-                fontFamily: "'Bricolage Grotesque',sans-serif",
-                fontSize: 26,
-                fontWeight: 800,
-                margin: 0,
-                letterSpacing: -0.5,
-                color: "#f1f5f9",
+                background: `linear-gradient(135deg, ${T.teal}, ${T.blue})`,
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
               }}
             >
-              {course?.title}
-            </h1>
-            <div style={{ fontSize: 13, color: T.grey, marginTop: 4 }}>
-              {course?.subtitle}
-            </div>
-          </div>
-
-          {/* Content */}
-          <div
+              technology
+            </span>
+          </h1>
+          <p
             style={{
-              flex: 1,
-              padding: "16px 24px 40px",
-              maxWidth: 800,
-              margin: "0 auto",
-              width: "100%",
+              color: T.grey,
+              fontSize: 14,
+              maxWidth: 500,
+              margin: "0 auto 28px",
+              lineHeight: 1.75,
             }}
           >
-            {CourseComponent && <CourseComponent />}
-          </div>
+            Dive into structured, interactive environments to master the modern
+            data stack. Select a technology to begin.
+          </p>
         </div>
-      )}
+
+        {/* Tech Grid */}
+        <div
+          style={{
+            padding: "40px 24px 60px",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))",
+            gap: 16,
+            maxWidth: 900,
+            margin: "0 auto",
+          }}
+        >
+          {TECHNOLOGIES.map((tech, i) => {
+            const isHovered = hovered === tech.id;
+            const CardMarkup = (
+              <div
+                onMouseEnter={() => setHovered(tech.id)}
+                onMouseLeave={() => setHovered(null)}
+                style={{
+                  background:
+                    isHovered && tech.active
+                      ? "rgba(15,23,42,0.98)"
+                      : T.surface,
+                  border: `1px solid ${
+                    isHovered && tech.active
+                      ? tech.color + "44"
+                      : "rgba(255,255,255,0.07)"
+                  }`,
+                  borderRadius: 14,
+                  padding: "24px",
+                  cursor: tech.active ? "pointer" : "not-allowed",
+                  opacity: tech.active ? 1 : 0.6,
+                  transition: "all 0.2s",
+                  transform:
+                    isHovered && tech.active
+                      ? "translateY(-4px)"
+                      : "translateY(0)",
+                  boxShadow:
+                    isHovered && tech.active
+                      ? `0 10px 32px ${tech.color}14`
+                      : "none",
+                  animation: `fadeUp 0.4s ease both`,
+                  animationDelay: `${i * 40}ms`,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 12,
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                {!tech.active && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 12,
+                      right: 12,
+                      fontSize: 10,
+                      background: "rgba(255,255,255,0.1)",
+                      color: T.grey,
+                      padding: "2px 8px",
+                      borderRadius: 12,
+                      fontFamily: "monospace",
+                    }}
+                  >
+                    Coming Soon
+                  </div>
+                )}
+                <div
+                  style={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: 12,
+                    background: `${tech.color}15`,
+                    border: `1px solid ${tech.color}30`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 24,
+                  }}
+                >
+                  {tech.icon}
+                </div>
+                <div>
+                  <h3
+                    style={{
+                      fontSize: 18,
+                      fontWeight: 700,
+                      color: "#f1f5f9",
+                      fontFamily: "'Bricolage Grotesque',sans-serif",
+                      margin: "0 0 4px 0",
+                    }}
+                  >
+                    {tech.name}
+                  </h3>
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: 13,
+                      color: T.grey,
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    {tech.description}
+                  </p>
+                </div>
+              </div>
+            );
+
+            if (tech.active) {
+              return (
+                <Link
+                  href={tech.href}
+                  key={tech.id}
+                  style={{ textDecoration: "none" }}
+                >
+                  {CardMarkup}
+                </Link>
+              );
+            }
+            return <React.Fragment key={tech.id}>{CardMarkup}</React.Fragment>;
+          })}
+        </div>
+      </div>
     </>
   );
 }

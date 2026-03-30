@@ -73,6 +73,8 @@ model User {
   oneOnOneSessionsRemaining Int @default(0)
   subscriptionId   String?          // Paystack subscription code
   credits1on1      Int              @default(0)
+  subscriptionPeriodEnd DateTime?
+  cancelAtPeriodEnd    Boolean   @default(false)
   
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt

@@ -12,6 +12,21 @@ import {
 } from "@/lib/paystack";
 import { revalidatePath } from "next/cache";
 
+const ALLOWED_PLANS: Record<
+  string,
+  { tier: SubscriptionTier; credits: number }
+> = {
+  [process.env.NEXT_PUBLIC_PAYSTACK_PLAN_BASIC!]: { tier: "BASIC", credits: 0 },
+  [process.env.NEXT_PUBLIC_PAYSTACK_PLAN_PRO_LITE!]: {
+    tier: "PRO_LITE",
+    credits: 1,
+  },
+  [process.env.NEXT_PUBLIC_PAYSTACK_PLAN_PRO_PLUS!]: {
+    tier: "PRO_PLUS",
+    credits: 4,
+  },
+};
+
 export async function updateSubscription(reference: string, userId: string) {
   console.log("Updating subscription for user", userId);
   // const session = await getServerSession(authOptions);
@@ -26,13 +41,8 @@ export async function updateSubscription(reference: string, userId: string) {
   });
 
   if (existing) {
-    // Map planCode back to tier for the response
-    let tier: SubscriptionTier = "FREE";
-    if (existing.planCode === process.env.NEXT_PUBLIC_PAYSTACK_PLAN_BASIC) tier = "BASIC";
-    else if (existing.planCode === process.env.NEXT_PUBLIC_PAYSTACK_PLAN_PRO_LITE) tier = "PRO_LITE";
-    else if (existing.planCode === process.env.NEXT_PUBLIC_PAYSTACK_PLAN_PRO_PLUS) tier = "PRO_PLUS";
-
-    return { success: true, updated: false, tier };
+    const plan = ALLOWED_PLANS[existing.planCode!];
+    return { success: true, updated: false, tier: plan?.tier || "FREE" };
   }
 
   // 1. Verify transaction with Paystack
@@ -50,39 +60,36 @@ export async function updateSubscription(reference: string, userId: string) {
     select: { email: true },
   });
 
-  if (!targetUser || targetUser.email.toLowerCase() !== paystackEmail.toLowerCase()) {
+  if (
+    !targetUser ||
+    targetUser.email.toLowerCase() !== paystackEmail.toLowerCase()
+  ) {
     console.error("Security Alert: User email mismatch", {
       providedUserId: userId,
       targetUserEmail: targetUser?.email,
       paystackEmail,
     });
-    throw new Error("User mismatch: This transaction does not belong to the intended user.");
+    throw new Error(
+      "User mismatch: This transaction does not belong to the intended user.",
+    );
   }
 
   const planCode = verification.data.plan;
   const amount = verification.data.amount / 100;
   const paystackTransactionId = verification.data.id.toString();
 
-  console.log("The verification worked", verification);
-
   // 2. Map plan to tier and credits
-  let tier: SubscriptionTier = "FREE";
-  let creditsToAdd = 0;
+  const plan = ALLOWED_PLANS[planCode];
 
-  if (planCode === process.env.NEXT_PUBLIC_PAYSTACK_PLAN_BASIC) {
-    tier = "BASIC";
-    creditsToAdd = 0;
-  } else if (planCode === process.env.NEXT_PUBLIC_PAYSTACK_PLAN_PRO_LITE) {
-    tier = "PRO_LITE";
-    creditsToAdd = 1;
-  } else if (planCode === process.env.NEXT_PUBLIC_PAYSTACK_PLAN_PRO_PLUS) {
-    tier = "PRO_PLUS";
-    creditsToAdd = 4;
-  }
-
-  if (tier === "FREE") {
+  if (!plan) {
     throw new Error("Invalid plan code or plan not recognized");
   }
+
+  const { tier, credits: creditsToAdd } = plan;
+
+  const subscriptionPeriodEnd = verification.data.next_payment_date
+    ? new Date(verification.data.next_payment_date)
+    : null;
 
   // Use a transaction to ensure both user update and transaction logging succeed
   const result = await prisma.$transaction(async (tx) => {
@@ -91,6 +98,8 @@ export async function updateSubscription(reference: string, userId: string) {
       data: {
         subscriptionTier: tier,
         subscriptionId: verification.data.subscription_code || null,
+        subscriptionPeriodEnd: subscriptionPeriodEnd,
+        cancelAtPeriodEnd: false, // Reset cancellation flag on new payment/update
         credits1on1: {
           increment: creditsToAdd,
         },
@@ -176,12 +185,11 @@ export async function cancelSubscription() {
     );
   }
 
-  // 3. Update user record in database to FREE
+  // 3. Update user record in database to set cancellation flag
   const updatedUser = await prisma.user.update({
     where: { id: session.user.id },
     data: {
-      subscriptionTier: "FREE",
-      subscriptionId: null,
+      cancelAtPeriodEnd: true,
     },
   });
 

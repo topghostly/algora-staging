@@ -35,12 +35,17 @@ export default function PlaygroundNav() {
           href="/"
           style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
         >
-          <div style={{ position: "relative", width: "100px", height: "50px" }}>
+          <div
+            style={{
+              position: "relative",
+              // width: "100px",
+            }}
+          >
             <Image
-              src="/logo-long.png"
+              src="/images/logo-white.svg"
               alt="Algora Logo"
-              fill
-              style={{ objectFit: "contain" }}
+              width={100}
+              height={30}
             />
           </div>
         </Link>

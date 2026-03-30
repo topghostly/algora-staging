@@ -13,6 +13,7 @@ import {
 import { SubscriptionTier } from "@prisma/client";
 import { toast } from "sonner";
 import { ConfirmationDialog } from "@/components/ui/alert-dialog";
+import { v4 as uuidv4 } from "uuid";
 
 export default function PricingCard({
   title,
@@ -54,7 +55,7 @@ export default function PricingCard({
   const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   const config = {
-    reference: new Date().getTime().toString(),
+    reference: uuidv4(),
     email: session?.user?.email || "",
     amount: (amount || 0) * 100,
     publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
@@ -351,7 +352,23 @@ export default function PricingCard({
             Cancelling...
           </span>
         ) : isCurrentPlan ? (
-          <span className="text-red-500">Cancel Subscription</span>
+          <span className="text-red-500 flex flex-col items-center">
+            {session?.user?.cancelAtPeriodEnd ? (
+              <>
+                <span>Subscription Cancelled</span>
+                {session?.user?.subscriptionPeriodEnd && (
+                  <span className="text-[10px] opacity-70">
+                    Active until{" "}
+                    {new Date(
+                      session.user.subscriptionPeriodEnd,
+                    ).toLocaleDateString()}
+                  </span>
+                )}
+              </>
+            ) : (
+              "Cancel Subscription"
+            )}
+          </span>
         ) : (
           buttonText
         )}
@@ -361,7 +378,7 @@ export default function PricingCard({
         isOpen={showCancelDialog}
         onOpenChange={setShowCancelDialog}
         title="Cancel Subscription"
-        description="Are you sure you want to cancel your subscription? Your current plan will be downgraded to Free at the end of the billing period."
+        description="Cancel subscription? You’ll move to the Free plan at the end of your billing cycle."
         confirmText="Yes, Cancel Subscription"
         cancelText="No, Keep It"
         onConfirm={confirmCancel}
