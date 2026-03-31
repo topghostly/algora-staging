@@ -35,7 +35,7 @@ const nextConfig: NextConfig = {
             key: "Content-Security-Policy",
             value: `
               default-src 'self';
-              script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.paystack.co https://www.youtube.com https://unpkg.com;
+              script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.paystack.co https://www.youtube.com https://unpkg.com https://vercel.live;
               worker-src 'self' blob:;
               style-src 'self' 'unsafe-inline';
               img-src 'self' blob: data: https://algora-user-profiles-bucket.s3.us-east-1.amazonaws.com https://images.unsplash.com https://lh3.googleusercontent.com https://avatar.iran.liara.run https://i.ytimg.com;
