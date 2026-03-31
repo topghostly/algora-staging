@@ -29,12 +29,25 @@ export const SPECIALTY_OPTIONS: ComboboxOption[] = [
   { value: "Machine Learning", label: "Machine Learning" },
 ];
 
+import { z } from "zod";
+import { FormFieldError } from "@/components/ui/form-error";
+
+const onboardingSchema = z.object({
+  specialties: z.array(z.string()).min(1, "Please select at least one specialty."),
+  tutorBio: z.string().min(10, "Bio must be at least 10 characters.").max(1000),
+});
+
+type OnboardingErrors = {
+  [K in keyof z.infer<typeof onboardingSchema>]?: string;
+};
+
 export default function OnboardingPage() {
   const { data: session, status, update } = useSession();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
   const [bio, setBio] = useState("");
+  const [errors, setErrors] = useState<OnboardingErrors>({});
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -48,13 +61,21 @@ export default function OnboardingPage() {
   }, [status, session, router]);
 
   const handleSaveSpecialties = async () => {
-    if (selectedSpecialties.length === 0) {
-      toast.error("Please select at least one specialty.");
-      return;
-    }
+    setErrors({});
+    const validation = onboardingSchema.safeParse({
+      specialties: selectedSpecialties,
+      tutorBio: bio,
+    });
 
-    if (!bio.trim()) {
-      toast.error("Please provide a short professional bio.");
+    if (!validation.success) {
+      const fieldErrors: OnboardingErrors = {};
+      validation.error.issues.forEach((issue) => {
+        if (issue.path[0]) {
+          fieldErrors[issue.path[0] as keyof OnboardingErrors] = issue.message;
+        }
+      });
+      setErrors(fieldErrors);
+      toast.error("Please fix the errors in your profile.");
       return;
     }
 
@@ -63,10 +84,7 @@ export default function OnboardingPage() {
       const res = await fetch("/api/user/onboarding", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          specialties: selectedSpecialties,
-          tutorBio: bio,
-        }),
+        body: JSON.stringify(validation.data),
       });
 
       if (res.ok) {
@@ -168,6 +186,7 @@ export default function OnboardingPage() {
                 onValueChange={setSelectedSpecialties}
                 placeholder="Search and select specialties..."
               />
+              <FormFieldError error={errors.specialties} />
             </div>
 
             <div className="mb-6">
@@ -180,6 +199,7 @@ export default function OnboardingPage() {
                 onChange={(e) => setBio(e.target.value)}
                 className="h-32"
               />
+              <FormFieldError error={errors.tutorBio} />
               <p className="text-xs text-muted-foreground mt-1.5">
                 Tell students about your expertise and teaching approach.
               </p>

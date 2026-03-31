@@ -53,8 +53,6 @@ export default function Dashboard() {
     }
   }, [session]);
 
-  console.log(session);
-
   useEffect(() => {
     if (session && session.user?.role !== "LEARNER") {
       router.replace("/auth/redirect");
@@ -69,13 +67,13 @@ export default function Dashboard() {
     <div className="container" style={{ padding: "4rem 0" }}>
       {/* <BreadcrumbNav items={[{ label: "Dashboard" }]} className="mb-4" /> */}
       <div style={{ marginBottom: "3rem" }}>
-        <h1
+        <h2
           style={{
             marginBottom: "1rem",
           }}
         >
           Dashboard
-        </h1>
+        </h2>
         <p style={{ color: "var(--muted)", fontSize: "1.1rem" }}>
           Welcome back,{" "}
           <span style={{ color: "var(--foreground)", fontWeight: 600 }}>

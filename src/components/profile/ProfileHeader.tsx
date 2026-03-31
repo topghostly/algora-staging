@@ -5,7 +5,7 @@ interface ProfileHeaderProps {
   user: {
     name?: string | null;
     email?: string | null;
-    role: string;
+    role: string | null;
     image?: string | null;
   };
 }
@@ -74,7 +74,7 @@ export default function ProfileHeader({ user }: ProfileHeaderProps) {
           <h2 className="font-semibold">{user.name || "User"}</h2>
           <p className="text-muted-foreground">{user.email}</p>
           <div className="mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-white">
-            {user.role}
+            {user.role ?? "No Role"}
           </div>
         </div>
       </div>

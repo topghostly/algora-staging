@@ -14,9 +14,9 @@ export async function POST(req: Request) {
       );
     }
 
-    const userId = verifyPasswordResetToken(token);
+    const email = await verifyPasswordResetToken(token);
 
-    if (!userId) {
+    if (!email) {
       return NextResponse.json(
         { error: "Invalid or expired token" },
         { status: 400 }
@@ -28,10 +28,15 @@ export async function POST(req: Request) {
 
     // Update user password
     await prisma.user.update({
-      where: { id: userId },
+      where: { email },
       data: {
         passwordHash: hashedPassword,
       },
+    });
+
+    // Delete the token to ensure single-use
+    await prisma.passwordResetToken.delete({
+      where: { token },
     });
 
     return NextResponse.json({

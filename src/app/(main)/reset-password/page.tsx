@@ -3,6 +3,8 @@
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { toast } from "sonner";
+import { Eye, EyeOff, Loader2, CheckCircle, XCircle } from "lucide-react";
 
 function ResetPasswordForm() {
   const router = useRouter();
@@ -11,24 +13,26 @@ function ResetPasswordForm() {
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
-    setMessage("");
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      toast.error("Passwords do not match", {
+        description: "Please ensure both passwords are identical.",
+      });
       setLoading(false);
       return;
     }
 
     if (!token) {
-      setError("Missing reset token");
+      toast.error("Missing reset token", {
+        description: "The reset link is invalid or has expired.",
+      });
       setLoading(false);
       return;
     }
@@ -46,12 +50,18 @@ function ResetPasswordForm() {
         throw new Error(data.error || "Something went wrong");
       }
 
-      setMessage(data.message);
+      toast.success("Password Reset Successful!", {
+        description:
+          "Your password has been updated. Redirecting to sign in...",
+      });
+
       setTimeout(() => {
         router.push("/auth/signin");
       }, 2000);
     } catch (err: any) {
-      setError(err.message);
+      toast.error("Reset Failed", {
+        description: err.message,
+      });
     } finally {
       setLoading(false);
     }
@@ -66,150 +76,90 @@ function ResetPasswordForm() {
 
   if (!token) {
     return (
-      <div style={containerStyle} className="card">
-        <h1
-          style={{
-            textAlign: "center",
-            fontSize: "1.5rem",
-            fontWeight: 600,
-            marginBottom: "0.5rem",
-          }}
-        >
-          Invalid Link
-        </h1>
-        <p style={{ textAlign: "center", color: "var(--muted)" }}>
+      <div
+        style={containerStyle}
+        className="card flex flex-col items-center justify-center text-center"
+      >
+        <XCircle className="text-red-500 mb-4" size={40} strokeWidth={1.5} />
+        <h3 className="mb-2">Invalid Link</h3>
+        <p className="text-muted-foreground mb-6">
           This password reset link is invalid or missing a token.
         </p>
-        <p style={{ textAlign: "center", marginTop: "1rem" }}>
-          <Link
-            href="/auth/forgot-password"
-            style={{ textDecoration: "underline" }}
-          >
-            Request a new link
-          </Link>
-        </p>
+        <Link
+          href="/auth/forgot-password"
+          className="btn btn-outline rounded-md"
+        >
+          Request a new link
+        </Link>
       </div>
     );
   }
 
   return (
-    <div>
-      <div style={containerStyle} className="card">
-        <h1
-          style={{
-            textAlign: "center",
-            fontSize: "1.4rem",
-            fontWeight: 600,
-            marginBottom: "0.5rem",
-          }}
-        >
-          Set New Password
-        </h1>
-        <p
-          style={{
-            textAlign: "center",
-            color: "var(--muted)",
-            marginBottom: "2rem",
-          }}
-        >
-          Please enter your new password below
-        </p>
+    <div style={containerStyle} className="card">
+      <h3 className="text-center mb-1">Set New Password</h3>
+      <p className="text-center text-muted-foreground mb-8">
+        Please enter your new password below
+      </p>
 
-        {error && (
-          <p
-            style={{
-              color: "#FF453A",
-              fontSize: "0.85rem",
-              marginBottom: "1rem",
-            }}
-          >
-            {error}
-          </p>
-        )}
-        {message && (
-          <p
-            style={{
-              color: "#32D74B",
-              fontSize: "0.85rem",
-              marginBottom: "1rem",
-            }}
-          >
-            {message}
-          </p>
-        )}
-
-        <form
-          onSubmit={handleSubmit}
-          style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}
-        >
-          <div>
-            <label
-              style={{
-                fontSize: "0.9rem",
-                fontWeight: 500,
-              }}
-            >
-              New Password
-            </label>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+        <div className="space-y-2">
+          <label className="text-sm font-medium">New Password</label>
+          <div className="relative">
             <input
-              type="password"
-              style={{
-                width: "100%",
-                padding: "0.75rem",
-                borderRadius: "var(--radius)",
-                border: "1px solid var(--border)",
-                fontSize: "1rem",
-                marginTop: "0.6rem",
-              }}
+              type={showPassword ? "text" : "password"}
+              className="w-full h-10 pl-3 pr-10 py-2 bg-background rounded-lg text-sm border-2 border-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
             />
-          </div>
-          <div>
-            <label
-              style={{
-                fontSize: "0.9rem",
-                fontWeight: 500,
-              }}
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
             >
-              Confirm Password
-            </label>
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Confirm Password</label>
+          <div className="relative">
             <input
-              type="password"
-              style={{
-                width: "100%",
-                padding: "0.75rem",
-                borderRadius: "var(--radius)",
-                border: "1px solid var(--border)",
-                fontSize: "1rem",
-                marginTop: "0.6rem",
-              }}
+              type={showConfirmPassword ? "text" : "password"}
+              className="w-full h-10 pl-3 pr-10 py-2 bg-background rounded-lg text-sm border-2 border-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="••••••••"
             />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
           </div>
+        </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              width: "100%",
-              padding: "0.8rem",
-              borderRadius: "var(--radius)",
-              border: "none",
-              backgroundColor: "var(--primary)",
-              color: "var(--background)",
-              fontWeight: 600,
-              cursor: "pointer",
-              marginTop: "0.5rem",
-            }}
-          >
-            {loading ? "Resetting..." : "Reset Password"}
-          </button>
-        </form>
-      </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className="btn btn-primary w-full rounded-md mt-2"
+        >
+          {loading ? (
+            <span className="flex items-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Resetting...
+            </span>
+          ) : (
+            "Reset Password"
+          )}
+        </button>
+      </form>
     </div>
   );
 }
@@ -218,8 +168,8 @@ export default function ResetPassword() {
   return (
     <Suspense
       fallback={
-        <div style={{ color: "white", textAlign: "center", marginTop: "4rem" }}>
-          Loading...
+        <div className="flex justify-center mt-16">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       }
     >

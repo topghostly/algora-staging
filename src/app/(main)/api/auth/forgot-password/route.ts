@@ -24,7 +24,7 @@ export async function POST(req: Request) {
       });
     }
 
-    const token = generatePasswordResetToken(user.id);
+    const token = await generatePasswordResetToken(user.email);
 
     // Determine base URL based on environment
     const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";

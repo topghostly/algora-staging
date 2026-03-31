@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { Inter } from "next/font/google";
+
+const raleway = Inter({ subsets: ["latin"] });
 import { Check, Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { usePaystackPayment } from "react-paystack";
@@ -258,7 +261,17 @@ export default function PricingCard({
           marginBottom: "1rem",
         }}
       >
-        <span style={{ fontSize: "2.5rem", fontWeight: 600 }}>{price}</span>
+        <span>
+          <p
+            style={{
+              fontSize: "3rem",
+            }}
+          >
+            <span className={`${raleway.className} tracking-tighter`}>
+              {price}
+            </span>
+          </p>
+        </span>
         {period && (
           <span
             style={{

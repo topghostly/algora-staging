@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react";
 
 function SignInForm() {
   const router = useRouter();
@@ -17,6 +18,7 @@ function SignInForm() {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [isSocialHovered, setIsSocialHovered] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const { data: session, status } = useSession();
 
@@ -32,12 +34,21 @@ function SignInForm() {
   useEffect(() => {
     if (status !== "authenticated") return;
 
+    toast.success("Welcome back!", {
+      description: "You've successfully signed in.",
+    });
+
     if (callbackUrl) {
       router.replace(callbackUrl);
       return;
     }
 
     const role = session?.user?.role;
+
+    if (!role) {
+      router.replace("/auth/select-role");
+      return;
+    }
 
     if (role === "TUTOR") router.replace("/tutor");
     else if (role === "LEARNER") router.replace("/dashboard");
@@ -55,8 +66,14 @@ function SignInForm() {
       redirect: false,
     });
 
+    // console.log(res);
+
     if (res?.error) {
-      setError("Invalid email or password");
+      const errorMessage = "Invalid email or password";
+      setError(errorMessage);
+      toast.error("Sign in failed", {
+        description: errorMessage,
+      });
       setLoading(false);
     }
   };
@@ -253,14 +270,27 @@ function SignInForm() {
                 Forgot your password?
               </Link>
             </div>
-            <input
-              type="password"
-              className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              required
-              onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value })
-              }
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pr-10"
+                required
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+              >
+                {showPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+              </button>
+            </div>
           </div>
 
           <button

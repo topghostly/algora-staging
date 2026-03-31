@@ -63,7 +63,7 @@ function VerifyEmailContent() {
   }, [token, router]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4">
+    <div className="flex flex-col items-center justify-center text-center p-4">
       {status === "loading" && (
         <>
           <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
@@ -74,11 +74,15 @@ function VerifyEmailContent() {
 
       {status === "success" && (
         <>
-          <CheckCircle className="text-green-500 mb-4" size={45} />
-          <h1 className="text-2xl font-bold">Email Verified!</h1>
+          <CheckCircle
+            className="text-green-500 mb-4"
+            size={40}
+            strokeWidth={1.5}
+          />
+          <h3 className="mb-1">Email Verified!</h3>
           <p className="text-muted-foreground mb-6">{message}</p>
 
-          <Link href="/dashboard" className="btn btn-primary mt-4">
+          <Link href="/dashboard" className="btn btn-primary mt-4 rounded-md">
             Go to Dashboard
           </Link>
         </>
@@ -86,10 +90,10 @@ function VerifyEmailContent() {
 
       {status === "error" && (
         <>
-          <XCircle className="text-red-500 mb-4" size={45} />
-          <h1 className="text-2xl font-bold mb-2">Verification Failed</h1>
+          <XCircle className="text-red-500 mb-4" size={40} strokeWidth={1.5} />
+          <h3 className="mb-1">Verification Failed</h3>
           <p className="text-muted-foreground mb-6">{message}</p>
-          <Link href="/auth/signin" className="btn btn-outline">
+          <Link href="/auth/signin" className="btn btn-outline rounded-md">
             Back to Sign In
           </Link>
         </>
@@ -114,7 +118,13 @@ export default function VerifyEmailPage() {
           </div>
         }
       >
-        <div className="card">
+        <div
+          className="card"
+          style={{
+            boxShadow: "none",
+            border: "none",
+          }}
+        >
           <VerifyEmailContent />
         </div>
       </Suspense>

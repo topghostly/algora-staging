@@ -5,7 +5,6 @@ import Image from "next/image";
 import { useSession, signOut } from "next-auth/react";
 import {
   Menu,
-  X,
   Layers,
   Video,
   Briefcase,
@@ -13,6 +12,7 @@ import {
   LogOut,
   LayoutDashboard,
   Coins,
+  TicketCheck,
 } from "lucide-react";
 import { useState } from "react";
 import Dropdown from "./ui/Dropdown";
@@ -21,6 +21,7 @@ import { ConfirmationDialog } from "./ui/alert-dialog";
 
 import { Badge } from "@/components/ui/badge";
 import GlowingButton from "./GlowingButton";
+import { QuickSearch } from "./QuickSearch";
 
 export default function Navbar() {
   const { data: session } = useSession();
@@ -41,14 +42,14 @@ export default function Navbar() {
       <div
         style={{
           display: "flex",
-          justifyContent: "space-between",
           alignItems: "center",
           height: "64px",
           paddingLeft: "clamp(1rem, 5vw, 2rem)",
           paddingRight: "clamp(1rem, 5vw, 2rem)",
+          gap: "1rem",
         }}
       >
-        <div className="flex items-center gap-1">
+        <div className="flex flex-1 items-center gap-1">
           <Link
             href="/"
             style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
@@ -73,10 +74,15 @@ export default function Navbar() {
           )}
         </div>
 
+        {/* Quick Search Bar (Hidden on mobile) */}
+        <div className="hidden md:flex flex-1 justify-center max-w-md mx-auto">
+          <QuickSearch />
+        </div>
+
         {/* Desktop Navigation */}
         <div
-          className="desktop-nav"
-          style={{ display: "flex", alignItems: "center", gap: "2rem" }}
+          className="desktop-nav flex-1 flex justify-end"
+          style={{ alignItems: "center", gap: "2rem" }}
         >
           {session ? (
             <div className="flex items-center gap-3">
@@ -177,12 +183,20 @@ export default function Navbar() {
                   )}
 
                   {session.user.role === "TUTOR" && (
-                    <Link href="/tutor">
-                      <div className="dropdown-item">
-                        <Layers size={16} />
-                        <span>Dashboard</span>
-                      </div>
-                    </Link>
+                    <>
+                      <Link href="/tutor">
+                        <div className="dropdown-item">
+                          <Layers size={16} />
+                          <span>Dashboard</span>
+                        </div>
+                      </Link>
+                      <Link href="/tutor/sessions">
+                        <div className="dropdown-item">
+                          <TicketCheck size={16} />
+                          <span>Sessions</span>
+                        </div>
+                      </Link>
+                    </>
                   )}
 
                   <Link href="/dashboard/profile">

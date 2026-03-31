@@ -5,6 +5,7 @@ import { authOptions } from "@/lib/auth";
 import { sendEmail } from "@/lib/email";
 import { AccountDisabledEmail } from "@/components/emails/AccountDisabledEmail";
 import React from "react";
+import { logActivity } from "@/lib/activity-log";
 
 export async function PATCH(
   req: Request,
@@ -30,6 +31,14 @@ export async function PATCH(
         where: { id },
         data: { role },
         select: { id: true, email: true, role: true, name: true },
+      });
+
+      await logActivity({
+        userId: session.user.id,
+        action: "ROLE_UPDATED",
+        entityType: "USER",
+        entityId: updatedUser.id,
+        metadata: { newRole: role, userEmail: updatedUser.email },
       });
 
       return NextResponse.json(updatedUser);
@@ -59,6 +68,14 @@ export async function PATCH(
         }),
       });
 
+      await logActivity({
+        userId: session.user.id,
+        action: "USER_DISABLED",
+        entityType: "USER",
+        entityId: updatedUser.id,
+        metadata: { userEmail: updatedUser.email },
+      });
+
       return NextResponse.json(updatedUser);
     }
 
@@ -68,6 +85,15 @@ export async function PATCH(
         data: { suspended: true },
         select: { id: true, email: true, suspended: true },
       });
+
+      await logActivity({
+        userId: session.user.id,
+        action: "USER_SUSPENDED",
+        entityType: "USER",
+        entityId: updatedUser.id,
+        metadata: { userEmail: updatedUser.email },
+      });
+
       return NextResponse.json(updatedUser);
     }
 
@@ -77,6 +103,15 @@ export async function PATCH(
         data: { suspended: false },
         select: { id: true, email: true, suspended: true },
       });
+
+      await logActivity({
+        userId: session.user.id,
+        action: "USER_UNSUSPENDED",
+        entityType: "USER",
+        entityId: updatedUser.id,
+        metadata: { userEmail: updatedUser.email },
+      });
+
       return NextResponse.json(updatedUser);
     }
 

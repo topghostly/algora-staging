@@ -4,11 +4,12 @@ declare module "next-auth" {
   interface Session {
     user: {
       id: string;
-      role: string;
+      role: string | null;
       subscriptionTier: string;
       emailVerified: boolean;
       calendarConnected: boolean;
       hasCompletedOnboarding: boolean;
+      image: string | null;
       specialties: string[];
       tutorBio: string | null;
       subscriptionPeriodEnd?: Date | string | null;
@@ -18,10 +19,11 @@ declare module "next-auth" {
 
   interface User {
     id: string;
-    role: string;
+    role: string | null;
     subscriptionTier: string;
     emailVerified: boolean;
     calendarConnected: boolean;
+    image: string | null;
     hasCompletedOnboarding: boolean;
     specialties: string[];
     tutorBio: string | null;
@@ -33,7 +35,7 @@ declare module "next-auth" {
 declare module "next-auth/jwt" {
   interface JWT {
     id: string;
-    role: string;
+    role: string | null;
     subscriptionTier: string;
     emailVerified: boolean;
     calendarConnected: boolean;

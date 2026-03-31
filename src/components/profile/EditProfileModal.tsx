@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Camera, X, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import Image from "next/image";
 import {
   Popover,
@@ -22,7 +23,6 @@ export default function EditProfileModal({ user }: EditProfileModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [name, setName] = useState(user.name || "");
   const [imagePreview, setImagePreview] = useState(user.image || "");
-  const [error, setError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
@@ -31,15 +31,13 @@ export default function EditProfileModal({ user }: EditProfileModalProps) {
     if (!file) return;
 
     if (file.size > 1024 * 1024) {
-      // 1MB
-      setError("Image size must be less than 1MB");
+      toast.error("Image size must be less than 1MB");
       return;
     }
 
     const reader = new FileReader();
     reader.onloadend = () => {
       setImagePreview(reader.result as string);
-      setError("");
     };
     reader.readAsDataURL(file);
   };
@@ -47,7 +45,6 @@ export default function EditProfileModal({ user }: EditProfileModalProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError("");
 
     try {
       const res = await fetch("/api/user/profile", {
@@ -64,10 +61,11 @@ export default function EditProfileModal({ user }: EditProfileModalProps) {
         throw new Error(data.message || "Something went wrong");
       }
 
+      toast.success("Profile updated successfully");
       router.refresh();
       setIsOpen(false);
     } catch (err: any) {
-      setError(err.message);
+      toast.error(err.message || "Failed to update profile");
     } finally {
       setIsLoading(false);
     }
@@ -119,20 +117,6 @@ export default function EditProfileModal({ user }: EditProfileModalProps) {
             gap: "1.5rem",
           }}
         >
-          {error && (
-            <div
-              style={{
-                backgroundColor: "#fef2f2",
-                color: "#dc2626",
-                fontSize: "0.875rem",
-                padding: "0.75rem",
-                borderRadius: "6px",
-              }}
-            >
-              {error}
-            </div>
-          )}
-
           {/* Image Upload Section */}
           <div
             style={{

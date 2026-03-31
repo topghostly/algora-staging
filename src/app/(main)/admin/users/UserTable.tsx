@@ -17,7 +17,7 @@ interface User {
   id: string;
   email: string;
   name: string | null;
-  role: string;
+  role: string | null;
   emailVerified: Date | null;
   subscriptionTier: string;
   createdAt: Date;
@@ -46,7 +46,7 @@ export default function UserTable({ users }: UserTableProps) {
     setIsDialogOpen(true);
   };
 
-  const updateRole = async (userId: string, currentRole: string) => {
+  const updateRole = async (userId: string, currentRole: string | null) => {
     const newRole = currentRole === "LEARNER" ? "TUTOR" : "LEARNER";
     try {
       const res = await fetch(`/api/admin/users/${userId}`, {
@@ -197,16 +197,20 @@ export default function UserTable({ users }: UserTableProps) {
                           ? "#fee2e2"
                           : user.role === "TUTOR"
                             ? "#e0f2fe"
-                            : "#f3f4f6",
+                            : user.role == null
+                              ? "#fef9c3"
+                              : "#f3f4f6",
                       color:
                         user.role === "ADMIN"
                           ? "#dc2626"
                           : user.role === "TUTOR"
                             ? "#0284c7"
-                            : "#6b7280",
+                            : user.role == null
+                              ? "#a16207"
+                              : "#6b7280",
                     }}
                   >
-                    {user.role}
+                    {user.role ?? "No Role"}
                   </span>
                 </td>
                 <td style={{ padding: "1rem" }}>
@@ -301,7 +305,7 @@ export default function UserTable({ users }: UserTableProps) {
                       className="btn btn-outline "
                       style={{ padding: "0.4rem", height: "auto" }}
                       title="Change Role"
-                      disabled={user.role === "ADMIN"}
+                      disabled={user.role === "ADMIN" || user.role == null}
                     >
                       <UserCog size={16} />
                     </button>

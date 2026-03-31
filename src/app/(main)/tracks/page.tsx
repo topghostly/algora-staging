@@ -40,7 +40,7 @@ const SkeletonTrackCard = () => (
       position: "relative",
     }}
   >
-    <div
+    {/* <div
       style={{
         height: "200px",
         backgroundColor: "var(--muted-light)",
@@ -69,14 +69,14 @@ const SkeletonTrackCard = () => (
             "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)",
         }}
       />
-    </div>
+    </div> */}
     <div
       style={{
         height: "1.5rem",
         width: "80%",
         backgroundColor: "var(--muted-light)",
         borderRadius: "4px",
-        marginBottom: "1rem",
+        marginBottom: "1.4rem",
         position: "relative",
         overflow: "hidden",
       }}
@@ -101,7 +101,7 @@ const SkeletonTrackCard = () => (
         width: "100%",
         backgroundColor: "var(--muted-light)",
         borderRadius: "4px",
-        marginBottom: "0.5rem",
+        marginBottom: "0.7rem",
         position: "relative",
         overflow: "hidden",
       }}
@@ -322,7 +322,7 @@ export default function TracksPage() {
           </div>
         </div>
 
-        <div className="container hidden md:block">
+        {/* <div className="container hidden md:block">
           <Image
             src="/images/man_holding_binoculars_with_plants.svg"
             alt="man_holding_binoculars_with_plants"
@@ -339,7 +339,7 @@ export default function TracksPage() {
             }}
             sizes="100vw"
           />
-        </div>
+        </div> */}
       </section>
 
       <section className="md:mt-20">
@@ -355,7 +355,7 @@ export default function TracksPage() {
             <h3>
               {debouncedQuery
                 ? `Search results for "${debouncedQuery}"`
-                : "Recommended Tracks"}
+                : "All Tracks"}
             </h3>
 
             {!debouncedQuery && (
@@ -380,8 +380,8 @@ export default function TracksPage() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))",
-              gap: "2rem",
+              gridTemplateColumns: "repeat(auto-fill, minmax(450px, 1fr))",
+              gap: "1rem",
             }}
           >
             <AnimatePresence mode="popLayout">
@@ -433,7 +433,6 @@ export default function TracksPage() {
 
                       <div className="h-16">
                         <h3
-                          // className="text-2xl md:text-3xl"
                           style={{
                             fontWeight: 500,
                             marginBottom: "0.75rem",
@@ -449,7 +448,7 @@ export default function TracksPage() {
                       </div>
                       <div
                         style={{
-                          height: "6rem",
+                          height: "3rem",
                         }}
                       >
                         <p
@@ -458,22 +457,13 @@ export default function TracksPage() {
 
                             lineHeight: 1.6,
                             display: "-webkit-box",
-                            WebkitLineClamp: 4,
+                            WebkitLineClamp: 2,
                             WebkitBoxOrient: "vertical",
                             overflow: "hidden",
                             textOverflow: "ellipsis",
                           }}
                         >
-                          {/* {track.description} */}
-                          Lorem ipsum dolor sit, amet consectetur adipisicing
-                          elit. Asperiores, provident. In qui, dicta saepe,
-                          sequi possimus quod rem, tempore expedita vitae
-                          corrupti facilis. Fugiat eum unde autem ea, ut nihil.
-                          Nesciunt doloribus quaerat inventore nisi perspiciatis
-                          vel labore. Molestiae explicabo recusandae deleniti
-                          rerum vero aut nam voluptate. Suscipit eum id,
-                          laudantium laboriosam placeat necessitatibus
-                          excepturi, doloremque, tempora aliquam esse culpa!
+                          {track.description}
                         </p>
                       </div>
                       <div

@@ -6,7 +6,6 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { verifyVerificationToken } from "./tokens";
 import { encrypt } from "./crypto";
-import { cookies } from "next/headers";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -16,6 +15,18 @@ export const authOptions: NextAuthOptions = {
   },
 
   secret: process.env.NEXTAUTH_SECRET,
+
+  cookies: {
+    sessionToken: {
+      name: "next-auth.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax" as const,
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+  },
 
   pages: {
     signIn: "/auth/signin",
@@ -61,6 +72,7 @@ export const authOptions: NextAuthOptions = {
             email: user.email,
             name: user.name,
             role: user.role,
+            image: user.image,
             subscriptionTier: user.subscriptionTier,
             emailVerified: user.emailVerified as any,
             calendarConnected: user.calendarConnected,
@@ -97,6 +109,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name,
           role: user.role,
+          image: user.image,
           subscriptionTier: user.subscriptionTier,
           emailVerified: user.emailVerified as any,
           calendarConnected: user.calendarConnected,
@@ -116,7 +129,8 @@ export const authOptions: NextAuthOptions = {
       // Initial login - runs after user is created/linked by adapter
       if (user && account) {
         token.id = user.id;
-        token.role = user.role;
+        token.role = (user as any).role;
+        token.image = user.image;
         token.subscriptionTier = user.subscriptionTier;
         token.emailVerified = user.emailVerified as any;
         token.calendarConnected = user.calendarConnected;
@@ -127,18 +141,12 @@ export const authOptions: NextAuthOptions = {
         if (account.provider === "google") {
           token.provider = "google";
 
-          const cookieStore = await cookies();
-          const pendingRole = cookieStore.get("pending_role")?.value;
-
           const dataToUpdate: any = {
             emailVerified: new Date(),
           };
           token.emailVerified = dataToUpdate.emailVerified;
 
-          if (pendingRole === "TUTOR") {
-            dataToUpdate.role = "TUTOR";
-            token.role = "TUTOR";
-          }
+          // Leave role as NULL — middleware will redirect to /auth/select-role
 
           if (account.refresh_token) {
             dataToUpdate.googleId = account.providerAccountId;
@@ -199,8 +207,19 @@ export const authOptions: NextAuthOptions = {
             where: { id: userId },
           });
 
+          if (!freshUser || freshUser.disabled || freshUser.suspended) {
+            console.warn(
+              "Session Invalidation: User is inactive or not found",
+              userId,
+            );
+            // Return an empty object or a flag that can be caught elsewhere to force logout
+            // NextAuth doesn't have a clean way to force logout from JWT callback other than returning null or throwing,
+            // but returning an object without the expected fields is often effective.
+            return {} as any;
+          }
+
           if (freshUser) {
-            // Lazy Downgrade Logic: 
+            // Lazy Downgrade Logic:
             // If user cancelled but period ended, downgrade them now
             if (
               freshUser.cancelAtPeriodEnd &&
@@ -222,6 +241,7 @@ export const authOptions: NextAuthOptions = {
             token.emailVerified = freshUser.emailVerified as any;
             token.calendarConnected = freshUser.calendarConnected;
             token.role = freshUser.role;
+            token.image = freshUser.image;
             token.subscriptionTier = freshUser.subscriptionTier;
             token.name = freshUser.name;
             token.email = freshUser.email;
@@ -252,14 +272,17 @@ export const authOptions: NextAuthOptions = {
         session.user.hasCompletedOnboarding = token.hasCompletedOnboarding;
         session.user.specialties = token.specialties;
         session.user.tutorBio = token.tutorBio;
-        session.user.subscriptionPeriodEnd = token.subscriptionPeriodEnd as Date | null;
-        session.user.cancelAtPeriodEnd = token.cancelAtPeriodEnd as boolean | null;
+        session.user.subscriptionPeriodEnd =
+          token.subscriptionPeriodEnd as Date | null;
+        session.user.cancelAtPeriodEnd = token.cancelAtPeriodEnd as
+          | boolean
+          | null;
         (session.user as any).provider = token.provider;
       }
 
       return session;
     },
-    async signIn({ user, account }) {
+    async signIn() {
       return true;
     },
   },

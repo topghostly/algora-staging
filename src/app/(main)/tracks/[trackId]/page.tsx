@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { notFound } from "next/navigation";
+import { unstable_cache } from "next/cache";
 import Link from "next/link";
 import {
   BookOpen,
@@ -18,36 +19,37 @@ import { ErrorState } from "@/components/ErrorState";
 
 export const dynamic = "force-dynamic";
 
-interface TrackOverviewPageProps {
-  params: {
-    trackId: string;
-  };
-}
-
-async function getTrackData(trackId: string, userId?: string) {
-  const track = await prisma.track.findUnique({
-    where: { id: trackId },
-    include: {
-      modules: {
-        orderBy: { order: "asc" },
-        include: {
-          lessons: {
-            orderBy: { order: "asc" },
-            include: {
-              progress: {
-                where: { userId: userId || "no-user" },
-              },
-            },
+const getCachedTrack = unstable_cache(
+  async (trackId: string) =>
+    prisma.track.findUnique({
+      where: { id: trackId },
+      include: {
+        modules: {
+          orderBy: { order: "asc" },
+          include: {
+            lessons: { orderBy: { order: "asc" } },
           },
         },
       },
-      enrollments: {
-        where: { userId: userId || "no-user" },
-      },
-    },
-  });
+    }),
+  ["track-structure"],
+  { revalidate: 3600, tags: ["tracks"] },
+);
 
-  return track;
+async function getUserTrackData(trackId: string, userId: string) {
+  const [enrollments, progress] = await Promise.all([
+    prisma.enrollment.findMany({ where: { trackId, userId } }),
+    prisma.progress.findMany({
+      where: { userId, lesson: { module: { trackId } } },
+      select: { lessonId: true },
+    }),
+  ]);
+  return {
+    isEnrolled: enrollments.length > 0,
+    completedLessonIds: new Set(
+      progress.map((p: { lessonId: string }) => p.lessonId),
+    ),
+  };
 }
 
 export default async function TrackOverviewPage({
@@ -58,10 +60,21 @@ export default async function TrackOverviewPage({
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
   const { trackId } = await params;
+
   let track;
+  let isEnrolled = false;
+  let completedLessonIds = new Set<string>();
 
   try {
-    track = await getTrackData(trackId, userId);
+    const [trackData, userData] = await Promise.all([
+      getCachedTrack(trackId),
+      userId ? getUserTrackData(trackId, userId) : null,
+    ]);
+    track = trackData;
+    if (userData) {
+      isEnrolled = userData.isEnrolled;
+      completedLessonIds = userData.completedLessonIds;
+    }
   } catch (error) {
     console.error("Error fetching track data:", error);
     return (
@@ -82,28 +95,27 @@ export default async function TrackOverviewPage({
     notFound();
   }
 
-  const isEnrolled = track.enrollments.length > 0;
-
   // Calculate progress stats
   const totalLessons = track.modules.reduce(
-    (acc: number, m: any) => acc + m.lessons.length,
+    (acc: number, m: { lessons: { id: string }[] }) => acc + m.lessons.length,
     0,
   );
-  const completedLessons = track.modules.reduce((acc: number, m: any) => {
-    return acc + m.lessons.filter((l: any) => l.progress.length > 0).length;
-  }, 0);
+  const completedLessons = track.modules.reduce(
+    (acc: number, m: { lessons: { id: string }[] }) =>
+      acc + m.lessons.filter((l) => completedLessonIds.has(l.id)).length,
+    0,
+  );
   const progressPercentage =
     totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
 
   // Find first incomplete lesson to continue
   let firstLessonUrl = "";
   if (track.modules.length > 0 && track.modules[0].lessons.length > 0) {
-    // Default to first lesson
     firstLessonUrl = `/tracks/${track.id}/lessons/${track.modules[0].lessons[0].id}`;
-
-    // Try to find first incomplete
     for (const module of track.modules) {
-      const lesson = module.lessons.find((l: any) => l.progress.length === 0);
+      const lesson = module.lessons.find(
+        (l: { id: string }) => !completedLessonIds.has(l.id),
+      );
       if (lesson) {
         firstLessonUrl = `/tracks/${track.id}/lessons/${lesson.id}`;
         break;
@@ -265,78 +277,93 @@ export default async function TrackOverviewPage({
         <div
           style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}
         >
-          {track.modules.map((module, index) => (
-            <div
-              key={module.id}
-              className="card"
-              style={{ padding: 0, overflow: "hidden" }}
-            >
+          {track.modules.map(
+            (
+              module: {
+                id: string;
+                title: string;
+                lessons: { id: string; title: string; type: string }[];
+              },
+              index: number,
+            ) => (
               <div
-                style={{
-                  padding: "1.5rem",
-                  backgroundColor: "var(--muted-light)",
-                  borderBottom: "1px solid var(--border)",
-                }}
+                key={module.id}
+                className="card"
+                style={{ padding: 0, overflow: "hidden" }}
               >
-                <h3 style={{ fontSize: "1.1rem", fontWeight: 500, margin: 0 }}>
-                  <span
-                    style={{ color: "var(--muted)", marginRight: "0.75rem" }}
+                <div
+                  style={{
+                    padding: "1.5rem",
+                    backgroundColor: "var(--muted-light)",
+                    borderBottom: "1px solid var(--border)",
+                  }}
+                >
+                  <h3
+                    style={{ fontSize: "1.1rem", fontWeight: 500, margin: 0 }}
                   >
-                    Module {index + 1}:
-                  </span>
-                  {module.title}
-                </h3>
-              </div>
-              <div>
-                {module.lessons.map((lesson) => {
-                  const isCompleted = lesson.progress.length > 0;
-                  // If not enrolled, content is locked (visually)
-                  const isLocked = !isEnrolled;
-
-                  return (
-                    <div
-                      key={lesson.id}
-                      style={{
-                        padding: "1rem 1.5rem",
-                        borderBottom: "1px solid var(--border)",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "1rem",
-                        color: isLocked ? "var(--muted)" : "var(--foreground)",
-                      }}
+                    <span
+                      style={{ color: "var(--muted)", marginRight: "0.75rem" }}
                     >
-                      {isCompleted ? (
-                        <CheckCircle size={20} color="var(--primary)" />
-                      ) : isLocked ? (
-                        <Lock size={20} />
-                      ) : lesson.type === "VIDEO" ? (
-                        <PlayCircle size={20} />
-                      ) : (
-                        <FileText size={20} />
-                      )}
+                      Module {index + 1}:
+                    </span>
+                    {module.title}
+                  </h3>
+                </div>
+                <div>
+                  {module.lessons.map(
+                    (lesson: { id: string; title: string; type: string }) => {
+                      const isCompleted = completedLessonIds.has(lesson.id);
+                      // If not enrolled, content is locked (visually)
+                      const isLocked = !isEnrolled;
 
-                      <span style={{ flex: 1, fontWeight: 500 }}>
-                        {lesson.title}
-                      </span>
-
-                      {isEnrolled && (
-                        <Link
-                          href={`/tracks/${track.id}/lessons/${lesson.id}`}
-                          className="btn btn-outline rounded-lg"
+                      return (
+                        <div
+                          key={lesson.id}
                           style={{
-                            fontSize: "0.8rem",
-                            padding: "0.25rem 0.75rem",
+                            padding: "1rem 1.5rem",
+                            borderBottom: "1px solid var(--border)",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "1rem",
+                            color: isLocked
+                              ? "var(--muted)"
+                              : "var(--foreground)",
                           }}
                         >
-                          {isCompleted ? "Review" : "Start"}
-                        </Link>
-                      )}
-                    </div>
-                  );
-                })}
+                          {isCompleted ? (
+                            <CheckCircle size={20} color="var(--primary)" />
+                          ) : isLocked ? (
+                            <Lock size={20} />
+                          ) : lesson.type === "VIDEO" ? (
+                            <PlayCircle size={20} />
+                          ) : (
+                            <FileText size={20} />
+                          )}
+
+                          <span style={{ flex: 1, fontWeight: 500 }}>
+                            {lesson.title}
+                          </span>
+
+                          {isEnrolled && (
+                            <Link
+                              href={`/tracks/${track.id}/lessons/${lesson.id}`}
+                              className="btn btn-outline rounded-lg"
+                              style={{
+                                fontSize: "0.8rem",
+                                padding: "0.25rem 0.75rem",
+                              }}
+                            >
+                              {isCompleted ? "Review" : "Start"}
+                            </Link>
+                          )}
+                        </div>
+                      );
+                    },
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            ),
+          )}
         </div>
       </div>
     </main>

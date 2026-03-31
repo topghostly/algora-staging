@@ -3,6 +3,9 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { deleteFromS3 } from "@/lib/s3";
+import { revalidateTag } from "next/cache";
+
+export const revalidate = 3600;
 
 export async function GET(
   req: Request,
@@ -60,6 +63,7 @@ export async function PUT(
       },
     });
 
+    revalidateTag("tracks", "max");
     return NextResponse.json(track);
   } catch (error) {
     return NextResponse.json(
@@ -110,6 +114,7 @@ export async function DELETE(
       where: { id: trackId },
     });
 
+    revalidateTag("tracks", "max");
     return NextResponse.json({ message: "Track deleted" });
   } catch (error) {
     return NextResponse.json(

@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { revalidateTag } from "next/cache";
+
+export const revalidate = 3600;
 
 export async function GET(req: Request) {
   try {
@@ -59,6 +62,7 @@ export async function POST(req: Request) {
       },
     });
 
+    revalidateTag("tracks", "max");
     return NextResponse.json(track);
   } catch (error) {
     return NextResponse.json(

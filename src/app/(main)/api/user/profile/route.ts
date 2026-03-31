@@ -4,6 +4,9 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { uploadToS3 } from "@/lib/s3";
 import { v4 as uuidv4 } from "uuid";
+import { profileUpdateSchema } from "@/lib/schemas";
+import { ZodError } from "zod";
+import { logActivity } from "@/lib/activity-log";
 
 export async function PATCH(req: Request) {
   const session = await getServerSession(authOptions);
@@ -13,15 +16,7 @@ export async function PATCH(req: Request) {
 
   try {
     const body = await req.json();
-    const { name, image } = body;
-
-    // Validation
-    if (name && name.length > 50) {
-      return NextResponse.json(
-        { message: "Name is too long" },
-        { status: 400 },
-      );
-    }
+    const { name, image } = profileUpdateSchema.parse(body);
 
     let imageUrl = image;
 
@@ -64,6 +59,13 @@ export async function PATCH(req: Request) {
       },
     });
 
+    await logActivity({
+      userId: session.user.id,
+      action: "PROFILE_UPDATED",
+      entityType: "USER",
+      entityId: session.user.id,
+    });
+
     return NextResponse.json({
       success: true,
       user: {
@@ -73,8 +75,16 @@ export async function PATCH(req: Request) {
     });
   } catch (error: any) {
     console.error("Profile update error:", error);
+    
+    if (error instanceof ZodError) {
+      return NextResponse.json(
+        { message: "Invalid input", details: error.issues },
+        { status: 400 },
+      );
+    }
+
     return NextResponse.json(
-      { message: "Internal Server Error: " + error.message },
+      { message: "Internal Server Error" },
       { status: 500 },
     );
   }

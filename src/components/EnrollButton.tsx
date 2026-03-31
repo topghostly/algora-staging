@@ -12,7 +12,9 @@ export default function EnrollButton({ trackId }: { trackId: string }) {
   const [loading, setLoading] = useState(false);
 
   const handleEnroll = async () => {
+    console.log(session);
     if (!session) {
+      console.log("No session");
       router.push("/auth/signin");
       return;
     }

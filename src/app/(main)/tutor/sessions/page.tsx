@@ -1,4 +1,3 @@
-import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
@@ -8,24 +7,8 @@ import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 import { toast } from "sonner";
 import SessionDelete from "@/components/sessionDelete";
 import { ErrorState } from "@/components/ErrorState";
-
-async function getSessions(userId: string) {
-  return await prisma.tutorSession.findMany({
-    where: {
-      tutorId: userId,
-    },
-    orderBy: {
-      startTime: "asc",
-    },
-    include: {
-      bookings: {
-        include: {
-          user: true,
-        },
-      },
-    },
-  });
-}
+import { getCachedTutorSessions } from "@/lib/tutor-cache";
+import { prisma } from "@/lib/prisma";
 
 export default async function TutorSessionsPage() {
   const session = await getServerSession(authOptions);
@@ -39,7 +22,7 @@ export default async function TutorSessionsPage() {
 
   try {
     [sessions, pendingRequestsCount] = await Promise.all([
-      getSessions(session.user.id),
+      getCachedTutorSessions(session.user.id),
       prisma.sessionRequest.count({
         where: {
           tutorId: session.user.id,

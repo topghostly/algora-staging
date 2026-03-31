@@ -55,7 +55,7 @@ model User {
   passwordHash  String?
   name          String?
   image         String?
-  role          Role      @default(LEARNER)
+  role          Role?
   emailVerified DateTime?
   googleId             String?  @unique
   googleRefreshToken   String?
@@ -95,6 +95,7 @@ model User {
   studentRequests SessionRequest[] @relation("StudentRequests")
   tutorRequests   SessionRequest[] @relation("TutorRequests")
   transactions    PaymentTransaction[]
+  activityLogs    ActivityLog[]
 }
 
 model PaymentTransaction {
@@ -348,4 +349,18 @@ model SessionRequest {
   
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
+}
+
+model ActivityLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  action     String   // e.g., "USER_REGISTERED", "PROFILE_UPDATED", "TRACK_CREATED"
+  entityType String?  // e.g., "USER", "TRACK", "SESSION"
+  entityId   String?
+  metadata   Json?    // Additional context
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
 }

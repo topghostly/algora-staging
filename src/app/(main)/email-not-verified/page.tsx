@@ -13,7 +13,8 @@ export default function EmailNotVerifiedPage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!session?.user?.emailVerified) {
+    // console.log(!!session?.user?.emailVerified);
+    if (session?.user?.emailVerified) {
       router.push("/dashboard");
     }
   }, [session, router]);

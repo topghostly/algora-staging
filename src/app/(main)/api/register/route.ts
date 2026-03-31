@@ -4,17 +4,17 @@ import bcrypt from "bcryptjs";
 import { sendEmail } from "@/lib/email";
 import { VerifyEmail } from "@/components/emails/VerifyEmail";
 import { generateVerificationToken } from "@/lib/tokens";
+import { registerSchema } from "@/lib/schemas";
+import { ZodError } from "zod";
+
+import { logActivity } from "@/lib/activity-log";
 
 export async function POST(req: Request) {
   try {
-    const { email, password, name, role } = await req.json();
+    const body = await req.json();
 
-    if (!email || !password) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 },
-      );
-    }
+    // Validate with Zod - this explicitly ignores any 'role' field passed in the body
+    const { email, password, name } = registerSchema.parse(body);
 
     const existingUser = await prisma.user.findUnique({
       where: { email },
@@ -34,8 +34,16 @@ export async function POST(req: Request) {
         email,
         name,
         passwordHash: hashedPassword,
-        role: role || "LEARNER",
       },
+    });
+
+    // Log registration
+    await logActivity({
+      userId: user.id,
+      action: "USER_REGISTERED",
+      entityType: "USER",
+      entityId: user.id,
+      metadata: { email: user.email },
     });
 
     // Remove password from response
@@ -54,17 +62,17 @@ export async function POST(req: Request) {
 
     return NextResponse.json(userWithoutPassword);
   } catch (error) {
-    console.error("Registration error details:", error);
-    if (error instanceof Error) {
-      console.error("Error message:", error.message);
-      console.error("Error stack:", error.stack);
+    console.error("Registration error:", error);
+
+    if (error instanceof ZodError) {
+      return NextResponse.json(
+        { error: "Invalid input", details: error.issues },
+        { status: 400 },
+      );
     }
+
     return NextResponse.json(
-      {
-        error:
-          "Internal server error: " +
-          (error instanceof Error ? error.message : "Unknown error"),
-      },
+      { error: "Internal server error" },
       { status: 500 },
     );
   }

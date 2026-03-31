@@ -1,18 +1,36 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import Link from "next/link";
-
-import { useSearchParams } from "next/navigation";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
+import { z } from "zod";
+import { FormFieldError } from "@/components/ui/form-error";
+
+const sessionSchema = z.object({
+  title: z.string().min(5, "Title must be at least 5 characters").max(100),
+  studentEmail: z
+    .string()
+    .email("Please enter a valid email")
+    .or(z.literal("")),
+  type: z.enum(["ONE_ON_ONE", "GROUP"]),
+  duration: z.string().min(1, "Please select a duration"),
+  date: z.string().min(1, "Please select a date"),
+  startTime: z.string().min(1, "Please select a start time"),
+});
+
+type SessionErrors = {
+  [K in keyof z.infer<typeof sessionSchema>]?: string;
+};
 
 function SubmitButton({ loading }: { loading: boolean }) {
   return (
     <button
       type="submit"
-      className="btn btn-primary w-full rounded-lg"
+      className="btn btn-primary  rounded-lg"
+      style={{
+        padding: "10px 28px",
+      }}
       disabled={loading}
     >
       {loading ? "Creating..." : "Create Session"}
@@ -23,8 +41,8 @@ function SubmitButton({ loading }: { loading: boolean }) {
 export default function NewSessionPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  console.log(searchParams);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<SessionErrors>({});
 
   const initialEmail = searchParams.get("studentEmail") || "";
   const initialTitle = searchParams.get("title") || "";
@@ -34,25 +52,33 @@ export default function NewSessionPage() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setErrors({});
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
-    const title = formData.get("title") as string;
-    const type = formData.get("type") as string;
-    const duration = formData.get("duration") as string;
-    const date = formData.get("date") as string;
-    const startTimeStr = formData.get("startTime") as string;
-    const studentEmail = formData.get("studentEmail") as string;
+    const data = Object.fromEntries(formData.entries());
 
-    if (!title || !type || !duration || !date || !startTimeStr) {
-      toast.error("Please fill in all required fields");
+    const validation = sessionSchema.safeParse(data);
+
+    if (!validation.success) {
+      const fieldErrors: SessionErrors = {};
+      validation.error.issues.forEach((issue) => {
+        if (issue.path[0]) {
+          fieldErrors[issue.path[0] as keyof SessionErrors] = issue.message;
+        }
+      });
+      setErrors(fieldErrors);
+      toast.error("Please fix the errors in the form");
       setLoading(false);
       return;
     }
 
+    const { title, type, duration, date, startTime, studentEmail } =
+      validation.data;
+
     try {
       // Calculate start and end times
-      const startDateTime = new Date(`${date}T${startTimeStr}`);
+      const startDateTime = new Date(`${date}T${startTime}`);
       const durationMs = parseInt(duration) * 60 * 1000;
       const endDateTime = new Date(startDateTime.getTime() + durationMs);
 
@@ -102,7 +128,7 @@ export default function NewSessionPage() {
   }
 
   return (
-    <div className="max-w-lg mx-auto">
+    <div className="w-full mx-auto">
       <BreadcrumbNav
         items={[
           { label: "Tutor Dashboard", href: "/tutor" },
@@ -112,16 +138,12 @@ export default function NewSessionPage() {
         className="mb-6"
       />
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-medium">Create New Session</h1>
-        {/* <Link
-          href="/tutor/sessions"
-          className="text-muted-foreground hover:text-foreground"
-        >
-          Cancel
-        </Link> */}
+        <h1 className="text-3xl text-center mx-auto font-medium">
+          Create New Session
+        </h1>
       </div>
 
-      <div className="bg-card ">
+      <div className="bg-card max-w-lg mx-auto">
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
             <label className="block text-sm font-medium mb-2">
@@ -134,6 +156,7 @@ export default function NewSessionPage() {
               placeholder="student@example.com"
               className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             />
+            <FormFieldError error={errors.studentEmail} />
             {!initialEmail && (
               <div className="text-xs text-orange-500 ml-1.5 mt-1">
                 For Group Sessions leave blank
@@ -150,9 +173,10 @@ export default function NewSessionPage() {
               name="title"
               defaultValue={initialTitle}
               required
-              placeholder="e.g., Weekly Mentorship Call"
+              placeholder="Weekly Mentorship Call"
               className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             />
+            <FormFieldError error={errors.title} />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -169,6 +193,7 @@ export default function NewSessionPage() {
                 <option value="ONE_ON_ONE">One-on-One</option>
                 <option value="GROUP">Group Session</option>
               </select>
+              <FormFieldError error={errors.type} />
             </div>
             <div>
               <label className="block text-sm font-medium mb-2">
@@ -186,6 +211,7 @@ export default function NewSessionPage() {
                 <option value="90">1.5 hours</option>
                 <option value="120">2 hours</option>
               </select>
+              <FormFieldError error={errors.duration} />
             </div>
           </div>
 
@@ -200,6 +226,7 @@ export default function NewSessionPage() {
                 className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 min={new Date().toISOString().split("T")[0]}
               />
+              <FormFieldError error={errors.date} />
             </div>
             <div>
               <label className="block text-sm font-medium mb-2">
@@ -212,6 +239,7 @@ export default function NewSessionPage() {
                 required
                 className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               />
+              <FormFieldError error={errors.startTime} />
             </div>
           </div>
 

@@ -4,6 +4,8 @@ import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
+import { toast } from "sonner";
 
 function SignUpForm() {
   const router = useRouter();
@@ -15,6 +17,7 @@ function SignUpForm() {
     email: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -41,6 +44,9 @@ function SignUpForm() {
       });
 
       if (res.ok) {
+        toast.success("Account created", {
+          description: "You've successfully registered. Please sign in.",
+        });
         const callbackUrl = plan ? encodeURIComponent("/pricing") : "";
         const redirectUrl = plan
           ? `/auth/signin?callbackUrl=${callbackUrl}&registered=true`
@@ -48,10 +54,17 @@ function SignUpForm() {
         router.push(redirectUrl);
       } else {
         const data = await res.json();
-        setError(data.error || "Registration failed");
+        const errorMessage = data.error || "Registration failed";
+        setError(errorMessage);
+        toast.error("Registration failed", {
+          description: errorMessage,
+        });
       }
     } catch (err) {
       setError("Something went wrong");
+      toast.error("Error", {
+        description: "Something went wrong during registration.",
+      });
     } finally {
       setLoading(false);
     }
@@ -60,6 +73,7 @@ function SignUpForm() {
   const containerStyle: React.CSSProperties = {
     maxWidth: "420px",
     margin: "2rem auto",
+    marginBottom: "1rem",
     border: "none",
     boxShadow: "none",
   };
@@ -228,17 +242,30 @@ function SignUpForm() {
             <label style={{ fontSize: "0.9rem", fontWeight: 500 }}>
               Password
             </label>
-            <input
-              type="password"
-              autoComplete="new-password"
-              data-lpignore="true"
-              className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              required
-              value={formData.password}
-              onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value })
-              }
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                autoComplete="new-password"
+                data-lpignore="true"
+                className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pr-10"
+                required
+                value={formData.password}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+              >
+                {showPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+              </button>
+            </div>
           </div>
 
           <button
@@ -272,20 +299,6 @@ function SignUpForm() {
             Sign in
           </Link>
         </p>
-        <p
-          style={{
-            textAlign: "center",
-            marginTop: "0.5rem",
-            fontSize: "0.9rem",
-          }}
-        >
-          <Link
-            href="/auth/tutor-signup"
-            style={{ textDecoration: "underline", fontWeight: 600 }}
-          >
-            Create a tutor account
-          </Link>
-        </p>
       </div>
       <p
         style={{
@@ -297,7 +310,7 @@ function SignUpForm() {
       >
         By clicking continue, you agree to our <br />
         <Link
-          href="/terms"
+          href="/terms-of-service"
           style={{ fontWeight: 600, textDecoration: "underline" }}
         >
           Terms of Service

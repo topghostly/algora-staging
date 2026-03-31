@@ -11,6 +11,11 @@ export default function AuthRedirect() {
   useEffect(() => {
     if (status !== "authenticated" || !session) return;
 
+    if (!session.user.role) {
+      router.replace("/auth/select-role");
+      return;
+    }
+
     switch (session.user.role) {
       case "ADMIN":
         router.replace("/admin");
@@ -19,6 +24,9 @@ export default function AuthRedirect() {
         if (!session.user.hasCompletedOnboarding)
           router.replace("/tutor/onboarding");
         else router.replace("/tutor");
+        break;
+      case "LEARNER":
+        router.replace("/dashboard");
         break;
       default:
         router.replace("/dashboard");

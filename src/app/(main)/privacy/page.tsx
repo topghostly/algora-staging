@@ -3,8 +3,9 @@ import { Metadata } from "next";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy ",
-  description: "Privacy Policy for the Algora platform",
+  title: "Privacy Policy | Algora",
+  description:
+    "Privacy Policy and Google API Disclosure for the Algora platform",
 };
 
 export default function PrivacyPolicyPage() {
@@ -17,7 +18,7 @@ export default function PrivacyPolicyPage() {
         <h1 className="mb-8">Privacy Policy</h1>
 
         <section className="mb-8">
-          <h3 className=" mb-4">Introduction</h3>
+          <h3 className="mb-4 text-2xl font-semibold">Introduction</h3>
           <p className="mb-4">
             Algora operates this platform to provide a high-quality learning
             experience, comprehensive courses, and structured mentorship to
@@ -32,7 +33,9 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section className="mb-8">
-          <h3 className=" mb-4">Information We Collect</h3>
+          <h3 className="mb-4 text-2xl font-semibold">
+            Information We Collect
+          </h3>
           <h3 className="text-xl font-medium mb-2">
             Data Provided Directly by Users
           </h3>
@@ -52,185 +55,147 @@ export default function PrivacyPolicyPage() {
           </p>
         </section>
 
+        {/* GOOGLE API DISCLOSURE SECTION - UPDATED FOR VERIFICATION */}
         <section className="mb-8">
-          <h3 className=" mb-4">Use of Third-Party Services</h3>
+          <h3 className="mb-4 text-2xl font-semibold">
+            Use of Third-Party Services & Google API Disclosure
+          </h3>
           <p className="mb-4">
             Our platform relies on trusted third-party services to securely and
             efficiently handle authentication, payments, and infrastructure.
-          </p>
-          <p className="mb-4 ">
             Specifically, we use Google Services (Google OAuth / Google Sign-In)
             for user authentication and scheduling functionality.
           </p>
-          <ul className="list-disc pl-6 mb-4 flex flex-col gap-2">
+
+          <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-6">
+            <p className="font-bold mb-4">Google API Limited Use Disclosure</p>
+            <p className="mb-4 ">
+              Algora’s use and transfer of information received from Google APIs
+              to any other app will adhere to the{" "}
+              <a
+                href="https://developers.google.com/terms/api-services-user-data-policy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 underline"
+              >
+                Google API Services User Data Policy
+              </a>
+              , including the Limited Use requirements.
+            </p>
+          </div>
+
+          <ul className="list-disc pl-6 mb-4 flex flex-col gap-4">
             <li>
               <p>
                 <strong>Shared Data:</strong> During authentication, Google
                 provides us with limited user information necessary to create
                 and manage your account. This includes your email address, name,
-                and basic profile information such as your profile image (if
-                available).
+                and basic profile image.
               </p>
             </li>
             <li>
               <p>
-                <strong>OAuth Scopes:</strong> We request only the minimum
-                necessary Google OAuth scopes required for functionality,
-                including basic profile information (<code>openid</code>,{" "}
-                <code>email</code>, <code>profile</code>) for authentication,
-                and Google Calendar access (
-                <code>https://www.googleapis.com/auth/calendar.events</code>)
-                strictly for scheduling tutoring sessions. We do not request
-                access to sensitive data such as Gmail, Google Drive, or
-                contacts.
+                <strong>OAuth Scopes & Usage:</strong> We request the minimum
+                necessary Google OAuth scopes:
+              </p>
+              <ul className="list-circle pl-8 mt-2 space-y-1">
+                <li>
+                  <code>openid, email, profile</code>: To authenticate your
+                  identity and secure your account.
+                </li>
+                <li>
+                  <code>https://www.googleapis.com/auth/calendar.events</code>:
+                  Strictly used by tutors to schedule tutoring sessions,
+                  generate Google Meet links, and manage session timing.
+                </li>
+              </ul>
+            </li>
+            <li>
+              <p>
+                <strong>Google Calendar Specifics:</strong> With your explicit
+                consent, we access your calendar only to create and manage
+                events related to sessions booked through Algora. We do not
+                read, modify, or delete any events, or access any other
+                calendars that are not created by our platform.
               </p>
             </li>
             <li>
               <p>
-                <strong>No Passwords Stored:</strong> Authentication is securely
-                handled by Google. We do not collect, process, or store your
-                passwords on our platform.
-              </p>
-            </li>
-            <li>
-              <p>
-                <strong>Data Processing Control:</strong> We do not control how
-                Google processes or stores your data on their systems. We
-                recommend reviewing{" "}
-                <a
-                  href="https://policies.google.com/privacy"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline"
-                >
-                  Google’s Privacy Policy
-                </a>{" "}
-                for more information on their practices.
-              </p>
-            </li>
-            <li>
-              <p>
-                <strong>Google Calendar & Meet (Tutors Only):</strong> Tutors
-                may optionally connect their Google Calendar to enable automated
-                scheduling of tutoring sessions. With your explicit consent, we
-                request permission to create and manage calendar events related
-                only to sessions booked through our platform, including adding
-                session details and generating Google Meet links. We do not
-                access, read, or modify any calendar events unrelated to
-                sessions created through our platform. This access is used
-                strictly to support core functionality and can be revoked at any
-                time through your Google account settings.
-              </p>
-            </li>
-            <li>
-              <p>
-                <strong>Limited Use:</strong> We only request access to Google
-                user data that is necessary to provide core platform
-                functionality. We do not sell, rent, or share your data with
-                third parties for advertising or marketing purposes. We do not
-                use Google user data for training artificial intelligence or
-                machine learning models. Algora's use and transfer of
-                information received from Google APIs complies with{" "}
-                <a
-                  href="https://developers.google.com/terms/api-services-user-data-policy"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline"
-                >
-                  Google API Services User Data Policy
-                </a>
-                , including the Limited Use requirements.
+                <strong>No Data Selling or AI Training:</strong> We do not sell,
+                rent, or share your Google user data with third parties for
+                advertising or marketing purposes. Furthermore, we do not use
+                Google user data to train artificial intelligence or machine
+                learning models.
               </p>
             </li>
           </ul>
         </section>
 
         <section className="mb-8">
-          <h3 className=" mb-4">How We Use Your Information</h3>
+          <h3 className="mb-4 text-2xl font-semibold">
+            How We Use Your Information
+          </h3>
           <p className="mb-4">
             We use the information we collect for the following purposes:
           </p>
           <ul className="list-disc pl-6 flex flex-col gap-2 mb-4">
+            <li>To authenticate your identity and provide secure access.</li>
+            <li>To personalize your learning experience and track progress.</li>
+            <li>To manage subscriptions and process payments.</li>
             <li>
-              <p>
-                To authenticate your identity and provide secure access to your
-                account and courses.
-              </p>
+              To synchronize tutoring sessions with Google Calendar and generate
+              Google Meet links.
             </li>
-            <li>
-              <p>
-                To personalize your learning experience and track your progress.
-              </p>
-            </li>
-            <li>
-              <p>
-                To manage subscriptions, process payments, and facilitate
-                mentorship sessions.
-              </p>
-            </li>
-            <li>
-              <p>
-                To synchronize tutoring sessions with Google Calendar and
-                generate Google Meet links for connected tutor accounts.
-              </p>
-            </li>
-            <li>
-              <p>
-                To improve, maintain, and optimize platform performance and user
-                experience.
-              </p>
-            </li>
+            <li>To improve, maintain, and optimize platform performance.</li>
           </ul>
         </section>
 
         <section className="mb-8">
-          <h3 className=" mb-4">Data Storage and Security</h3>
+          <h3 className="mb-4 text-2xl font-semibold">
+            Data Storage, Security & Retention
+          </h3>
           <p className="mb-4">
             We implement industry-standard security measures, including
-            encryption in transit and restricted access controls, to protect
-            your data from unauthorized access, alteration, or disclosure.
+            encryption in transit and restricted access controls.
           </p>
           <p className="mb-4">
-            We retain personal data only for as long as necessary to provide our
-            services and comply with applicable legal obligations.
+            <strong>Retention:</strong> We retain personal data and Google
+            API-sourced metadata only for as long as your account is active or
+            as needed to provide you with our services. If you delete your
+            account, we will purge your personal data from our active databases
+            within 30 days, unless required otherwise by law.
+          </p>
+          <p className="mb-4">
+            <strong>Human Access:</strong> Our staff does not access or read
+            your Google user data unless specifically required for technical
+            support requested by you.
           </p>
         </section>
 
         <section className="mb-8">
-          <h3 className=" mb-4">User Rights</h3>
+          <h3 className="mb-4 text-2xl font-semibold">User Rights</h3>
           <p className="mb-4">
             You have the right to access, update, or request deletion of your
             personal data at any time.
           </p>
           <p className="mb-4">
-            You also maintain full control over your third-party account
-            connections and may revoke our access to your Google account at any
-            time through your Google account settings. Once access is revoked,
-            we will no longer access or process your Google data.
+            <strong>Revocation:</strong> You may revoke Algora&apos;s access to
+            your Google account at any time through your{" "}
+            <a
+              href="https://myaccount.google.com/permissions"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 underline"
+            >
+              Google Security Settings
+            </a>
+            . Once access is revoked, we will no longer be able to synchronize
+            events to your calendar.
           </p>
         </section>
 
         <section className="mb-8">
-          <h3 className=" mb-4">Third-Party Links and Services Disclaimer</h3>
-          <p className="mb-4">
-            Our platform may contain links to external websites and integrate
-            third-party services. These services operate independently under
-            their own privacy policies, and we are not responsible for their
-            data practices.
-          </p>
-        </section>
-
-        <section className="mb-8">
-          <h3 className=" mb-4">Changes to This Policy</h3>
-          <p className="mb-4">
-            We may update this Privacy Policy from time to time to reflect
-            changes in our practices or legal requirements. When updates are
-            made, users will be notified accordingly.
-          </p>
-        </section>
-
-        <section className="mb-8">
-          <h3 className=" mb-4">Contact Information</h3>
+          <h3 className="mb-4 text-2xl font-semibold">Contact Information</h3>
           <p className="mb-4">
             If you have any questions, concerns, or requests regarding this
             Privacy Policy or your personal data, please contact us at:{" "}

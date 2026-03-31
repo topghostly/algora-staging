@@ -46,23 +46,8 @@ export default function ForgotPassword() {
   return (
     <div>
       <div style={containerStyle} className="card">
-        <h1
-          style={{
-            textAlign: "center",
-            fontSize: "1.4rem",
-            fontWeight: 600,
-            marginBottom: "0.5rem",
-          }}
-        >
-          Reset Password
-        </h1>
-        <p
-          style={{
-            textAlign: "center",
-            color: "var(--muted)",
-            marginBottom: "2rem",
-          }}
-        >
+        <h3 className="text-center">Reset Password</h3>
+        <p className="text-center text-muted-foreground mb-6">
           Enter your email to receive a reset link
         </p>
 
@@ -82,14 +67,7 @@ export default function ForgotPassword() {
             <input
               type="email"
               placeholder="m@example.com"
-              style={{
-                width: "100%",
-                padding: "0.75rem",
-                borderRadius: "var(--radius)",
-                border: "1px solid var(--border)",
-                fontSize: "1rem",
-                marginTop: "0.6rem",
-              }}
+              className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -99,17 +77,7 @@ export default function ForgotPassword() {
           <button
             type="submit"
             disabled={loading}
-            style={{
-              width: "100%",
-              padding: "0.8rem",
-              borderRadius: "var(--radius)",
-              border: "none",
-              backgroundColor: "var(--primary)",
-              color: "var(--background)",
-              fontWeight: 600,
-              cursor: "pointer",
-              marginTop: "0.5rem",
-            }}
+            className="btn btn-primary w-fit mx-auto rounded-md"
           >
             {loading ? "Sending..." : "Send Reset Link"}
           </button>

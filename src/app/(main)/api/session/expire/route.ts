@@ -3,15 +3,10 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(req: Request) {
   try {
-    // Basic security check for Vercel Cron
-    // In production, you should also set a CRON_SECRET environment variable
     const authHeader = req.headers.get("authorization");
-    // if (
-    //   process.env.NODE_ENV === "production" &&
-    //   authHeader !== `Bearer ${process.env.CRON_SECRET}`
-    // ) {
-    //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    // }
+    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     const now = new Date();
 

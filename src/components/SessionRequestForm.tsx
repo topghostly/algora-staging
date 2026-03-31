@@ -7,6 +7,8 @@ import { createSessionRequest } from "@/app/(main)/actions/request";
 import { SPECIALTY_OPTIONS } from "@/app/(main)/tutor/onboarding/page";
 import { Badge } from "@/components/ui/badge";
 import { User, CheckCircle2 } from "lucide-react";
+import { z } from "zod";
+import { FormFieldError } from "@/components/ui/form-error";
 
 interface Tutor {
   id: string;
@@ -21,9 +23,23 @@ interface SessionRequestFormProps {
   tutors: Tutor[];
 }
 
+const sessionRequestSchema = z.object({
+  specialty: z.string().min(1, "Please select a specialty"),
+  tutorId: z.string().min(1, "Please select a tutor"),
+  title: z.string().min(5, "Title must be at least 5 characters").max(100),
+  preferredDate: z.string().min(1, "Please select a preferred date"),
+  preferredTime: z.string().min(1, "Please select a preferred time"),
+  message: z.string().optional(),
+});
+
+type FormErrors = {
+  [K in keyof z.infer<typeof sessionRequestSchema>]?: string;
+};
+
 export function SessionRequestForm({ tutors }: SessionRequestFormProps) {
   const [selectedSpecialty, setSelectedSpecialty] = useState("");
   const [selectedTutorId, setSelectedTutorId] = useState("");
+  const [errors, setErrors] = useState<FormErrors>({});
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -37,7 +53,26 @@ export function SessionRequestForm({ tutors }: SessionRequestFormProps) {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setErrors({});
     const formData = new FormData(event.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+
+    const validation = sessionRequestSchema.safeParse({
+      ...data,
+      specialty: selectedSpecialty,
+    });
+
+    if (!validation.success) {
+      const fieldErrors: FormErrors = {};
+      validation.error.issues.forEach((issue) => {
+        if (issue.path[0]) {
+          fieldErrors[issue.path[0] as keyof FormErrors] = issue.message;
+        }
+      });
+      setErrors(fieldErrors);
+      toast.error("Please fix the errors in the form");
+      return;
+    }
 
     startTransition(async () => {
       try {
@@ -73,6 +108,7 @@ export function SessionRequestForm({ tutors }: SessionRequestFormProps) {
             </option>
           ))}
         </select>
+        <FormFieldError error={errors.specialty} />
       </div>
 
       <div className="space-y-4">
@@ -142,6 +178,7 @@ export function SessionRequestForm({ tutors }: SessionRequestFormProps) {
           )}
         </div>
         <input type="hidden" name="tutorId" value={selectedTutorId} required />
+        <FormFieldError error={errors.tutorId} />
       </div>
 
       <div className="space-y-2">
@@ -156,6 +193,7 @@ export function SessionRequestForm({ tutors }: SessionRequestFormProps) {
           placeholder="e.g., Help with React Tables"
           className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         />
+        <FormFieldError error={errors.title} />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -196,6 +234,7 @@ export function SessionRequestForm({ tutors }: SessionRequestFormProps) {
           placeholder="Tell the tutor what you'd like to cover..."
           className="w-full min-h-[100px] px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         ></textarea>
+        <FormFieldError error={errors.message} />
       </div>
 
       <button

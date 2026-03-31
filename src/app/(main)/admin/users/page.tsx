@@ -11,6 +11,19 @@ export const dynamic = "force-dynamic";
 async function getUsers() {
   return await prisma.user.findMany({
     orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      role: true,
+      emailVerified: true,
+      subscriptionTier: true,
+      createdAt: true,
+      disabled: true,
+      suspended: true,
+      image: true,
+      // passwordHash, googleRefreshToken, etc. are NOT selected
+    },
   });
 }
 
