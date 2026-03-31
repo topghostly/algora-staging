@@ -45,7 +45,7 @@ const nextConfig: NextConfig = {
               base-uri 'self';
               form-action 'self';
               frame-ancestors 'none';
-              frame-src 'self' https://js.paystack.co https://checkout.paystack.com https://standard.paystack.co https://www.youtube.com https://www.youtube-nocookie.com;
+              frame-src 'self' https://js.paystack.co https://checkout.paystack.com https://standard.paystack.co https://www.youtube.com https://www.youtube-nocookie.com https://vercel.live;
               block-all-mixed-content;
               upgrade-insecure-requests;
             `
