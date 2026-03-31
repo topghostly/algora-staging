@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -21,7 +21,6 @@ function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
 
   const { data: session, status } = useSession();
-  const redirected = useRef(false);
 
   useEffect(() => {
     const errorParam = searchParams.get("error");
@@ -33,8 +32,8 @@ function SignInForm() {
   }, [searchParams]);
 
   useEffect(() => {
-    if (status !== "authenticated" || redirected.current) return;
-    redirected.current = true;
+    console.log(`The first part status: ${status} and the session: ${session}`);
+    if (status !== "authenticated") return;
 
     toast.success("Welcome back!", {
       description: "You've successfully signed in.",
@@ -46,6 +45,7 @@ function SignInForm() {
     }
 
     const role = session?.user?.role;
+    console.log(`The third part role: ${role}`);
 
     if (!role) {
       router.replace("/auth/select-role");
@@ -68,7 +68,7 @@ function SignInForm() {
       redirect: false,
     });
 
-    // console.log(res);
+    console.log(`The second part res: ${res}`);
 
     if (res?.error) {
       const errorMessage = "Invalid email or password";
