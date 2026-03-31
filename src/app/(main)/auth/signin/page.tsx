@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -21,6 +21,7 @@ function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
 
   const { data: session, status } = useSession();
+  const redirected = useRef(false);
 
   useEffect(() => {
     const errorParam = searchParams.get("error");
@@ -32,7 +33,8 @@ function SignInForm() {
   }, [searchParams]);
 
   useEffect(() => {
-    if (status !== "authenticated") return;
+    if (status !== "authenticated" || redirected.current) return;
+    redirected.current = true;
 
     toast.success("Welcome back!", {
       description: "You've successfully signed in.",
@@ -334,10 +336,7 @@ function SignInForm() {
         }}
       >
         By clicking continue, you agree to our <br />
-        <Link
-          href="/terms"
-          style={{ fontWeight: 600, textDecoration: "underline" }}
-        >
+        <Link href="#" style={{ fontWeight: 600, textDecoration: "underline" }}>
           Terms of Service
         </Link>{" "}
         and{" "}

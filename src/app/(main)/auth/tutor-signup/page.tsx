@@ -289,10 +289,7 @@ function SignUpForm() {
         }}
       >
         By clicking continue, you agree to our <br />
-        <Link
-          href="/terms"
-          style={{ fontWeight: 600, textDecoration: "underline" }}
-        >
+        <Link href="#" style={{ fontWeight: 600, textDecoration: "underline" }}>
           Terms of Service
         </Link>{" "}
         and{" "}
