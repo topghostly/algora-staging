@@ -2,17 +2,20 @@ import crypto from "crypto";
 
 const algorithm = "aes-256-gcm";
 
-const ENCRYPTION_SECRET = process.env.ENCRYPTION_KEY!;
+function getEncryptionKey() {
+  const secret = process.env.ENCRYPTION_KEY;
 
-if (!ENCRYPTION_SECRET) {
-  throw new Error("Missing ENCRYPTION_KEY in environment variables");
+  if (!secret) {
+    throw new Error("ENCRYPTION_KEY is not configured");
+  }
+
+  return crypto.scryptSync(secret, "livermore-duckwald", 32);
 }
 
-// scrypt always returns a buffer of the exact length we request
-const key = crypto.scryptSync(ENCRYPTION_SECRET, "livermore-duckwald", 32);
-
 export function encrypt(text: string) {
-  const iv = crypto.randomBytes(12); // 12 bytes is recommended for GCM
+  const key = getEncryptionKey();
+
+  const iv = crypto.randomBytes(12);
   const cipher = crypto.createCipheriv(algorithm, key, iv);
 
   let encrypted = cipher.update(text, "utf8", "hex");
@@ -24,6 +27,8 @@ export function encrypt(text: string) {
 }
 
 export function decrypt(payload: string) {
+  const key = getEncryptionKey();
+
   const [ivHex, authTagHex, encrypted] = payload.split(":");
 
   const decipher = crypto.createDecipheriv(
