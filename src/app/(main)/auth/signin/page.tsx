@@ -32,7 +32,6 @@ function SignInForm() {
   }, [searchParams]);
 
   useEffect(() => {
-    console.log(`The first part status: ${status} and the session: ${session}`);
     if (status !== "authenticated") return;
 
     toast.success("Welcome back!", {
@@ -45,7 +44,6 @@ function SignInForm() {
     }
 
     const role = session?.user?.role;
-    console.log(`The third part role: ${role}`);
 
     if (!role) {
       router.replace("/auth/select-role");
@@ -67,8 +65,6 @@ function SignInForm() {
       password: formData.password,
       redirect: false,
     });
-
-    console.log(`The second part res: ${res}`);
 
     if (res?.error) {
       const errorMessage = "Invalid email or password";
