@@ -128,7 +128,7 @@ export default function Dashboard() {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fill, minmax(360px, 1fr))",
                 gap: "1.5rem",
               }}
             >
@@ -136,7 +136,11 @@ export default function Dashboard() {
                 <div
                   key={enrollment.id}
                   className="card"
-                  style={{ display: "flex", flexDirection: "column" }}
+                  style={{
+                    display: "flex",
+                    boxShadow: "none",
+                    flexDirection: "column",
+                  }}
                 >
                   <div style={{ marginBottom: "1rem" }}>
                     <h3
@@ -195,8 +199,10 @@ export default function Dashboard() {
                         alignItems: "center",
                         gap: "0.25rem",
                       }}
+                      className="btn btn-outline rounded-lg"
                     >
-                      Continue <ArrowRight size={14} />
+                      Continue
+                      {/* <ArrowRight size={14} /> */}
                     </Link>
                   </div>
                 </div>

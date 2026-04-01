@@ -96,9 +96,6 @@ async function getLessonData(
 
 import { canAccessLesson } from "@/lib/access-control";
 import VideoPlayer from "@/components/ui/video-palyer";
-import { BreadcrumbNav } from "@/components/BreadcrumbNav";
-
-// ... existing imports
 
 export default async function LessonPage({ params }: LessonPageProps) {
   const session = await getServerSession(authOptions);
@@ -147,7 +144,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
       <div>
         {prevLesson && (
           <Link href={`/tracks/${track.id}/lessons/${prevLesson.id}`}>
-            <div className="py-2 bg-linear-to-r from-gray-500 via-green-500 to-emerald-400 flex flex-col gap-0 justify-center items-center cursor-pointer">
+            <div className="py-2 bg-secondary from-gray-500 via-green-500 to-emerald-400 flex flex-col gap-0 justify-center items-center cursor-pointer">
               <ChevronUp color="white" />
               <p
                 className="text-md underline"
@@ -162,13 +159,13 @@ export default async function LessonPage({ params }: LessonPageProps) {
           </Link>
         )}
 
-        <div className="mb-8 bg-white md:bg-linear-to-r from-zinc-500 via-stone-600 to-zinc-900 py-8 md:py-24">
+        <div className="mb-8 bg-white md:bg-secondary from-zinc-500 via-stone-600 to-zinc-900 py-8 md:py-18">
           <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
             <h1
               className="text-black md:text-white"
-              style={{
-                fontSize: "clamp(2.4rem, 4vw, 3.4rem)",
-              }}
+              // style={{
+              //   fontSize: "clamp(2.4rem, 4vw, 3.4rem)",
+              // }}
             >
               {currentLesson.title}
             </h1>
@@ -251,7 +248,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
           <div>
             {nextLesson ? (
               <Link href={`/tracks/${track.id}/lessons/${nextLesson.id}`}>
-                <div className="py-2 bg-linear-to-r from-gray-500 via-green-500 to-emerald-400 flex flex-col gap-0 justify-center items-center cursor-pointer">
+                <div className="py-2 bg-secondary from-gray-500 via-green-500 to-emerald-400 flex flex-col gap-0 justify-center items-center cursor-pointer">
                   <p
                     className="text-md underline"
                     style={{
@@ -268,7 +265,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
                 href="/dashboard"
                 // className="btn btn-primary flex items-center gap-2"
               >
-                <div className="py-4 bg-linear-to-r from-gray-500 via-green-500 to-emerald-400 flex flex-col gap-0 justify-center items-center cursor-pointer">
+                <div className="py-4 bg-secondary from-gray-500 via-green-500 to-emerald-400 flex flex-col gap-0 justify-center items-center cursor-pointer">
                   <p
                     className="text-md underline"
                     style={{
