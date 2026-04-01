@@ -50,6 +50,8 @@ export default function Home() {
       link: "#",
     },
   ];
+
+  console.log("The EMAIL", process.env.EMAIL_VERIFICATION_SECRET);
   return (
     <>
       <LoadingScreen />
