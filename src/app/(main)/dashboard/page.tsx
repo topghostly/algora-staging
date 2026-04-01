@@ -67,20 +67,17 @@ export default function Dashboard() {
     <div className="container" style={{ padding: "4rem 0" }}>
       {/* <BreadcrumbNav items={[{ label: "Dashboard" }]} className="mb-4" /> */}
       <div style={{ marginBottom: "3rem" }}>
-        <h2
+        <p
           style={{
-            marginBottom: "1rem",
+            marginBottom: "3rem",
           }}
         >
           Dashboard
-        </h2>
-        <p style={{ color: "var(--muted)", fontSize: "1.1rem" }}>
-          Welcome back,{" "}
-          <span style={{ color: "var(--foreground)", fontWeight: 600 }}>
-            {session?.user?.name}
-          </span>
-          !
         </p>
+        <h1 className="font-light">
+          Welcome, <br />{" "}
+          <span className="font-medium">{session?.user?.name}</span>!
+        </h1>
       </div>
 
       <div
