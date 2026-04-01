@@ -14,7 +14,8 @@ export default withAuth(
     const isSelectRoleApi = pathname.startsWith("/api/auth/select-role");
     const isProfileApi = pathname.startsWith("/api/user/profile");
     const isRegisterApi = pathname.startsWith("/api/register");
-    const isAuthApi = pathname.startsWith("/api/auth/forgot-password") ||
+    const isAuthApi =
+      pathname.startsWith("/api/auth/forgot-password") ||
       pathname.startsWith("/api/auth/reset-password") ||
       pathname.startsWith("/api/auth/verify-email");
 
@@ -72,7 +73,8 @@ export default withAuth(
         const isProfileApi = pathname.startsWith("/api/user/profile");
         const isSelectRoleApi = pathname.startsWith("/api/auth/select-role");
         const isRegisterApi = pathname.startsWith("/api/register");
-        const isAuthApi = pathname.startsWith("/api/auth/forgot-password") ||
+        const isAuthApi =
+          pathname.startsWith("/api/auth/forgot-password") ||
           pathname.startsWith("/api/auth/reset-password") ||
           pathname.startsWith("/api/auth/verify-email");
 
@@ -92,7 +94,7 @@ export default withAuth(
     pages: {
       signIn: "/auth/signin",
     },
-    secret: process.env.NEXTAUTH_SECRET,
+    // secret: process.env.NEXTAUTH_SECRET,
   },
 );
 
