@@ -32,18 +32,19 @@ export default function Navbar() {
   return (
     <nav
       style={{
-        borderBottom: "1px solid var(--border)",
-        backgroundColor: "var(--background)",
+        background: "linear-gradient(to bottom, #1084d0 0%, #0a246a 100%)",
         position: "sticky",
         top: 0,
         zIndex: 50,
+        borderBottom: "2px solid #08174a",
+        boxShadow: "0 2px 4px rgba(0,0,0,0.4)",
       }}
     >
       <div
         style={{
           display: "flex",
           alignItems: "center",
-          height: "64px",
+          height: "36px",
           paddingLeft: "clamp(1rem, 5vw, 2rem)",
           paddingRight: "clamp(1rem, 5vw, 2rem)",
           gap: "1rem",
@@ -227,13 +228,26 @@ export default function Navbar() {
               <div className="items-center gap-3 hidden sm:flex">
                 <Link
                   href="/tracks"
-                  className="text-muted text-sm transition-all duration-300 hover:text-primary px-3 py-1.5 rounded-lg"
+                  style={{
+                    fontFamily: "Tahoma, sans-serif",
+                    fontSize: "11px",
+                    color: "#fff",
+                    textDecoration: "none",
+                    padding: "2px 8px",
+                    background: "transparent",
+                  }}
                 >
                   Tracks
                 </Link>
                 <Link
                   href="/pricing"
-                  className="text-muted text-sm transition-all duration-300 hover:text-primary px-3 py-1.5 rounded-lg"
+                  style={{
+                    fontFamily: "Tahoma, sans-serif",
+                    fontSize: "11px",
+                    color: "#fff",
+                    textDecoration: "none",
+                    padding: "2px 8px",
+                  }}
                 >
                   Pricing
                 </Link>
@@ -245,7 +259,16 @@ export default function Navbar() {
                 </GlowingButton>
                 <Link
                   href="/auth/signup"
-                  className="btn btn-primary rounded-full transition-all duration-300"
+                  style={{
+                    fontFamily: "Tahoma, sans-serif",
+                    fontSize: "11px",
+                    background: "#c0c0c0",
+                    color: "#000",
+                    textDecoration: "none",
+                    padding: "3px 10px",
+                    border: "2px solid",
+                    borderColor: "#dfdfdf #808080 #808080 #dfdfdf",
+                  }}
                 >
                   Get Started
                 </Link>

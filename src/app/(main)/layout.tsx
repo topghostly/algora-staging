@@ -65,9 +65,9 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={euclid.className} suppressHydrationWarning>
         <Providers>
-          <div className="flex flex-col min-h-screen">
+          <div className="flex flex-col min-h-screen" style={{ background: "#008080" }}>
             <Navbar />
-            <main className="grow px-[clamp(1rem,5vw,2rem)]">{children}</main>
+            <main className="grow">{children}</main>
             <Toaster />
           </div>
         </Providers>

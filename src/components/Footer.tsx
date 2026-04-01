@@ -4,59 +4,90 @@ import { Facebook, Twitter, Instagram, Linkedin, Github } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="bg-background border-t border-border py-12 mt-auto">
+    <footer
+      style={{
+        background: "#c0c0c0",
+        borderTop: "2px solid",
+        borderColor: "#dfdfdf #808080 #808080 #dfdfdf",
+        fontFamily: "Tahoma, Verdana, sans-serif",
+        marginBottom: 30,
+      }}
+    >
+      <div
+        style={{
+          background: "linear-gradient(to right, #0a246a, #3a6ea5)",
+          padding: "3px 12px",
+        }}
+      >
+        <span
+          style={{
+            color: "#fff",
+            fontFamily: "Tahoma, sans-serif",
+            fontSize: "11px",
+            fontWeight: "bold",
+          }}
+        >
+          Algora — © {new Date().getFullYear()} All rights reserved.
+        </span>
+      </div>
       <div className="container">
-        <div className="flex flex-col items-center text-center space-y-8 gap-4">
-          {/* Logo Section */}
-          <Link href="/" className="inline-block">
+        <div
+          style={{
+            padding: "8px 0",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: 8,
+          }}
+        >
+          {/* Logo */}
+          <Link href="/" style={{ display: "inline-block" }}>
             <Image
               src="/images/svg/Algora-image.svg"
               alt="Algora Logo"
-              width={50}
-              height={50}
-              className="h-10 w-auto object-contain"
+              width={30}
+              height={30}
+              className="h-8 w-auto object-contain"
             />
           </Link>
 
           {/* Navigation Links */}
           <nav>
-            <ul className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm font-medium text-muted list-none p-0">
+            <ul
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 4,
+                listStyle: "none",
+                padding: 0,
+                margin: 0,
+              }}
+            >
               <li>
                 <Link
                   href="/courses"
-                  className="hover:text-primary transition-colors"
+                  style={{
+                    fontFamily: "Tahoma, sans-serif",
+                    fontSize: "11px",
+                    color: "#000080",
+                    textDecoration: "underline",
+                    padding: "2px 6px",
+                  }}
                 >
                   Courses
                 </Link>
               </li>
-              {/* <li>
-                <Link
-                  href="/mentorship"
-                  className="hover:text-primary transition-colors"
-                >
-                  Mentorship
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/projects"
-                  className="hover:text-primary transition-colors"
-                >
-                  Projects
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/about"
-                  className="hover:text-primary transition-colors"
-                >
-                  About Us
-              </Link>
-              </li> */}
               <li>
                 <Link
                   href="/terms"
-                  className="hover:text-primary transition-colors"
+                  style={{
+                    fontFamily: "Tahoma, sans-serif",
+                    fontSize: "11px",
+                    color: "#000080",
+                    textDecoration: "underline",
+                    padding: "2px 6px",
+                  }}
                 >
                   Terms
                 </Link>
@@ -64,59 +95,48 @@ const Footer = () => {
               <li>
                 <Link
                   href="/privacy"
-                  className="hover:text-primary transition-colors"
+                  style={{
+                    fontFamily: "Tahoma, sans-serif",
+                    fontSize: "11px",
+                    color: "#000080",
+                    textDecoration: "underline",
+                    padding: "2px 6px",
+                  }}
                 >
                   Privacy
                 </Link>
               </li>
             </ul>
           </nav>
-        </div>
 
-        {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-sm text-muted">
-            © {new Date().getFullYear()} Algora. All rights reserved.
-          </p>
-
-          <div className="flex items-center gap-4">
+          {/* Social */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <a
               href="https://x.com/algora_io"
-              className="text-muted hover:text-primary transition-colors"
-              aria-label="Twitter"
               target="_blank"
+              rel="noreferrer"
+              style={{ color: "#000080" }}
+              aria-label="Twitter"
             >
-              <Twitter size={20} />
+              <Twitter size={16} />
             </a>
             <a
               href="https://www.linkedin.com/company/algora-io/"
-              className="text-muted hover:text-primary transition-colors"
-              aria-label="LinkedIn"
               target="_blank"
+              rel="noreferrer"
+              style={{ color: "#000080" }}
+              aria-label="LinkedIn"
             >
-              <Linkedin size={20} />
+              <Linkedin size={16} />
             </a>
-            {/* <a
-              href="#"
-              className="text-muted hover:text-primary transition-colors"
-              aria-label="GitHub"
-            >
-              <Github size={20} />
-            </a> */}
-            {/* <a
-              href="#"
-              className="text-muted hover:text-primary transition-colors"
-              aria-label="Facebook"
-            >
-              <Facebook size={20} />
-            </a> */}
             <a
               href="https://www.instagram.com/joinalgora/"
-              className="text-muted hover:text-primary transition-colors"
-              aria-label="Instagram"
               target="_blank"
+              rel="noreferrer"
+              style={{ color: "#000080" }}
+              aria-label="Instagram"
             >
-              <Instagram size={20} />
+              <Instagram size={16} />
             </a>
           </div>
         </div>
