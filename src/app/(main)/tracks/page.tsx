@@ -231,20 +231,6 @@ export default function TracksPage() {
         }}
         className="py-10md:py-22"
       >
-        <div
-          style={{
-            display: "inline-block",
-            padding: "0.5rem 1rem",
-            backgroundColor: "rgba(0, 137, 123, 0.1)",
-            color: "var(--primary)",
-            borderRadius: "99px",
-            fontWeight: 600,
-            marginBottom: "1.5rem",
-          }}
-          className="text-xs md:text-base text-center"
-        >
-          Launching the next generation of African Tech Talent
-        </div>
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
           <h1 style={{ marginBottom: "1rem" }}>Learning Tracks</h1>
           <p
@@ -321,25 +307,6 @@ export default function TracksPage() {
             </div>
           </div>
         </div>
-
-        {/* <div className="container hidden md:block">
-          <Image
-            src="/images/man_holding_binoculars_with_plants.svg"
-            alt="man_holding_binoculars_with_plants"
-            width={0}
-            height={0}
-            style={{
-              width: "100%",
-              height: "auto",
-              pointerEvents: "none",
-              userSelect: "none",
-              WebkitUserSelect: "none",
-              MozUserSelect: "none",
-              msUserSelect: "none",
-            }}
-            sizes="100vw"
-          />
-        </div> */}
       </section>
 
       <section className="md:mt-20">
@@ -371,49 +338,48 @@ export default function TracksPage() {
             )}
           </div>
 
-          {error && (
+          {error ? (
             <div className="my-10">
               <ErrorState message={error} onReload={handleReload} />
             </div>
-          )}
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(450px, 1fr))",
-              gap: "1rem",
-            }}
-          >
-            <AnimatePresence mode="popLayout">
-              {loading
-                ? // Skeleton loading state
-                  Array.from({ length: 3 }).map((_, i) => (
-                    <motion.div
-                      key={`skeleton-${i}`}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                    >
-                      <SkeletonTrackCard />
-                    </motion.div>
-                  ))
-                : tracks.map((track) => (
-                    <motion.div
-                      key={track.id}
-                      layout
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      className="card"
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "space-between",
-                        height: "100%",
-                        gap: "20px",
-                      }}
-                    >
-                      {/* <div
+          ) : (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(450px, 1fr))",
+                gap: "1rem",
+              }}
+            >
+              <AnimatePresence mode="popLayout">
+                {loading
+                  ? // Skeleton loading state
+                    Array.from({ length: 3 }).map((_, i) => (
+                      <motion.div
+                        key={`skeleton-${i}`}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                      >
+                        <SkeletonTrackCard />
+                      </motion.div>
+                    ))
+                  : tracks.map((track) => (
+                      <motion.div
+                        key={track.id}
+                        layout
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        className="card"
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          justifyContent: "space-between",
+                          height: "100%",
+                          gap: "20px",
+                        }}
+                      >
+                        {/* <div
                         style={{
                           height: "200px",
                           borderRadius: "var(--radius) var(--radius) 0 0",
@@ -431,111 +397,112 @@ export default function TracksPage() {
                         />
                       </div> */}
 
-                      <div className="h-16">
-                        <h3
+                        <div className="h-16">
+                          <h3
+                            style={{
+                              fontWeight: 500,
+                              marginBottom: "0.75rem",
+                              display: "-webkit-box",
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            }}
+                          >
+                            {track.title}
+                          </h3>
+                        </div>
+                        <div
                           style={{
-                            fontWeight: 500,
-                            marginBottom: "0.75rem",
-                            display: "-webkit-box",
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: "vertical",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
+                            height: "3rem",
                           }}
                         >
-                          {track.title}
-                        </h3>
-                      </div>
-                      <div
-                        style={{
-                          height: "3rem",
-                        }}
-                      >
-                        <p
+                          <p
+                            style={{
+                              color: "var(--muted)",
+
+                              lineHeight: 1.6,
+                              display: "-webkit-box",
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            }}
+                          >
+                            {track.description}
+                          </p>
+                        </div>
+                        <div
                           style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "1.5rem",
+                            // marginBottom: "1rem",
+                            fontSize: "0.9rem",
                             color: "var(--muted)",
-
-                            lineHeight: 1.6,
-                            display: "-webkit-box",
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: "vertical",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
                           }}
                         >
-                          {track.description}
-                        </p>
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "1.5rem",
-                          // marginBottom: "1rem",
-                          fontSize: "0.9rem",
-                          color: "var(--muted)",
-                        }}
-                      >
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "0.5rem",
-                          }}
-                        >
-                          <BookOpen size={16} />
-                          <span>{track._count.modules} Modules</span>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "0.5rem",
+                            }}
+                          >
+                            <BookOpen size={16} />
+                            <span>{track._count.modules} Modules</span>
+                          </div>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "0.5rem",
+                            }}
+                          >
+                            <Clock size={16} />
+                            <span>Self-paced</span>
+                          </div>
                         </div>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "0.5rem",
-                          }}
-                        >
-                          <Clock size={16} />
-                          <span>Self-paced</span>
-                        </div>
-                      </div>
 
-                      <EnrollButton trackId={track.id} />
-                    </motion.div>
-                  ))}
-            </AnimatePresence>
+                        <EnrollButton trackId={track.id} />
+                      </motion.div>
+                    ))}
+              </AnimatePresence>
 
-            {!loading && !error && tracks.length === 0 && (
-              <div
-                style={{
-                  gridColumn: "1 / -1",
-                  textAlign: "center",
-                  padding: "4rem",
-                  backgroundColor: "var(--muted-light)",
-                  borderRadius: "var(--radius)",
-                  border: "1px dashed var(--border)",
-                }}
-              >
-                <h3 style={{ marginBottom: "1rem" }}>
-                  {debouncedQuery
-                    ? `No tracks found matching "${debouncedQuery}"`
-                    : "No tracks available yet"}
-                </h3>
-                <p style={{ color: "var(--muted)" }}>
-                  {debouncedQuery
-                    ? "Try searching for something else or browse all tracks."
-                    : "Check back soon! We are working hard to create amazing content for you."}
-                </p>
-                {debouncedQuery && (
-                  <button
-                    onClick={clearSearch}
-                    className="btn btn-primary"
-                    style={{ marginTop: "1.5rem" }}
-                  >
-                    Clear Search
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
+              {!loading && !error && tracks.length === 0 && (
+                <div
+                  style={{
+                    gridColumn: "1 / -1",
+                    textAlign: "center",
+                    padding: "4rem",
+                    backgroundColor: "var(--muted-light)",
+                    borderRadius: "var(--radius)",
+                    border: "1px dashed var(--border)",
+                  }}
+                >
+                  <h3 style={{ marginBottom: "1rem" }}>
+                    {debouncedQuery
+                      ? `No tracks found matching "${debouncedQuery}"`
+                      : "No tracks available yet"}
+                  </h3>
+                  <p style={{ color: "var(--muted)" }}>
+                    {debouncedQuery
+                      ? "Try searching for something else or browse all tracks."
+                      : "Check back soon! We are working hard to create amazing content for you."}
+                  </p>
+                  {debouncedQuery && (
+                    <button
+                      onClick={clearSearch}
+                      className="btn btn-primary"
+                      style={{ marginTop: "1.5rem" }}
+                    >
+                      Clear Search
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </section>
       <div className="block md:hidden mt-15">

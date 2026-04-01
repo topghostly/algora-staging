@@ -126,6 +126,12 @@ const pages: PageLink[] = [
     description: "Read our privacy and data protection terms",
     roles: ["LEARNER", "ADMIN", "TUTOR", "GUEST"],
   },
+  {
+    title: "Terms of Service",
+    href: "/terms",
+    description: "Read our terms of service",
+    roles: ["LEARNER", "ADMIN", "TUTOR", "GUEST"],
+  },
 ];
 
 export function QuickSearch() {

@@ -29,7 +29,7 @@ const Footer = () => {
                   Courses
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   href="/mentorship"
                   className="hover:text-primary transition-colors"
@@ -51,14 +51,14 @@ const Footer = () => {
                   className="hover:text-primary transition-colors"
                 >
                   About Us
-                </Link>
-              </li>
+              </Link>
+              </li> */}
               <li>
                 <Link
-                  href="/contact"
+                  href="/terms"
                   className="hover:text-primary transition-colors"
                 >
-                  Contact
+                  Terms
                 </Link>
               </li>
               <li>
@@ -81,37 +81,40 @@ const Footer = () => {
 
           <div className="flex items-center gap-4">
             <a
-              href="#"
+              href="https://x.com/algora_io"
               className="text-muted hover:text-primary transition-colors"
               aria-label="Twitter"
+              target="_blank"
             >
               <Twitter size={20} />
             </a>
             <a
-              href="#"
+              href="https://www.linkedin.com/company/algora-io/"
               className="text-muted hover:text-primary transition-colors"
               aria-label="LinkedIn"
+              target="_blank"
             >
               <Linkedin size={20} />
             </a>
-            <a
+            {/* <a
               href="#"
               className="text-muted hover:text-primary transition-colors"
               aria-label="GitHub"
             >
               <Github size={20} />
-            </a>
-            <a
+            </a> */}
+            {/* <a
               href="#"
               className="text-muted hover:text-primary transition-colors"
               aria-label="Facebook"
             >
               <Facebook size={20} />
-            </a>
+            </a> */}
             <a
-              href="#"
+              href="https://www.instagram.com/joinalgora/"
               className="text-muted hover:text-primary transition-colors"
               aria-label="Instagram"
+              target="_blank"
             >
               <Instagram size={20} />
             </a>
