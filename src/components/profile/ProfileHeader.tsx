@@ -1,5 +1,6 @@
 import Image from "next/image";
 import EditProfileModal from "./EditProfileModal";
+import DeleteAccountButton from "./DeleteAccountButton";
 
 interface ProfileHeaderProps {
   user: {
@@ -12,7 +13,7 @@ interface ProfileHeaderProps {
 
 export default function ProfileHeader({ user }: ProfileHeaderProps) {
   return (
-    <div className="card p-6 mb-6 flex flex-col md:flex-row md:items-center gap-6">
+    <div className="py-6 mb-6 flex flex-col md:flex-row md:items-center gap-6">
       <div className="flex items-center gap-6">
         <div
           style={{
@@ -79,8 +80,9 @@ export default function ProfileHeader({ user }: ProfileHeaderProps) {
         </div>
       </div>
 
-      <div className="md:ml-auto">
+      <div className="md:ml-auto flex items-center gap-2">
         <EditProfileModal user={user} />
+        <DeleteAccountButton />
       </div>
     </div>
   );

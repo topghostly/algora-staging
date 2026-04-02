@@ -340,52 +340,63 @@ export default function PricingCard({
         ))}
       </ul>
 
-      <button
-        onClick={isCurrentPlan ? handleCancelClick : handleClick}
-        disabled={isCancelling}
-        className={`btn rounded-lg ${variant === "primary" ? "btn-primary" : "btn-outline"} `}
-        style={{
-          width: "100%",
-          textAlign: "center",
-          justifyContent: "center",
-          padding: "0.75rem",
-          marginTop: "auto",
-          opacity: isCancelling ? 0.7 : 1,
-          cursor: isCancelling ? "not-allowed" : "pointer",
-          display: "flex",
-          alignItems: "center",
-          gap: "0.5rem",
-          border: isCurrentPlan ? "1px solid red" : "",
-          backgroundColor: isCurrentPlan ? "#fff7f7" : "",
-        }}
-      >
-        {isCancelling ? (
-          <span className="text-red-500 flex items-center gap-2">
-            <Loader2 className="w-4 h-4 animate-spin" />
-            Cancelling...
-          </span>
-        ) : isCurrentPlan ? (
-          <span className="text-red-500 flex flex-col items-center">
-            {session?.user?.cancelAtPeriodEnd ? (
-              <>
-                <span>Subscription Cancelled</span>
-                {session?.user?.subscriptionPeriodEnd && (
-                  <span className="text-[10px] opacity-70">
-                    Active until{" "}
-                    {new Date(
-                      session.user.subscriptionPeriodEnd,
-                    ).toLocaleDateString()}
-                  </span>
-                )}
-              </>
-            ) : (
-              "Cancel Subscription"
-            )}
-          </span>
-        ) : (
-          buttonText
-        )}
-      </button>
+      {title !== "Free" ? (
+        <button
+          onClick={isCurrentPlan ? handleCancelClick : handleClick}
+          disabled={isCancelling}
+          className={`btn rounded-lg ${variant === "primary" ? "btn-primary" : "btn-outline"} `}
+          style={{
+            width: "100%",
+            textAlign: "center",
+            justifyContent: "center",
+            padding: "0.75rem",
+            marginTop: "auto",
+            opacity: isCancelling ? 0.7 : 1,
+            cursor: isCancelling ? "not-allowed" : "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            border: isCurrentPlan ? "1px solid red" : "",
+            backgroundColor: isCurrentPlan ? "#fff7f7" : "",
+          }}
+        >
+          {isCancelling ? (
+            <span className="text-red-500 flex items-center gap-2">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Cancelling...
+            </span>
+          ) : isCurrentPlan ? (
+            <span className="text-red-500 flex flex-col items-center">
+              {session?.user?.cancelAtPeriodEnd ? (
+                <>
+                  <span>Subscription Cancelled</span>
+                  {session?.user?.subscriptionPeriodEnd && (
+                    <span className="text-[10px] opacity-70">
+                      Active until{" "}
+                      {new Date(
+                        session.user.subscriptionPeriodEnd,
+                      ).toLocaleDateString()}
+                    </span>
+                  )}
+                </>
+              ) : (
+                "Cancel Subscription"
+              )}
+            </span>
+          ) : (
+            buttonText
+          )}
+        </button>
+      ) : (
+        <button
+          className="btn rounded-lg btn-outline w-full opacity-50 cursor-not-allowed"
+          style={{
+            padding: "0.75rem",
+          }}
+        >
+          {isCurrentPlan ? "You're on Free" : "Start Free"}
+        </button>
+      )}
 
       <ConfirmationDialog
         isOpen={showCancelDialog}

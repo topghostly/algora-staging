@@ -83,6 +83,10 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
+        if (user.disabled) {
+          throw new Error("AccountDisabled");
+        }
+
         const isValid = await bcrypt.compare(
           credentials.password,
           user.passwordHash,
@@ -270,7 +274,15 @@ export const authOptions: NextAuthOptions = {
 
       return session;
     },
-    async signIn() {
+    async signIn({ user }) {
+      if (!user?.id) return true;
+      const dbUser = await prisma.user.findUnique({
+        where: { id: user.id },
+        select: { disabled: true },
+      });
+      if (dbUser?.disabled) {
+        return "/auth/signin?error=AccountDisabled";
+      }
       return true;
     },
   },

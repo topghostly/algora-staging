@@ -1,5 +1,6 @@
 import { CreditCard, Zap } from "lucide-react";
 import Link from "next/link";
+import { Button } from "../ui/button";
 
 interface SubscriptionCardProps {
   subscriptionTier: string;
@@ -11,13 +12,13 @@ export default function SubscriptionCard({
   credits1on1,
 }: SubscriptionCardProps) {
   return (
-    <div className="card p-6">
+    <div className="py-6">
       <div className="flex items-center gap-2 mb-4">
-        <CreditCard className="" size={30} />
+        {/* <CreditCard className="" size={30} /> */}
         <h3 className="font-medium">Subscription</h3>
       </div>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col  gap-4">
         <div>
           <p className="text-sm text-muted-foreground">Current Plan</p>
           <p className="text-lg font-semibold">{subscriptionTier}</p>
@@ -32,8 +33,8 @@ export default function SubscriptionCard({
         </div>
 
         <div className="pt-4">
-          <Link href="/pricing" className="btn btn-outline rounded-lg w-full">
-            Manage Subscription
+          <Link href="/pricing">
+            <Button variant="outline">Manage Subscription</Button>
           </Link>
         </div>
       </div>

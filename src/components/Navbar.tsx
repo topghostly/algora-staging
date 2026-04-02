@@ -13,11 +13,14 @@ import {
   LayoutDashboard,
   Coins,
   TicketCheck,
+  ShieldCheck,
+  ScrollText,
 } from "lucide-react";
 import { useState } from "react";
 import Dropdown from "./ui/Dropdown";
 import { useRouter } from "next/navigation";
 import { ConfirmationDialog } from "./ui/alert-dialog";
+import { Separator } from "./ui/separator";
 
 import { Badge } from "@/components/ui/badge";
 import GlowingButton from "./GlowingButton";
@@ -92,7 +95,7 @@ export default function Navbar() {
               </GlowingButton>
               {/* )} */}
 
-              <div>
+              <div className="w-[35px]">
                 <Image
                   src={
                     session.user.image
@@ -205,13 +208,21 @@ export default function Navbar() {
                       <span>Profile</span>
                     </div>
                   </Link>
-                  <div
-                    style={{
-                      margin: "0.5rem 0",
-                      borderTop: "1px solid var(--border)",
-                    }}
-                  />
+                  <Separator className="w-[90%] mx-auto my-2" />
+                  <Link href="/privacy">
+                    <div className="dropdown-item">
+                      <ShieldCheck size={16} />
+                      <span>Privacy Policy</span>
+                    </div>
+                  </Link>
+                  <Link href="/terms">
+                    <div className="dropdown-item">
+                      <ScrollText size={16} />
+                      <span>Terms of Service</span>
+                    </div>
+                  </Link>
 
+                  <Separator className="w-[90%] mx-auto my-2" />
                   <button
                     onClick={() => setIsSignOutDialogOpen(true)}
                     className="dropdown-item dropdown-item-signout"
@@ -299,6 +310,19 @@ export default function Navbar() {
                         <span>Pricing</span>
                       </div>
                     </Link>
+                    <Separator className="w-[90%] mx-auto my-2" />
+                    <Link href="/privacy">
+                      <div className="dropdown-item">
+                        <ShieldCheck size={16} />
+                        <span>Privacy Policy</span>
+                      </div>
+                    </Link>
+                    <Link href="/terms">
+                      <div className="dropdown-item">
+                        <ScrollText size={16} />
+                        <span>Terms of Service</span>
+                      </div>
+                    </Link>
                     <div
                       style={{
                         margin: "0.5rem 0",
@@ -352,7 +376,7 @@ export default function Navbar() {
         .dropdown-item {
           display: flex;
           align-items: center;
-          gap: 0.75rem;
+          gap: 0.6rem;
           padding: 0.6rem 1rem;
           font-size: 0.875rem;
           color: var(--foreground);

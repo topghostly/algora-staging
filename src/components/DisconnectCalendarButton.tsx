@@ -1,21 +1,36 @@
 "use client";
 
-import { signIn } from "next-auth/react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 import { Button } from "./ui/button";
 
-export default function ConnectCalendarButton({ email }: { email: string }) {
-  const connectCalendar = () => {
-    signIn(
-      "google",
-      { callbackUrl: "/tutor" },
-      {
-        login_hint: email,
-        access_type: "offline",
-        prompt: "consent",
-        scope:
-          "openid email profile https://www.googleapis.com/auth/calendar.events",
-      },
-    );
+export default function DisconnectCalendarButton() {
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const { update } = useSession();
+
+  const disconnectCalendar = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/tutor/calendar/disconnect", {
+        method: "POST",
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to disconnect calendar");
+      }
+
+      await update();
+      toast.success("Calendar disconnected successfully");
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to disconnect calendar");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -23,10 +38,19 @@ export default function ConnectCalendarButton({ email }: { email: string }) {
       <Button
         variant={"outline"}
         className="text-nowrap flex rounded-md gap-3 px-3 py-2 items-center duration-300 text-sm"
-        onClick={connectCalendar}
+        onClick={disconnectCalendar}
+        disabled={loading}
       >
-        Connect Calendar{" "}
-        <span style={{ width: "16px", height: "16px" }}>
+        {loading ? "Disconnecting..." : "Disconnect Calendar"}
+        <span
+          style={{
+            width: "16px",
+            height: "16px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           {/* <svg
             width="16px"
             height="16px"
@@ -95,7 +119,7 @@ export default function ConnectCalendarButton({ email }: { email: string }) {
               ></path>
             </g>
           </svg>
-        </span>{" "}
+        </span>
       </Button>
     </div>
   );

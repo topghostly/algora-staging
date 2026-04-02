@@ -10,6 +10,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Button } from "../ui/button";
 
 interface EditProfileModalProps {
   user: {
@@ -74,12 +75,15 @@ export default function EditProfileModal({ user }: EditProfileModalProps) {
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <button
+        {/* <button
           className="btn btn-outline rounded-lg"
           style={{ fontSize: "0.875rem" }}
         >
           Edit Profile
-        </button>
+        </button> */}
+        <Button variant={"outline"} size={"sm"}>
+          Edit Profile
+        </Button>
       </PopoverTrigger>
 
       <PopoverContent className="w-full max-w-[480px] p-0 overflow-hidden bg-white text-black border-none shadow-2xl rounded-xl">
@@ -95,13 +99,6 @@ export default function EditProfileModal({ user }: EditProfileModalProps) {
           <h4 className="font-medium">Edit Profile</h4>
           <button
             onClick={() => setIsOpen(false)}
-            // style={{
-            //   color: "#6b7280",
-            //   cursor: "pointer",
-            //   background: "none",
-            //   border: "none",
-            //   padding: 4,
-            // }}
             className="btn btn-outline rounded-lg"
           >
             <X size={20} />

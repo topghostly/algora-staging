@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { ConfirmationDialog } from "@/components/ui/alert-dialog";
+import { useRouter } from "next/navigation";
 
 const SessionDelete = ({ id }: { id: string }) => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const router = useRouter();
 
   const handleDeleteSession = async () => {
     setIsDeleting(true);
@@ -18,6 +20,7 @@ const SessionDelete = ({ id }: { id: string }) => {
         throw new Error("Failed to delete session");
       }
       toast.success("Session deleted successfully");
+      router.refresh();
     } catch (error) {
       console.log(error);
       toast.error("Failed to delete session");

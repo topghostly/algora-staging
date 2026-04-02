@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { decrypt, encrypt } from "@/lib/crypto";
 import { refreshGoogleAccessToken } from "@/lib/refreshGooglAccessToken";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 export async function DELETE(
   req: Request,
@@ -163,6 +163,8 @@ export async function DELETE(
     }
 
     await prisma.$transaction(operations);
+    // @ts-ignore
+    revalidateTag(`tutor-sessions-${session.user.id}`);
     revalidatePath("/tutor/sessions");
     return NextResponse.json({ message: "Session deleted successfully" });
   } catch (error: any) {

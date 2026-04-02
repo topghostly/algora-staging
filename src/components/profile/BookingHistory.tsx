@@ -18,9 +18,9 @@ interface BookingHistoryProps {
 
 export default function BookingHistory({ bookings }: BookingHistoryProps) {
   return (
-    <div className="card p-6">
+    <div className="p-6">
       <div className="flex items-center gap-2 mb-4">
-        <CalendarCheck2 size={30} />
+        {/* <CalendarCheck2 size={30} /> */}
         <h3 className="font-medium">Booking History</h3>
       </div>
 

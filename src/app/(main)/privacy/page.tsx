@@ -12,7 +12,7 @@ export default function PrivacyPolicyPage() {
   return (
     <>
       <main
-        className="mx-auto px-4 max-w-4xl"
+        className="mx-auto px-0 max-w-4xl"
         style={{ paddingTop: "4rem", paddingBottom: "4rem" }}
       >
         <h1 className="mb-8">Privacy Policy</h1>
@@ -101,7 +101,10 @@ export default function PrivacyPolicyPage() {
               <ul className="list-circle pl-8 mt-2 space-y-1">
                 <li>
                   <code>openid, email, profile</code>: To authenticate your
-                  identity and secure your account.
+                  identity and secure your account. The <code>profile</code>{" "}
+                  scope may include additional fields such as gender and
+                  preferred languages as defined by Google — we do not store or
+                  use these fields.
                 </li>
                 <li>
                   <code>https://www.googleapis.com/auth/calendar.events</code>:

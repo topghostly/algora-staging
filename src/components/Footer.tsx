@@ -58,7 +58,7 @@ const Footer = () => {
                   href="/terms"
                   className="hover:text-primary transition-colors"
                 >
-                  Terms
+                  Terms of Service
                 </Link>
               </li>
               <li>

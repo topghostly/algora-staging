@@ -51,7 +51,7 @@ export default function PricingPage() {
         <p className="mb-4">
           Invest in your future for less than the cost of a daily coffee.
         </p>
-        <div
+        {/* <div
           className="w-fit md:text-base px-3 py-1 font-semibold rounded-full mb-6 mx-auto"
           style={{
             backgroundColor: "var(--muted-light)",
@@ -66,14 +66,14 @@ export default function PricingPage() {
             ℹ️ <strong>Note:</strong> "Session Credits" are used to book 1-on-1
             mentorship sessions.
           </p>
-        </div>
+        </div> */}
       </div>
 
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-          gap: "1.5rem",
+          gridTemplateColumns: "repeat(auto-fit, minmax(500px, 1fr))",
+          gap: "2rem",
           alignItems: "stretch",
         }}
       >

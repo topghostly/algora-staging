@@ -14,7 +14,16 @@ import {
   createColumnHelper,
   type SortingState,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ArrowUp, ArrowDown, ExternalLink } from "lucide-react";
+import {
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  ExternalLink,
+  Layers,
+} from "lucide-react";
+import ConnectCalendarButton from "@/components/ConnectCalendarButton";
+import DisconnectCalendarButton from "@/components/DisconnectCalendarButton";
+import { Button } from "@/components/ui/button";
 
 type SessionStatus = "PENDING" | "COMPLETED" | "CANCELLED";
 type SessionType = "GROUP" | "ONE_ON_ONE";
@@ -202,16 +211,10 @@ export default function TutorDashboard() {
     initialState: { pagination: { pageSize: 10 } },
   });
 
-  // const frameworks = [
-  //   { value: "react", label: "React" },
-  //   { value: "next", label: "Next.js" },
-  //   { value: "vue", label: "Vue" },
-  // ];
-  // const [value, setValue] = useState("");
   return (
     <div className="flex flex-col gap-10">
-      <p className="text-muted mb-6">Tutor Dashboard </p>
-      <div className="flex justify-between items-end">
+      <p className="text-muted mb-0 md:mb-6">Tutor Dashboard </p>
+      <div className="flex gap-2 flex-col md:flex-row md:justify-between justify-start items-start md:items-end">
         <h1
           style={{
             marginBottom: "0.5rem",
@@ -221,18 +224,21 @@ export default function TutorDashboard() {
           Hello, <br />{" "}
           <span className="font-medium">{session?.user?.name}!</span>
         </h1>
-        <Link
-          href={"tutor/sessions"}
-          className="btn btn-primary w-fit h-fit rounded-full"
-          style={{
-            backgroundColor: "var(--primary)",
-            padding: "10px 20px",
-          }}
-        >
-          Manage Session
-        </Link>
+        <div className="flex gap-2">
+          {session?.user?.calendarConnected ? (
+            <DisconnectCalendarButton />
+          ) : (
+            <ConnectCalendarButton email={session?.user?.email!} />
+          )}
+          <Link href={"tutor/sessions"}>
+            <Button variant={"outline"} className="flex items-center gap-2">
+              Manage Session
+              <Layers size={16} />
+            </Button>
+          </Link>
+        </div>
       </div>
-      <div className="flex justify-between bg-primary p-10 rounded-3xl">
+      <div className="flex flex-col md:flex-row gap-3 justify-between bg-primary p-10 rounded-3xl">
         <Stats value="0" name="Upcoming Sessions" />
 
         <Stats value="0" name="Total Students" />

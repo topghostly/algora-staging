@@ -28,6 +28,12 @@ function SignInForm() {
       toast.error(
         "Account already exists. Please sign in with your email and password.",
       );
+    } else if (errorParam === "AccountDisabled") {
+      toast.error("Account disabled", {
+        description:
+          "Your account has been disabled and marked for deletion. Please contact support@joinalgora.com.",
+        duration: 8000,
+      });
     }
   }, [searchParams]);
 
@@ -66,7 +72,14 @@ function SignInForm() {
       redirect: false,
     });
 
-    if (res?.error) {
+    if (res?.error === "AccountDisabled") {
+      toast.error("Account disabled", {
+        description:
+          "Your account has been disabled and marked for deletion. Please contact support@joinalgora.com.",
+        duration: 8000,
+      });
+      setLoading(false);
+    } else if (res?.error) {
       const errorMessage = "Invalid email or password";
       setError(errorMessage);
       toast.error("Sign in failed", {
