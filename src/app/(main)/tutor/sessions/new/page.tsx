@@ -106,7 +106,7 @@ export default function NewSessionPage() {
             result.error?.includes("Calendar connection expired"))
         ) {
           toast.error(result.error);
-          router.push("/tutor");
+          router.push("/tutor/sessions");
           return;
         }
         throw new Error(result.error || "Failed to create session");
