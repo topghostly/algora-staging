@@ -141,45 +141,41 @@ export default async function LessonPage({ params }: LessonPageProps) {
 
   return (
     <LessonLayout track={track} currentLesson={currentLesson}>
-      <div>
+      <div className="flex flex-col min-h-[calc(100vh-116px)]">
         {prevLesson && (
           <Link href={`/tracks/${track.id}/lessons/${prevLesson.id}`}>
             <div className="py-2 bg-secondary from-gray-500 via-green-500 to-emerald-400 flex flex-col gap-0 justify-center items-center cursor-pointer">
-              <ChevronUp color="white" />
+              <ChevronUp color="white" size={20} />
               <p
-                className="text-md underline"
+                className="text-sm underline"
                 style={{
                   color: "white",
                 }}
               >
-                {/* <span className="hidden sm:inline">Previous:</span>{" "} */}
                 {prevLesson.title}
               </p>
             </div>
           </Link>
         )}
 
-        <div className="mb-8 bg-white md:bg-secondary from-zinc-500 via-stone-600 to-zinc-900 py-8 md:py-18">
-          <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <h1
-              className="text-black md:text-white"
-              // style={{
-              //   fontSize: "clamp(2.4rem, 4vw, 3.4rem)",
-              // }}
-            >
-              {currentLesson.title}
-            </h1>
-            {hasAccess && currentLesson.type !== "QUIZ" && isCompleted && (
-              <LessonCompleteButton
-                lessonId={currentLesson.id}
-                initialCompleted={isCompleted}
-              />
-            )}
+        {currentLesson.type !== "QUIZ" && (
+          <div className="mb-8 bg-white md:bg-secondary from-zinc-500 via-stone-600 to-zinc-900 py-8 md:py-18">
+            <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <h1 className="text-black md:text-white">
+                {currentLesson.title}
+              </h1>
+              {hasAccess && currentLesson.type !== "QUIZ" && isCompleted && (
+                <LessonCompleteButton
+                  lessonId={currentLesson.id}
+                  initialCompleted={isCompleted}
+                />
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Content Viewer */}
-        <div className="mb-12 max-w-6xl min-h-[60vh] mx-auto">
+        <div className="mb-12 max-w-6xl w-full bg-red mx-auto">
           {!hasAccess ? (
             <div className="p-8 md:p-12 border border-border rounded-2xl text-center bg-muted/30">
               <div className="mb-6">
@@ -202,7 +198,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
           ) : (
             <>
               {currentLesson.type === "VIDEO" && currentLesson.contentUrl && (
-                <div className="relative aspect-video rounded-2xl overflow-hidden bg-black shadow-xl">
+                <div className="relative aspect-video rounded-2xl overflow-hidden bg-black w-full shadow-xl">
                   <VideoPlayer
                     videoId={currentLesson.contentUrl}
                     lessonId={currentLesson.id}
@@ -240,47 +236,46 @@ export default async function LessonPage({ params }: LessonPageProps) {
           )}
         </div>
 
-        <ProgressTrigger
-          lessonId={currentLesson.id}
-          isCompleted={isCompleted}
-          lessonType={currentLesson.type}
-        >
-          <div>
-            {nextLesson ? (
-              <Link href={`/tracks/${track.id}/lessons/${nextLesson.id}`}>
-                <div className="py-2 bg-secondary from-gray-500 via-green-500 to-emerald-400 flex flex-col gap-0 justify-center items-center cursor-pointer">
-                  <p
-                    className="text-md underline"
-                    style={{
-                      color: "white",
-                    }}
-                  >
-                    {nextLesson.title}
-                  </p>
-                  <ChevronDown color="white" />
-                </div>
-              </Link>
-            ) : (
-              <Link
-                href="/dashboard"
-                // className="btn btn-primary flex items-center gap-2"
-              >
-                <div className="py-4 bg-secondary from-gray-500 via-green-500 to-emerald-400 flex flex-col gap-0 justify-center items-center cursor-pointer">
-                  <p
-                    className="text-md underline"
-                    style={{
-                      color: "white",
-                    }}
-                  >
-                    Complete Track
-                  </p>
-                  {/* <CheckCircle color="white" /> */}
-                </div>
-              </Link>
-            )}
-          </div>
-        </ProgressTrigger>
+        <div className="mt-auto">
+          <ProgressTrigger
+            lessonId={currentLesson.id}
+            isCompleted={isCompleted}
+            lessonType={currentLesson.type}
+          >
+            <div>
+              {nextLesson ? (
+                <Link href={`/tracks/${track.id}/lessons/${nextLesson.id}`}>
+                  <div className="py-2 bg-secondary from-gray-500 via-green-500 to-emerald-400 flex flex-col gap-0 justify-center items-center cursor-pointer">
+                    <p
+                      className="text-sm underline"
+                      style={{
+                        color: "white",
+                      }}
+                    >
+                      {nextLesson.title}
+                    </p>
+                    <ChevronDown color="white" size={20} />
+                  </div>
+                </Link>
+              ) : (
+                <Link href="/dashboard">
+                  <div className="py-4 bg-secondary from-gray-500 via-green-500 to-emerald-400 flex flex-col gap-0 justify-center items-center cursor-pointer">
+                    <p
+                      className="text-sm underline"
+                      style={{
+                        color: "white",
+                      }}
+                    >
+                      Complete Track
+                    </p>
+                  </div>
+                </Link>
+              )}
+            </div>
+          </ProgressTrigger>
+        </div>
       </div>
+      {/* </div> */}
     </LessonLayout>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import {
   CheckCircle,
@@ -10,6 +11,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
+import { Button } from "./ui/button";
 
 interface Option {
   id: string;
@@ -187,23 +189,21 @@ export default function QuizViewer({
     );
 
   return (
-    <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+    <div className="max-w-[800px] mx-auto flex justify-center items-center h-full">
       {!submitted ? (
-        <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+        <div className="flex flex-col gap-8 mt-10">
           {questions.map((q, index) => (
-            <div key={q.id} className="card" style={{ padding: "1.5rem" }}>
-              <h3
-                style={{
-                  fontSize: "1.1rem",
-                  fontWeight: 600,
-                  marginBottom: "1rem",
-                }}
-              >
-                <span style={{ color: "var(--muted)", marginRight: "0.5rem" }}>
-                  {index + 1}.
-                </span>
-                {q.text}
-              </h3>
+            <div key={q.id} className="" style={{ padding: "1.5rem" }}>
+              <div className="grid grid-cols-[30px_1fr]">
+                <h4>
+                  <span
+                    style={{ color: "var(--muted)", marginRight: "0.5rem" }}
+                  >
+                    {index + 1}.
+                  </span>
+                </h4>
+                <h4 className="mb-4 leading-tight">{q.text}</h4>
+              </div>
               <div
                 style={{
                   display: "flex",
@@ -250,83 +250,217 @@ export default function QuizViewer({
             </div>
           ))}
 
-          <button
+          <Button
             onClick={handleSubmit}
+            variant={"outline"}
+            className="w-fit"
             disabled={
               Object.keys(answers).length < questions.length || submitting
             }
-            className="btn btn-primary"
-            style={{
-              alignSelf: "flex-start",
-              padding: "0.75rem 2rem",
-              fontSize: "1rem",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-            }}
           >
             {submitting && <RefreshCw size={18} className="animate-spin" />}
             Submit Quiz
-          </button>
+          </Button>
         </div>
       ) : (
-        <div className="card" style={{ padding: "3rem", textAlign: "center" }}>
-          <div style={{ marginBottom: "1.5rem" }}>
-            {passed ? (
-              <CheckCircle
-                size={64}
-                color="#16a34a"
-                style={{ margin: "0 auto", marginBottom: "1rem" }}
+        <QuizResultsView
+          score={score}
+          passed={passed}
+          handleRetry={handleRetry}
+        />
+      )}
+    </div>
+  );
+}
+
+function QuizResultsView({
+  score,
+  passed,
+  handleRetry,
+}: {
+  score: number;
+  passed: boolean;
+  handleRetry: () => void;
+}) {
+  const radius = 140;
+  const circumference = 2 * Math.PI * radius;
+  const maxDash = circumference * 0.75;
+
+  return (
+    <div className="w-full flex w-full flex-col pt-8">
+      <div className="w-full max-w-3xl mx-auto mb-16 px-8">
+        <h2 className="text-gray-500 font-sans tracking-tight">Quiz Results</h2>
+      </div>
+
+      <div className="relative flex justify-center items-center w-full max-w-[600px] mx-auto min-h-[400px]">
+        {/* SVG UI */}
+        <svg width="450" height="350" className="absolute top-0">
+          <defs>
+            <pattern
+              id="diagonalHatch"
+              width="4"
+              height="4"
+              patternTransform="rotate(45 0 0)"
+              patternUnits="userSpaceOnUse"
+            >
+              <line
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="4"
+                stroke="#d1d5db"
+                strokeWidth="1"
               />
-            ) : (
-              <XCircle
-                size={64}
-                color="#ef4444"
-                style={{ margin: "0 auto", marginBottom: "1rem" }}
-              />
-            )}
-            <h2
-              style={{
-                fontSize: "2rem",
-                fontWeight: 500,
-                marginBottom: "0.5rem",
+            </pattern>
+          </defs>
+
+          {/* Background circle arc */}
+          <circle
+            cx="225"
+            cy="175"
+            r="140"
+            fill="transparent"
+            stroke="url(#diagonalHatch)"
+            strokeWidth="1.5"
+            strokeDasharray={`${maxDash} ${circumference}`}
+            transform="rotate(135 225 175)"
+            strokeLinecap="round"
+          />
+
+          {/* Foreground animated circle arc */}
+          <motion.circle
+            cx="225"
+            cy="175"
+            r="140"
+            fill="transparent"
+            stroke="#263238"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+            strokeDasharray={`${maxDash} ${circumference}`}
+            initial={{ strokeDashoffset: maxDash }}
+            animate={{ strokeDashoffset: maxDash - (score / 100) * maxDash }}
+            transition={{ duration: 2, ease: "easeOut", delay: 1 }}
+            transform="rotate(135 225 175)"
+          />
+
+          {/* Dot travelling at end of stroke */}
+          <motion.circle
+            cx="225"
+            cy="175"
+            r="140"
+            fill="transparent"
+            stroke="#263238"
+            strokeWidth="9"
+            strokeLinecap="round"
+            strokeDasharray={`0 ${circumference * 2}`}
+            initial={{ strokeDashoffset: 0 }}
+            animate={{ strokeDashoffset: -((score / 100) * maxDash) }}
+            transition={{ duration: 2, ease: "easeOut", delay: 1 }}
+            transform="rotate(135 225 175)"
+          />
+
+          {/* Label pointer for passing */}
+          <polyline
+            points="338,93 355,75 390,75"
+            fill="none"
+            stroke="#d1d5db"
+            strokeWidth="1"
+          />
+          <text
+            x="395"
+            y="70"
+            fontSize="10"
+            letterSpacing="1"
+            fontWeight="bold"
+            fill="#111827"
+          >
+            PASSING
+          </text>
+          <text x="395" y="85" fontSize="10" fill="#9ca3af">
+            70%
+          </text>
+        </svg>
+
+        {/* Center Text and Checkmark */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center top-[-25px]">
+          <motion.div
+            className="text-[13px] font-bold text-[#263238] mb-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5, duration: 0.5 }}
+          >
+            Your score {score}%
+          </motion.div>
+          {passed ? (
+            <motion.svg
+              width="70"
+              height="70"
+              viewBox="0 0 24 24"
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{
+                delay: 1.2,
+                duration: 0.5,
+                type: "spring",
+                stiffness: 200,
               }}
             >
-              {passed ? "Quiz Passed!" : "Quiz Failed"}
-            </h2>
-            <p style={{ fontSize: "1.2rem", color: "var(--muted)" }}>
-              You scored{" "}
-              <span style={{ fontWeight: 500, color: "var(--foreground)" }}>
-                {score}%
-              </span>
-            </p>
-          </div>
-
-          <div
-            style={{ display: "flex", justifyContent: "center", gap: "1rem" }}
-          >
-            {!passed ? (
-              <button onClick={handleRetry} className="btn btn-primary">
-                <RefreshCw size={18} style={{ marginRight: "0.5rem" }} /> Retry
-                Quiz
-              </button>
-            ) : (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: "1rem",
-                }}
-              >
-                <p style={{ color: "var(--muted)" }}>
-                  Great job! You have completed this lesson.
-                </p>
-              </div>
-            )}
-          </div>
+              <motion.path
+                d="M4 12 l5 5 l11 -11"
+                fill="transparent"
+                stroke="#263238"
+                strokeWidth="3.5"
+                strokeLinecap="square"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 0.7, delay: 0.8 }}
+              />
+            </motion.svg>
+          ) : (
+            <motion.svg
+              width="70"
+              height="70"
+              viewBox="0 0 24 24"
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{
+                delay: 1.2,
+                duration: 0.5,
+                type: "spring",
+                stiffness: 200,
+              }}
+            >
+              <motion.path
+                d="M6 6 l12 12 M6 18 l12 -12"
+                fill="transparent"
+                stroke="#ef4444"
+                strokeWidth="3.5"
+                strokeLinecap="square"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 0.7, delay: 0.8 }}
+              />
+            </motion.svg>
+          )}
         </div>
-      )}
+      </div>
+
+      <div className="flex flex-col items-center mt-[-10px] pb-10">
+        <div className="w-20 h-[1px] bg-gray-200 mb-6"></div>
+        <button
+          onClick={handleRetry}
+          className="flex flex-col items-center group cursor-pointer focus:outline-none"
+        >
+          <span className="text-[11px] font-bold tracking-widest text-[#111827] uppercase mb-4 title-font">
+            Take Again
+          </span>
+          <RefreshCw
+            size={26}
+            strokeWidth={1.5}
+            className="text-[#111827] group-hover:-rotate-180 transition-transform duration-700 ease-in-out"
+          />
+        </button>
+      </div>
     </div>
   );
 }

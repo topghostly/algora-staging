@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 
 import Plyr from "plyr";
 import "plyr/dist/plyr.css";
-// import { revalidatePage } from "@/app/actions/revalidate";
 
 type Props = {
   videoId: string;
@@ -79,16 +78,15 @@ export default function VideoPlayer({
         showinfo: 0,
         iv_load_policy: 3,
         playsinline: 1,
+        controls: 0,
+        disablekb: 1,
+        fs: 0,
       },
     });
 
     player.on("ended", () => {
       if (isCompleted) return;
       updateProgesss();
-      // revalidatePage(`/tracks/`);
-      // revalidatePage(`/tracks/${trackId}`);
-      // revalidatePage(`/tracks/${trackId}/lessons`);
-      // router.refresh();
     });
 
     return () => {
@@ -97,11 +95,23 @@ export default function VideoPlayer({
   }, []);
 
   return (
-    <div
-      ref={ref}
-      className="plyr__video-embed"
-      data-plyr-provider="youtube"
-      data-plyr-embed-id={videoId}
-    />
+    <>
+      <div
+        ref={ref}
+        className="plyr__video-embed"
+        data-plyr-provider="youtube"
+        data-plyr-embed-id={videoId}
+      />
+      {/* 
+        This style block blocks pointer events on the YouTube iframe seamlessly.
+        It prevents YouTube's hover UI (title bar, watch later) from appearing, 
+        blocks the YouTube clickable logo, and disables the context menu.
+      */}
+      <style>{`
+        .plyr__video-embed iframe {
+          pointer-events: none !important;
+        }
+      `}</style>
+    </>
   );
 }

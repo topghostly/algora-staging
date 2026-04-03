@@ -36,5 +36,7 @@ export default async function TutorDashboardPage() {
     _count: { bookings: s.bookings.length },
   }));
 
-  return <TutorDashboardClient initialSessions={sessions} user={session.user} />;
+  return (
+    <TutorDashboardClient initialSessions={sessions} user={session.user} />
+  );
 }

@@ -27,6 +27,11 @@ export default function Dashboard() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
+  if (!session) {
+    router.replace("/auth/signin");
+    return null;
+  }
+
   useEffect(() => {
     async function fetchEnrollments() {
       try {

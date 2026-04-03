@@ -267,7 +267,6 @@ export async function POST(req: Request) {
 
     revalidatePath("/tutor/sessions");
     revalidatePath("/tutor");
-    // revalidateTag(`tutor-sessions-${session.user.id}`);
 
     return NextResponse.json(
       {
