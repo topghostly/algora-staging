@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { BookOpen, ArrowRight, Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ErrorState } from "@/components/ErrorState";
+import GlobalLoader from "@/components/GlobalLoader";
 
 interface EnrolledTrack {
   id: string;
@@ -21,11 +22,16 @@ interface EnrolledTrack {
 }
 
 export default function Dashboard() {
-  const { data: session } = useSession();
+  const router = useRouter();
+  const { data: session, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      router.replace("/auth/signin");
+    },
+  });
   const [enrollments, setEnrollments] = useState<EnrolledTrack[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
   useEffect(() => {
     async function fetchEnrollments() {
@@ -54,12 +60,14 @@ export default function Dashboard() {
   }, [session]);
 
   useEffect(() => {
-    if (session === null) {
-      router.replace("/auth/signin");
-    } else if (session && session.user?.role !== "LEARNER") {
+    if (session && session.user?.role !== "LEARNER") {
       router.replace("/auth/redirect");
     }
   }, [session, router]);
+
+  if (status === "loading") {
+    return <GlobalLoader />;
+  }
 
   if (!session || session.user?.role !== "LEARNER") {
     return null;

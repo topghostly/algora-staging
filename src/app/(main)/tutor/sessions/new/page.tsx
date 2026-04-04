@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 import { z } from "zod";
 import { FormFieldError } from "@/components/ui/form-error";
+import { Button } from "@/components/ui/button";
+import { Loader } from "lucide-react";
 
 const sessionSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters").max(100),
@@ -25,16 +27,16 @@ type SessionErrors = {
 
 function SubmitButton({ loading }: { loading: boolean }) {
   return (
-    <button
-      type="submit"
-      className="btn btn-primary  rounded-lg"
-      style={{
-        padding: "10px 28px",
-      }}
-      disabled={loading}
-    >
-      {loading ? "Creating..." : "Create Session"}
-    </button>
+    <Button type="submit" disabled={loading}>
+      {loading ? (
+        <>
+          <Loader className="animate-spin" />
+          <span>Creating...</span>
+        </>
+      ) : (
+        "Create Session"
+      )}
+    </Button>
   );
 }
 

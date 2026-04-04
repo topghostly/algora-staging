@@ -17,22 +17,38 @@ export default function LoadingScreen() {
       return;
     }
 
-    const hide = () => {
-      setIsVisible(false);
-      sessionStorage.setItem("a_l_s", "true");
+    const MIN_DURATION = 2200;
+    let pageLoaded = false;
+    let minTimeElapsed = false;
+
+    const tryHide = () => {
+      if (pageLoaded && minTimeElapsed) {
+        setIsVisible(false);
+        sessionStorage.setItem("a_l_s", "true");
+      }
     };
 
-    window.addEventListener("load", hide);
+    const onLoad = () => {
+      pageLoaded = true;
+      tryHide();
+    };
 
-    const loaderTimer = setTimeout(() => setShowLoader(true), 2000);
+    const minTimer = setTimeout(() => {
+      minTimeElapsed = true;
+      tryHide();
+    }, MIN_DURATION);
+
+    const loaderTimer = setTimeout(() => setShowLoader(true), MIN_DURATION);
 
     if (document.readyState === "complete") {
-      hide();
-      return;
+      pageLoaded = true;
+    } else {
+      window.addEventListener("load", onLoad);
     }
 
     return () => {
-      window.removeEventListener("load", hide);
+      window.removeEventListener("load", onLoad);
+      clearTimeout(minTimer);
       clearTimeout(loaderTimer);
     };
   }, []);
@@ -93,7 +109,7 @@ export default function LoadingScreen() {
                 animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
                 exit={{ opacity: 0, scale: 0, filter: "blur(10px)" }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
-                className="absolute top-[calc(50%+40px)] left-[calc(50%-10px)] translax-[-50%] translate-y-[-50%] flex items-center gap-2 text-sm text-muted-foreground"
+                className="absolute top-[calc(50%+48px)] left-1/2 -translate-x-1/2 flex items-center gap-2 text-sm text-muted-foreground"
               >
                 <Loader size={22} className="animate-spin" />
               </motion.div>

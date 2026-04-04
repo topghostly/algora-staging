@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { ConfirmationDialog } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
+import { Loader } from "lucide-react";
 
 const SessionDelete = ({ id }: { id: string }) => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -40,7 +41,14 @@ const SessionDelete = ({ id }: { id: string }) => {
           borderRadius: "8px",
         }}
       >
-        {isDeleting ? "Deleting..." : "Delete"}
+        {isDeleting ? (
+          <>
+            <Loader className="animate-spin" />
+            <span>Deleting...</span>
+          </>
+        ) : (
+          "Delete"
+        )}
       </button>
 
       <ConfirmationDialog

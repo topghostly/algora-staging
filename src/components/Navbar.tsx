@@ -255,7 +255,7 @@ export default function Navbar() {
                   Playground
                 </GlowingButton>
                 <Link
-                  href="/auth/signup"
+                  href="/auth/signin"
                   className="btn btn-primary rounded-full transition-all duration-300"
                 >
                   Get Started
