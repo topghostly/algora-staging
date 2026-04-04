@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Calendar, Video } from "lucide-react";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 import { ErrorState } from "@/components/ErrorState";
+import { Button } from "@/components/ui/button";
 
 async function getUserBookings(userId: string) {
   return await prisma.sessionEnrollment.findMany({
@@ -71,11 +72,11 @@ export default async function LearnerSessionsPage() {
       <div className="block md:flex items-center justify-between my-16">
         <h1 className="text-3xl font-medium mb-10 md:mb-0">My Sessions</h1>
         <div className="flex sm:flex-row flex-col sm:gap-5 gap-2">
-          <Link href="/dashboard/sessions/browse" className="btn btn-primary">
-            Browse Available Sessions
+          <Link href="/dashboard/sessions/browse">
+            <Button>Browse Available Sessions</Button>
           </Link>
-          <Link href="/dashboard/sessions/request" className="btn btn-outline">
-            Request a 1-on-1 session
+          <Link href="/dashboard/sessions/request">
+            <Button variant="outline">Request a 1-on-1 session</Button>
           </Link>
         </div>
       </div>
@@ -92,7 +93,7 @@ export default async function LearnerSessionsPage() {
                 One-on-One Sessions Overview
               </h3>
 
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
                 {requests.map((request) => (
                   <div
                     key={request.id}
@@ -143,11 +144,8 @@ export default async function LearnerSessionsPage() {
                 <p className="text-muted-foreground mb-3">
                   You haven't booked any mentorship sessions yet.
                 </p>
-                <Link
-                  href="/dashboard/sessions/browse"
-                  className="btn btn-primary"
-                >
-                  Find a group session
+                <Link href="/dashboard/sessions/browse">
+                  <Button variant="default">Find a group session</Button>
                 </Link>
               </div>
             </div>
@@ -194,7 +192,7 @@ export default async function LearnerSessionsPage() {
                     </div>
                     {booking.session.meetingLink && (
                       <a
-                        className="flex items-center gap-2 text-sm text-white bg-blue-600 btn mt-6 h-[40px]"
+                        // className="flex items-center gap-2 text-sm text-white bg-blue-600 btn mt-6 h-[40px]"
                         href={booking.session.meetingLink}
                         target="_blank"
                         rel="noopener noreferrer"

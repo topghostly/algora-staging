@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, Save, Loader2 } from "lucide-react";
+import { ChevronLeft, Save, Loader } from "lucide-react";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 
 export default function NewTrackPage() {
@@ -141,7 +141,7 @@ export default function NewTrackPage() {
               }}
             >
               {isLoading ? (
-                <Loader2 size={20} className="animate-spin" />
+                <Loader size={20} className="animate-spin" />
               ) : (
                 <>
                   <Save size={18} style={{ marginRight: "0.5rem" }} />

@@ -4,7 +4,7 @@ import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useSession, signOut, signIn } from "next-auth/react";
 import Link from "next/link";
-import { Loader2, CheckCircle, XCircle } from "lucide-react";
+import { Loader, CheckCircle, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
 function VerifyEmailContent() {
@@ -66,7 +66,7 @@ function VerifyEmailContent() {
     <div className="flex flex-col items-center justify-center text-center p-4">
       {status === "loading" && (
         <>
-          <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+          <Loader className="h-12 w-12 animate-spin text-primary mb-4" />
           <h1 className="text-2xl font-bold mb-2">Verifying Email</h1>
           <p className="text-muted-foreground">{message}</p>
         </>
@@ -114,7 +114,7 @@ export default function VerifyEmailPage() {
       <Suspense
         fallback={
           <div className="flex justify-center p-8">
-            <Loader2 className="animate-spin" />
+            <Loader className="animate-spin" />
           </div>
         }
       >

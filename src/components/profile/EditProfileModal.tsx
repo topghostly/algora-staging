@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Camera, X, Loader2 } from "lucide-react";
+import { Camera, X, Loader } from "lucide-react";
 import { toast } from "sonner";
 import Image from "next/image";
 import {
@@ -267,7 +267,7 @@ export default function EditProfileModal({ user }: EditProfileModalProps) {
                 gap: "0.5rem",
               }}
             >
-              {isLoading && <Loader2 size={16} className="animate-spin" />}
+              {isLoading && <Loader size={16} className="animate-spin" />}
               Save Changes
             </button>
           </div>

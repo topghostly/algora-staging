@@ -2,11 +2,11 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { updateRequestStatus } from "@/app/(main)/actions/request";
 import Link from "next/link";
-import { Calendar, Clock, User, Check, X, Info } from "lucide-react";
+import { Calendar, Clock, User, Check, Info } from "lucide-react";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 import { ErrorState } from "@/components/ErrorState";
+import { DeclineRequestButton } from "./DeclineRequestButton";
 
 async function getRequests(tutorId: string) {
   return await prisma.sessionRequest.findMany({
@@ -120,21 +120,7 @@ export default async function TutorRequestsPage() {
                 </div>
 
                 <div className="flex gap-3 shrink-0">
-                  <form
-                    action={updateRequestStatus.bind(
-                      null,
-                      request.id,
-                      "REJECTED",
-                    )}
-                  >
-                    <button
-                      type="submit"
-                      className="btn btn-outline border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground px-4"
-                    >
-                      <X size={18} className="mr-2" />
-                      Decline
-                    </button>
-                  </form>
+                  <DeclineRequestButton requestId={request.id} />
                   <Link
                     href={`/tutor/sessions/new?studentEmail=${encodeURIComponent(request.student.email)}&title=${encodeURIComponent(request.title)}&requestId=${request.id}&preferredDate=${request.preferredDate}&preferredTime=${request.preferredTime}`}
                     className="btn btn-primary px-4"

@@ -9,6 +9,7 @@ import {
   RefreshCw,
   Lock,
   ArrowRight,
+  Loader,
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
@@ -125,7 +126,8 @@ export default function QuizViewer({
 
   if (loading)
     return (
-      <div style={{ padding: "2rem", textAlign: "center" }}>
+      <div style={{ padding: "2rem", textAlign: "center", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
+        <Loader size={18} className="animate-spin" />
         Loading quiz...
       </div>
     );

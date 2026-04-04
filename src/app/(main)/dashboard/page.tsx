@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { BookOpen, ArrowRight } from "lucide-react";
+import { BookOpen, ArrowRight, Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ErrorState } from "@/components/ErrorState";
 
@@ -26,11 +26,6 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-
-  if (!session) {
-    router.replace("/auth/signin");
-    return null;
-  }
 
   useEffect(() => {
     async function fetchEnrollments() {
@@ -59,12 +54,14 @@ export default function Dashboard() {
   }, [session]);
 
   useEffect(() => {
-    if (session && session.user?.role !== "LEARNER") {
+    if (session === null) {
+      router.replace("/auth/signin");
+    } else if (session && session.user?.role !== "LEARNER") {
       router.replace("/auth/redirect");
     }
   }, [session, router]);
 
-  if (session && session.user?.role !== "LEARNER") {
+  if (!session || session.user?.role !== "LEARNER") {
     return null;
   }
 
@@ -117,13 +114,8 @@ export default function Dashboard() {
               <ErrorState message={error} />
             </div>
           ) : loading ? (
-            <div
-              style={{
-                padding: "3rem",
-                textAlign: "center",
-                color: "var(--muted)",
-              }}
-            >
+            <div className="p-18 text-muted flex justify-center items-center flex-row gap-2">
+              <Loader size={18} className="animate-spin" />
               Loading your tracks...
             </div>
           ) : enrollments.length > 0 ? (

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { ArrowRight, Loader } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
@@ -67,7 +67,7 @@ export default function EnrollButton({ trackId }: { trackId: string }) {
     >
       {loading ? (
         <>
-          <Loader2
+          <Loader
             size={18}
             className="animate-spin"
             style={{ marginRight: "0.5rem" }}

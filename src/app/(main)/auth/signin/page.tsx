@@ -7,7 +7,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader } from "lucide-react";
 
 function SignInForm() {
   const router = useRouter();
@@ -319,7 +319,18 @@ function SignInForm() {
               marginTop: "0.5rem",
             }}
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading ? (
+              <>
+                <Loader
+                  size={16}
+                  className="animate-spin"
+                  style={{ marginRight: "0.4rem" }}
+                />
+                Logging in...
+              </>
+            ) : (
+              "Login"
+            )}
           </button>
         </form>
 

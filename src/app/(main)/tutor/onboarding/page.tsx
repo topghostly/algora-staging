@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Loader } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -207,6 +208,7 @@ export default function OnboardingPage() {
 
             <div className="flex justify-end items-center mt-8">
               <Button onClick={handleSaveSpecialties} disabled={isSaving}>
+                {isSaving && <Loader size={16} className="animate-spin" />}
                 {isSaving ? "Saving..." : "Confirm & Continue"}
               </Button>
             </div>

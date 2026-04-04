@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Loader } from "lucide-react";
 import Image from "next/image";
 
 export default function LoadingScreen() {
   const [isVisible, setIsVisible] = useState(true);
+  const [showLoader, setShowLoader] = useState(false);
 
   useEffect(() => {
     const hasBeenShown = sessionStorage.getItem("a_l_s");
@@ -15,12 +17,24 @@ export default function LoadingScreen() {
       return;
     }
 
-    const timer = setTimeout(() => {
+    const hide = () => {
       setIsVisible(false);
       sessionStorage.setItem("a_l_s", "true");
-    }, 2200);
+    };
 
-    return () => clearTimeout(timer);
+    window.addEventListener("load", hide);
+
+    const loaderTimer = setTimeout(() => setShowLoader(true), 2000);
+
+    if (document.readyState === "complete") {
+      hide();
+      return;
+    }
+
+    return () => {
+      window.removeEventListener("load", hide);
+      clearTimeout(loaderTimer);
+    };
   }, []);
 
   useEffect(() => {
@@ -47,7 +61,7 @@ export default function LoadingScreen() {
             opacity: 0,
             transition: { duration: 0.4, ease: "easeInOut", delay: 0.3 },
           }}
-          className="fixed inset-0 z-9999 flex items-center justify-center bg-white"
+          className="fixed inset-0 z-9999 flex  items-center justify-center bg-white"
         >
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
@@ -61,7 +75,7 @@ export default function LoadingScreen() {
               opacity: 0,
               transition: { duration: 0.3, ease: "easeIn" },
             }}
-            className="relative w-15 h-15"
+            className="relative w-15 h-15 bg-reg"
           >
             <Image
               src="/images/svg/Algora-image.svg"
@@ -71,6 +85,20 @@ export default function LoadingScreen() {
               className="object-contain"
             />
           </motion.div>
+
+          <AnimatePresence>
+            {showLoader && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0, filter: "blur(10px)" }}
+                animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                exit={{ opacity: 0, scale: 0, filter: "blur(10px)" }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className="absolute top-[calc(50%+40px)] left-[calc(50%-10px)] translax-[-50%] translate-y-[-50%] flex items-center gap-2 text-sm text-muted-foreground"
+              >
+                <Loader size={22} className="animate-spin" />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       )}
     </AnimatePresence>

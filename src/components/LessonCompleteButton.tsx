@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle, CircleAlert, Loader2 } from "lucide-react";
+import { CheckCircle, CircleAlert, Loader } from "lucide-react";
 
 interface LessonCompleteButtonProps {
   lessonId: string;
@@ -52,7 +52,7 @@ export default function LessonCompleteButton({
       }}
     >
       {loading ? (
-        <Loader2 size={18} className="animate-spin" />
+        <Loader size={18} className="animate-spin" />
       ) : completed ? (
         <CheckCircle size={18} color="var(--primary)" />
       ) : (

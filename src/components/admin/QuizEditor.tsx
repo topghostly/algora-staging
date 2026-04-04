@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Trash2, X } from "lucide-react";
+import { Plus, Trash2, X, Loader } from "lucide-react";
 import { toast } from "sonner";
 
 interface Option {
@@ -123,7 +123,7 @@ export default function QuizEditor({ lessonId }: QuizEditorProps) {
     setQuestions(newQuestions);
   }
 
-  if (isLoading) return <div>Loading quiz...</div>;
+  if (isLoading) return <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}><Loader size={18} className="animate-spin" />Loading quiz...</div>;
 
   return (
     <div
@@ -147,6 +147,7 @@ export default function QuizEditor({ lessonId }: QuizEditorProps) {
           disabled={isSaving}
           className="btn btn-primary rounded-full"
         >
+          {isSaving && <Loader size={16} className="animate-spin" style={{ marginRight: "0.25rem" }} />}
           {isSaving ? "Saving..." : "Save Quiz"}
         </button>
       </div>

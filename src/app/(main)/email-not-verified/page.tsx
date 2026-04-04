@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { Mail, Loader2, ArrowRight, MoveLeft } from "lucide-react";
+import { Mail, Loader, ArrowRight, MoveLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -95,7 +95,7 @@ export default function EmailNotVerifiedPage() {
               justifyContent: "center",
             }}
           >
-            {loading ? <>Sending...</> : "Resend Verification Email"}
+            {loading ? <><Loader size={16} className="animate-spin" style={{ marginRight: "0.4rem" }} />Sending...</> : "Resend Verification Email"}
           </button>
         </div>
       </div>

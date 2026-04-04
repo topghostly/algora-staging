@@ -4,7 +4,7 @@ import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Eye, EyeOff, Loader2, CheckCircle, XCircle } from "lucide-react";
+import { Eye, EyeOff, Loader, CheckCircle, XCircle } from "lucide-react";
 
 function ResetPasswordForm() {
   const router = useRouter();
@@ -152,7 +152,7 @@ function ResetPasswordForm() {
         >
           {loading ? (
             <span className="flex items-center gap-2">
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader className="h-4 w-4 animate-spin" />
               Resetting...
             </span>
           ) : (
@@ -169,7 +169,7 @@ export default function ResetPassword() {
     <Suspense
       fallback={
         <div className="flex justify-center mt-16">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <Loader className="h-8 w-8 animate-spin text-primary" />
         </div>
       }
     >

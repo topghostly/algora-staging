@@ -4,7 +4,7 @@ import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader } from "lucide-react";
 import { toast } from "sonner";
 
 function SignUpForm() {
@@ -283,7 +283,7 @@ function SignUpForm() {
               marginTop: "0.5rem",
             }}
           >
-            {loading ? "Creating account..." : "Continue"}
+            {loading ? <><Loader size={16} className="animate-spin" style={{ marginRight: "0.4rem" }} />Creating account...</> : "Continue"}
           </button>
         </form>
 

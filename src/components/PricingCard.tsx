@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Inter } from "next/font/google";
 
 const raleway = Inter({ subsets: ["latin"] });
-import { Check, Loader2 } from "lucide-react";
+import { Check, Loader } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { usePaystackPayment } from "react-paystack";
 import { useRouter } from "next/navigation";
@@ -362,7 +362,7 @@ export default function PricingCard({
         >
           {isCancelling ? (
             <span className="text-red-500 flex items-center gap-2">
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader className="w-4 h-4 animate-spin" />
               Cancelling...
             </span>
           ) : isCurrentPlan ? (

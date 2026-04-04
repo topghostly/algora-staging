@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
   Save,
+  Loader,
   Plus,
   Trash2,
   GripVertical,
@@ -588,7 +589,7 @@ export default function TrackEditor({ track }: { track: Track }) {
               borderRadius: "200px",
             }}
           >
-            <Save size={18} style={{ marginRight: "0.5rem" }} />
+            {isLoading ? <Loader size={18} className="animate-spin" style={{ marginRight: "0.5rem" }} /> : <Save size={18} style={{ marginRight: "0.5rem" }} />}
             {isLoading ? "Saving..." : "Save Changes"}
           </button>
         </div>

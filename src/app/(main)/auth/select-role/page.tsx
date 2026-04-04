@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { GraduationCap, Users, ArrowRight, Loader2 } from "lucide-react";
+import { GraduationCap, Users, ArrowRight, Loader } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -183,7 +183,7 @@ export default function SelectRolePage() {
             )}
           >
             {loading ? (
-              <Loader2 className="w-6 h-6 animate-spin" />
+              <Loader className="w-6 h-6 animate-spin" />
             ) : (
               <>
                 Continue to Dashboard
