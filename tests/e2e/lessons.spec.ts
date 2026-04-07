@@ -51,10 +51,10 @@ test.describe("Lessons – video playback", () => {
     page,
   }) => {
     await page.goto(VIDEO_LESSON_URL);
-    // At least one navigation control (prev or next) must exist
+    // At least one lesson navigation link (prev or next) must exist.
+    // The page renders links to adjacent lessons by title, not by "previous"/"next" text.
     const navControl = page
-      .getByRole("link", { name: /previous|next/i })
-      .or(page.locator('[aria-label*="next"], [aria-label*="prev"]'))
+      .locator(`a[href*="/tracks/${TEST_IDS.track}/lessons/"]`)
       .first();
     await expect(navControl).toBeVisible({ timeout: 10_000 });
   });

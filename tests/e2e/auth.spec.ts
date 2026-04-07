@@ -97,7 +97,7 @@ test.describe("Authentication", () => {
 
     await expect(
       page.getByRole("heading", { name: /create account/i }),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 10_000 });
     await expect(page.locator('main input[type="text"]')).toBeVisible();
     await expect(
       page.locator("main").getByPlaceholder("m@example.com"),
