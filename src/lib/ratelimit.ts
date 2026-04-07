@@ -5,6 +5,11 @@ import { Redis } from "@upstash/redis";
 const memoryCache = new Map<string, number[]>();
 
 export async function rateLimit(identifier: string) {
+  // Disable rate limiting in test environment to avoid false positives in E2E tests
+  if (process.env.NODE_ENV === "test" || process.env.DISABLE_RATE_LIMIT === "true") {
+    return { success: true, limit: 10, remaining: 10, reset: Date.now() + 10000 };
+  }
+
   // Check if Upstash credentials are configured
   if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
     const ratelimit = new Ratelimit({

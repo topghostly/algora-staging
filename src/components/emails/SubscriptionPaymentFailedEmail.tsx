@@ -71,18 +71,28 @@ export const SubscriptionPaymentFailedEmail = ({
           {/* Content */}
           <Section style={content}>
             <Text style={text}>
-              Hi {userName}, we were unable to process your subscription renewal for the <strong>{subscriptionTier}</strong> plan.
+              Hi {userName}, we were unable to process your subscription renewal
+              for the <strong>{subscriptionTier}</strong> plan.
             </Text>
 
             <Section style={detailsContainer}>
               <Text style={detailsText}>
-                This typically happens due to insufficient funds, an expired card, or banking restrictions. 
-                Paystack will automatically retry the charge shortly. To prevent your subscription from being cancelled, please ensure your payment method is up to date.
+                This typically happens due to insufficient funds, an expired
+                card, or banking restrictions. Paystack will automatically retry
+                the charge shortly. To prevent your subscription from being
+                cancelled, please ensure your payment method is up to date.
               </Text>
             </Section>
 
             <Section style={buttonContainer}>
-              <Button href={process.env.NEXT_PUBLIC_APP_URL ? `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/billing` : "https://joinalgora.com/dashboard/billing"} style={button}>
+              <Button
+                href={
+                  process.env.NEXT_PUBLIC_APP_URL
+                    ? `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/billing`
+                    : "https://www.joinalgora.com/dashboard/pricing"
+                }
+                style={button}
+              >
                 Update Payment Method
               </Button>
             </Section>

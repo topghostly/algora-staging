@@ -73,7 +73,9 @@ export const SubscriptionRenewedEmail = ({
           {/* Content */}
           <Section style={content}>
             <Text style={text}>
-              Hi {userName}, your subscription to the <strong>{subscriptionTier}</strong> plan has been successfully renewed!
+              Hi {userName}, your subscription to the{" "}
+              <strong>{subscriptionTier}</strong> plan has been successfully
+              renewed!
             </Text>
 
             <Section style={detailsContainer}>
@@ -87,13 +89,21 @@ export const SubscriptionRenewedEmail = ({
             </Section>
 
             <Section style={buttonContainer}>
-              <Button href={process.env.NEXT_PUBLIC_APP_URL ? `${process.env.NEXT_PUBLIC_APP_URL}/dashboard` : "https://joinalgora.com/dashboard"} style={button}>
+              <Button
+                href={
+                  process.env.NEXT_PUBLIC_APP_URL
+                    ? `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`
+                    : "https://www.joinalgora.com/dashboard"
+                }
+                style={button}
+              >
                 Go to Dashboard
               </Button>
             </Section>
 
             <Text style={mutedText}>
-              Thank you for being a valued member of our community. Explore your dashboard to make the most of your premium features.
+              Thank you for being a valued member of our community. Explore your
+              dashboard to make the most of your premium features.
             </Text>
           </Section>
         </Container>

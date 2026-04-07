@@ -51,8 +51,6 @@ export default function Home() {
     },
   ];
 
-  console.log("The EMAIL", process.env.EMAIL_VERIFICATION_SECRET);
-  console.log("NEXTAUTH_SECRET:", process.env.NEXTAUTH_SECRET);
   return (
     <>
       <LoadingScreen />

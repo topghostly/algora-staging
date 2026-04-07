@@ -66,6 +66,13 @@ function SignInForm() {
     setLoading(true);
     setError("");
 
+    // if (!formData.email || !formData.password) {
+    //   setError(`Please fill in all fields ${JSON.stringify(formData)}`);
+    //   toast.error("Please fill in all fields");
+    //   setLoading(false);
+    //   return;
+    // }
+
     const res = await signIn("credentials", {
       email: formData.email,
       password: formData.password,
@@ -80,7 +87,7 @@ function SignInForm() {
       });
       setLoading(false);
     } else if (res?.error) {
-      const errorMessage = "Invalid email or password";
+      const errorMessage = `Invalid email or password ${JSON.stringify(formData)}`;
       setError(errorMessage);
       toast.error("Sign in failed", {
         description: errorMessage,

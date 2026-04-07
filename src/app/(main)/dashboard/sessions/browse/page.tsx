@@ -62,7 +62,7 @@ export default async function BrowseSessionsPage() {
           className="mt-8 -mb-12"
         />
         <div className="flex justify-between items-center my-16">
-          <h1 className="text-3xl font-bold">Request group Session</h1>
+          <h1 className="">Request group Session</h1>
           <div className="bg-muted/50 px-4 py-2 rounded-lg text-sm">
             <span className="text-muted-foreground mr-2">Your Plan:</span>
             <span className="font-semibold mr-4">
@@ -76,9 +76,7 @@ export default async function BrowseSessionsPage() {
         <div className="h-[70vh] w-full flex items-center justify-center">
           <div className="text-center">
             <Calendar className="mx-auto h-12 w-12 text-muted-foreground mb-8" />
-            <h3 className="text-2xl font-semibold mb-2">
-              Upgrade to attend sessions
-            </h3>
+            <h3 className="mb-2">Upgrade to attend sessions</h3>
             <p className="text-muted-foreground mb-3">
               You need to have a paid subscription to browse and attend
               sessions.
@@ -137,7 +135,7 @@ export default async function BrowseSessionsPage() {
         className="mt-8 -mb-12"
       />
       <div className="flex justify-between items-center my-16">
-        <h1 className="text-3xl font-medium">Available Sessions</h1>
+        <h1 className="">Available Sessions</h1>
         <div className="bg-muted/50 px-4 py-2 rounded-lg text-sm">
           <span className="text-muted-foreground mr-2">Your Plan:</span>
           <span className="font-semibold mr-4">{user.subscriptionTier}</span>

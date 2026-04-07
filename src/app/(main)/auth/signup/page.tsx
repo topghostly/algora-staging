@@ -283,7 +283,18 @@ function SignUpForm() {
               marginTop: "0.5rem",
             }}
           >
-            {loading ? <><Loader size={16} className="animate-spin" style={{ marginRight: "0.4rem" }} />Creating account...</> : "Continue"}
+            {loading ? (
+              <>
+                <Loader
+                  size={16}
+                  className="animate-spin"
+                  style={{ marginRight: "0.4rem" }}
+                />
+                Creating account...
+              </>
+            ) : (
+              "Continue"
+            )}
           </button>
         </form>
 

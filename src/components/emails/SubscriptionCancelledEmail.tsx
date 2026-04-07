@@ -33,7 +33,9 @@ export const SubscriptionCancelledEmail = ({
           fontStyle="normal"
         />
       </Head>
-      <Preview>Your subscription has been cancelled and downgraded to FREE.</Preview>
+      <Preview>
+        Your subscription has been cancelled and downgraded to FREE.
+      </Preview>
 
       <Body style={main}>
         <Section style={spacer} />
@@ -60,7 +62,7 @@ export const SubscriptionCancelledEmail = ({
               backgroundSize: "cover",
               height: "240px",
               textAlign: "center",
-              backgroundColor: "#1f2937", 
+              backgroundColor: "#1f2937",
             }}
           >
             <Text style={heroText}>Subscription Cancelled</Text>
@@ -69,23 +71,36 @@ export const SubscriptionCancelledEmail = ({
           {/* Content */}
           <Section style={content}>
             <Text style={text}>
-              Hi {userName}, your premium subscription has been successfully cancelled. Your account has now been downgraded to the <strong>FREE</strong> plan.
+              Hi {userName}, your premium subscription has been successfully
+              cancelled. Your account has now been downgraded to the{" "}
+              <strong>FREE</strong> plan.
             </Text>
 
             <Section style={detailsContainer}>
               <Text style={detailsText}>
-                You will no longer be billed. You still have access to our free tier content and can continue learning with us! You can easily upgrade back to a premium plan at any time to regain full access.
+                You will no longer be billed. You still have access to our free
+                tier content and can continue learning with us! You can easily
+                upgrade back to a premium plan at any time to regain full
+                access.
               </Text>
             </Section>
 
             <Section style={buttonContainer}>
-              <Button href={process.env.NEXT_PUBLIC_APP_URL ? `${process.env.NEXT_PUBLIC_APP_URL}/pricing` : "https://joinalgora.com/pricing"} style={button}>
+              <Button
+                href={
+                  process.env.NEXT_PUBLIC_APP_URL
+                    ? `${process.env.NEXT_PUBLIC_APP_URL}/pricing`
+                    : "https://www.joinalgora.com/pricing"
+                }
+                style={button}
+              >
                 View Plans & Upgrade
               </Button>
             </Section>
 
             <Text style={mutedText}>
-              We'll be here whenever you're ready to upgrade again. Keep building!
+              We'll be here whenever you're ready to upgrade again. Keep
+              building!
             </Text>
           </Section>
         </Container>
