@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "src/app/(playground)/page.jsxage.jsx"  ],
+, "src/app/(playground)/page.jsxage.jsx", "src/app/(playground)/playground/python/python-template.js"  ],
   "exclude": ["node_modules"]
 }

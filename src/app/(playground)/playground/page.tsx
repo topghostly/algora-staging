@@ -29,7 +29,7 @@ const TECHNOLOGIES = [
     icon: "🐍",
     color: T.yellow,
     href: "/playground/python",
-    active: false,
+    active: true,
   },
   {
     id: "airflow",

@@ -43,7 +43,7 @@ const SessionDelete = ({ id }: { id: string }) => {
       >
         {isDeleting ? (
           <>
-            <Loader className="animate-spin" />
+            <Loader className="animate-spin" size={16} />
             <span>Deleting...</span>
           </>
         ) : (

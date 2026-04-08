@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import { Loader } from "lucide-react";
 import { updateRequestStatus } from "@/app/(main)/actions/request";
 import { ConfirmationDialog } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 
 export function DeclineRequestButton({ requestId }: { requestId: string }) {
   const [open, setOpen] = useState(false);
@@ -19,11 +20,11 @@ export function DeclineRequestButton({ requestId }: { requestId: string }) {
 
   return (
     <>
-      <button
-        type="button"
+      <Button
         disabled={isPending}
         onClick={() => setOpen(true)}
-        className="btn btn-outline border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground px-4"
+        variant={"outline"}
+        className="flex gap-0"
       >
         {isPending ? (
           <Loader size={18} className="animate-spin mr-2" />
@@ -31,7 +32,7 @@ export function DeclineRequestButton({ requestId }: { requestId: string }) {
           <X size={18} className="mr-2" />
         )}
         Decline
-      </button>
+      </Button>
 
       <ConfirmationDialog
         isOpen={open}

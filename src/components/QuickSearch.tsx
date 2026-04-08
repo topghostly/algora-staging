@@ -121,6 +121,12 @@ const pages: PageLink[] = [
     roles: ["LEARNER", "ADMIN"],
   },
   {
+    title: "Session History",
+    href: "/dashboard/sessions/history",
+    description: "View all your past sessions, requests, and their outcomes",
+    roles: ["LEARNER", "ADMIN"],
+  },
+  {
     title: "Privacy Policy",
     href: "/privacy",
     description: "Read our privacy and data protection terms",
