@@ -58,7 +58,7 @@ function FunctionPipeline() {
               </div>
             );
           })}
-          <SL c={T.greyDark} style={{ marginTop: 8 }}>APPLY TO ALL EMPLOYEES</SL>
+          <div style={{ marginTop: 8 }}><SL c={T.greyDark}>APPLY TO ALL EMPLOYEES</SL></div>
           <div style={{ border: `1px solid ${T.slate}`, borderRadius: 8, overflow: "hidden" }}>
             {DF_EMPLOYEES.map((emp, i) => {
               const r = classify(emp.salary);

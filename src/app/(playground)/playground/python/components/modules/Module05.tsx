@@ -117,7 +117,7 @@ function DataFrameExplorer() {
               </tbody>
             </table>
           </div>
-          <Note c={T.cyan} style={{ marginTop: 8 }}>score has <strong>count=7 not 10</strong> — .describe() excludes NaN. The 3 missing score values don't affect count here.</Note>
+          <div style={{ marginTop: 8 }}><Note c={T.cyan}>score has <strong>count=7 not 10</strong> — .describe() excludes NaN. The 3 missing score values don't affect count here.</Note></div>
         </div>
       )}
     </div>
