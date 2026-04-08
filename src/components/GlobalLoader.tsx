@@ -24,12 +24,8 @@ export default function GlobalLoader() {
           transition={{ duration: 0.4, ease: "easeOut", delay: 0.1 }}
           className="flex flex-col items-center justify-center gap-4"
         >
-          <div className="bg-primary/5 p-4 rounded-full">
-            <Loader
-              size={36}
-              className="text-primary animate-spin"
-              strokeWidth={2.5}
-            />
+          <div className="bg-secondary/1 p-4 rounded-full">
+            <Loader size={26} className="animate-spin" />
           </div>
         </motion.div>
       </motion.div>

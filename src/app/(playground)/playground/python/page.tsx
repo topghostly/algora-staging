@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { T, PLAT } from "./components/sql-constants";
+import { T, LEVEL_STYLE } from "./components/python-constants";
 import Module01 from "./components/modules/Module01";
 import Module02 from "./components/modules/Module02";
 import Module03 from "./components/modules/Module03";
@@ -16,151 +16,190 @@ import Module11 from "./components/modules/Module11";
 import Module12 from "./components/modules/Module12";
 import Module13 from "./components/modules/Module13";
 import Module14 from "./components/modules/Module14";
+import Module15 from "./components/modules/Module15";
+import Module16 from "./components/modules/Module16";
+import Module17 from "./components/modules/Module17";
+import Module18 from "./components/modules/Module18";
+import Module19 from "./components/modules/Module19";
 import { GLOBAL_STYLES } from "../components/constants";
 import PlaygroundTopHeader from "../components/palyground-top-header";
 
 const MODULES = [
   {
     id: "01",
-    title: "SELECT & FROM",
-    icon: "🔍",
+    title: "Variables & Types",
+    icon: "🔢",
     level: "easy",
-    desc: "Choose columns, filter rows, sort results",
-    color: T.cyan,
+    desc: "9 types with live type explorer, f-strings, mutability, and LEGB scope",
+    color: T.blue,
     component: Module01,
   },
   {
     id: "02",
-    title: "WHERE",
-    icon: "🎯",
+    title: "Lists & Loops",
+    icon: "📋",
     level: "easy",
-    desc: "Filter rows with conditions and predicates",
-    color: T.blue,
+    desc: "List operations, loop animator, comprehension builder, zip & enumerate",
+    color: T.purple,
     component: Module02,
   },
   {
     id: "03",
-    title: "GROUP BY",
-    icon: "📊",
-    level: "mid",
-    desc: "Aggregate and summarise your data",
-    color: T.green,
+    title: "Dictionaries",
+    icon: "🗂️",
+    level: "easy",
+    desc: "Live dict explorer, defaultdict, Counter, nested dicts, power patterns",
+    color: T.orange,
     component: Module03,
   },
   {
     id: "04",
-    title: "JOINs",
-    icon: "🔗",
-    level: "mid",
-    desc: "Combine rows from multiple tables",
-    color: T.yellow,
+    title: "Functions",
+    icon: "⚙️",
+    level: "easy",
+    desc: "Function tracer, all arg types, closures, decorators, common mistakes",
+    color: T.purple,
     component: Module04,
   },
   {
     id: "05",
-    title: "Subqueries & CTEs",
-    icon: "🪆",
+    title: "DataFrames",
+    icon: "🐼",
     level: "mid",
-    desc: "Nested queries and named query expressions",
-    color: T.orange,
+    desc: "TABLE/.info()/.describe() explorer, creating dfs, index & alignment",
+    color: T.cyan,
     component: Module05,
   },
   {
     id: "06",
-    title: "CASE",
-    icon: "🌿",
+    title: "Filtering",
+    icon: "🎯",
     level: "mid",
-    desc: "Conditional logic and if-then-else in SQL",
-    color: T.teal,
+    desc: "Filter builder, .loc vs .iloc, multiple conditions, isin & between",
+    color: T.blue,
     component: Module06,
   },
   {
     id: "07",
-    title: "Window Functions",
-    icon: "🪟",
-    level: "hard",
-    desc: "Row-by-row calculations over ordered sets",
-    color: T.purple,
+    title: "GroupBy",
+    icon: "📊",
+    level: "mid",
+    desc: "4-phase journey, .agg() vs .transform(), named aggregations",
+    color: T.cyan,
     component: Module07,
   },
   {
     id: "08",
-    title: "Set Operations",
-    icon: "♾️",
+    title: "Merging",
+    icon: "🔗",
     level: "mid",
-    desc: "UNION, INTERSECT, EXCEPT across result sets",
-    color: T.indigo,
+    desc: "Merge animator (INNER/LEFT/RIGHT/OUTER), pd.concat axis=0 & 1",
+    color: T.green,
     component: Module08,
   },
   {
     id: "09",
-    title: "NULL Handling",
-    icon: "❔",
-    level: "easy",
-    desc: "Understanding and working with NULLs",
-    color: T.orange,
+    title: "Data Cleaning",
+    icon: "🧹",
+    level: "mid",
+    desc: "Null heatmap, dtype fixer, outlier detection, duplicates",
+    color: T.yellow,
     component: Module09,
   },
   {
     id: "10",
-    title: "Views",
-    icon: "🔭",
+    title: "String Operations",
+    icon: "📝",
     level: "mid",
-    desc: "Virtual tables and reusable query logic",
-    color: T.cyan,
+    desc: "Live str method explorer, .str accessor, regex in pandas",
+    color: T.green,
     component: Module10,
   },
   {
     id: "11",
-    title: "DML",
-    icon: "✏️",
+    title: "Dates & Times",
+    icon: "📅",
     level: "mid",
-    desc: "INSERT, UPDATE, DELETE — modifying data",
+    desc: "Datetime explorer, tenure calculator, resample & time periods",
     color: T.blue,
     component: Module11,
   },
   {
     id: "12",
-    title: "String & Dates",
-    icon: "📅",
+    title: "Visualisation",
+    icon: "📈",
     level: "mid",
-    desc: "Text manipulation and date arithmetic",
-    color: T.green,
+    desc: "6-chart builder, choosing the right chart, subplots & saving",
+    color: T.blue,
     component: Module12,
   },
   {
     id: "13",
-    title: "Transactions",
+    title: "Lambda & Apply",
     icon: "⚡",
     level: "hard",
-    desc: "ACID, BEGIN, COMMIT, ROLLBACK, SAVEPOINT",
-    color: T.yellow,
+    desc: "Row-by-row apply animator, vectorised alternatives, map vs transform",
+    color: T.purple,
     component: Module13,
   },
   {
     id: "14",
-    title: "Indexes",
-    icon: "⚡",
+    title: "NumPy",
+    icon: "🔢",
     level: "hard",
-    desc: "Speed up queries with B-tree indexing",
-    color: T.red,
+    desc: "Array creation, vectorised math, statistics, boolean masking",
+    color: T.orange,
     component: Module14,
+  },
+  {
+    id: "15",
+    title: "Error Handling",
+    icon: "🛡️",
+    level: "hard",
+    desc: "try/except explorer, common exceptions, custom errors, context managers",
+    color: T.red,
+    component: Module15,
+  },
+  {
+    id: "16",
+    title: "File I/O",
+    icon: "📁",
+    level: "mid",
+    desc: "read_csv() mastery, CSV/Excel/JSON/Parquet/SQL, writing output",
+    color: T.cyan,
+    component: Module16,
+  },
+  {
+    id: "17",
+    title: "Regular Expressions",
+    icon: "🔍",
+    level: "hard",
+    desc: "Live regex builder with highlighting, cheatsheet, pandas regex patterns",
+    color: T.green,
+    component: Module17,
+  },
+  {
+    id: "18",
+    title: "APIs & JSON",
+    icon: "🌐",
+    level: "hard",
+    desc: "JSON navigator, calling APIs with requests, flatten with json_normalize",
+    color: T.cyan,
+    component: Module18,
+  },
+  {
+    id: "19",
+    title: "Full Pipeline",
+    icon: "🚀",
+    level: "hard",
+    desc: "6-step production pipeline: Load→Inspect→Clean→Transform→Visualise→Output",
+    color: T.blue,
+    component: Module19,
   },
 ];
 
-const LEVEL_STYLE: Record<string, any> = {
-  easy: { label: "Beginner", bg: "rgba(74,222,128,.1)", text: T.green },
-  mid: { label: "Intermediate", bg: "rgba(250,204,21,.1)", text: T.yellow },
-  hard: { label: "Advanced", bg: "rgba(248,113,113,.1)", text: T.red },
-};
-
-function Catalog({
-  onSelect,
-  platform,
-}: {
-  onSelect: (m: any) => void;
-  platform: string;
-}) {
+// ─── Catalog ──────────────────────────────────────────────────────────────────
+function Catalog({ onSelect }: { onSelect: (m: any) => void }) {
   const [filter, setFilter] = useState("all");
   const filtered =
     filter === "all" ? MODULES : MODULES.filter((m) => m.level === filter);
@@ -168,7 +207,7 @@ function Catalog({
   return (
     <>
       <PlaygroundTopHeader />
-      <div style={{ maxWidth: 960, margin: "0 auto", padding: "28px 20px" }}>
+      <div style={{ maxWidth: 980, margin: "0 auto", padding: "28px 20px" }}>
         <div
           style={{
             padding: "56px 32px 40px",
@@ -195,12 +234,19 @@ function Catalog({
                 WebkitTextFillColor: "transparent",
               }}
             >
-              SQL{" "}
+              Python
             </span>{" "}
             Playground
           </h1>
-          <div style={{ fontSize: 13, color: T.grey, marginTop: 6 }}>
-            14 interactive modules · visual-first · three SQL dialects
+          <div
+            style={{
+              fontSize: 13,
+              color: T.grey,
+              marginTop: 6,
+              fontFamily: "'Onest',sans-serif",
+            }}
+          >
+            19 interactive modules · visual-first · data science & engineering
           </div>
           <div
             style={{
@@ -219,20 +265,20 @@ function Catalog({
                   borderRadius: 16,
                   fontSize: 10,
                   cursor: "pointer",
-                  fontFamily: "monospace",
+                  fontFamily: "'JetBrains Mono',monospace",
                   fontWeight: 700,
                   transition: "all .18s",
-                  border: `1px solid ${filter === f ? (f === "all" ? T.cyan : LEVEL_STYLE[f].text) : "rgba(255,255,255,.1)"}`,
+                  border: `1px solid ${filter === f ? (f === "all" ? T.yellow : LEVEL_STYLE[f].text) : "rgba(255,255,255,.1)"}`,
                   background:
                     filter === f
                       ? f === "all"
-                        ? "rgba(34,211,238,.1)"
+                        ? "rgba(250,204,21,.1)"
                         : LEVEL_STYLE[f].bg
                       : "transparent",
                   color:
                     filter === f
                       ? f === "all"
-                        ? T.cyan
+                        ? T.yellow
                         : LEVEL_STYLE[f].text
                       : T.grey,
                 }}
@@ -244,12 +290,10 @@ function Catalog({
         </div>
         <div
           style={{
-            padding: "16px 24px 60px",
+            padding: "16px 0 60px",
             display: "grid",
             gridTemplateColumns: "repeat(auto-fill,minmax(255px,1fr))",
             gap: 12,
-            maxWidth: 1160,
-            margin: "0 auto",
           }}
         >
           {filtered.map((m, i) => (
@@ -263,7 +307,7 @@ function Catalog({
                 cursor: "pointer",
                 background: T.surface,
                 transition: "all .18s",
-                animation: `fadeUp .4s ease ${i * 40}ms both`,
+                animation: `fadeUp .4s ease ${i * 35}ms both`,
                 position: "relative",
                 overflow: "hidden",
               }}
@@ -300,7 +344,7 @@ function Catalog({
                     borderRadius: 8,
                     background: LEVEL_STYLE[m.level].bg,
                     color: LEVEL_STYLE[m.level].text,
-                    fontFamily: "monospace",
+                    fontFamily: "'JetBrains Mono',monospace",
                     fontWeight: 700,
                   }}
                 >
@@ -311,7 +355,7 @@ function Catalog({
                 style={{
                   fontSize: 9,
                   color: m.color,
-                  fontFamily: "monospace",
+                  fontFamily: "'JetBrains Mono',monospace",
                   marginBottom: 3,
                   fontWeight: 700,
                   letterSpacing: 0.5,
@@ -324,14 +368,21 @@ function Catalog({
                   fontSize: 13,
                   fontWeight: 700,
                   color: T.white,
-                  fontFamily: "'Syne',sans-serif",
+                  fontFamily: "'Bricolage Grotesque',sans-serif",
                   marginBottom: 4,
                   lineHeight: 1.2,
                 }}
               >
                 {m.title}
               </div>
-              <div style={{ fontSize: 10, color: T.grey, lineHeight: 1.5 }}>
+              <div
+                style={{
+                  fontSize: 10,
+                  color: T.grey,
+                  lineHeight: 1.5,
+                  fontFamily: "'Onest',sans-serif",
+                }}
+              >
                 {m.desc}
               </div>
             </div>
@@ -342,16 +393,13 @@ function Catalog({
   );
 }
 
+// ─── ModuleShell ──────────────────────────────────────────────────────────────
 function ModuleShell({
   module,
   onBack,
-  platform,
-  setPlatform,
 }: {
   module: any;
   onBack: (m?: any) => void;
-  platform: string;
-  setPlatform: (p: string) => void;
 }) {
   const Comp = module.component;
   const idx = MODULES.findIndex((m) => m.id === module.id);
@@ -360,7 +408,7 @@ function ModuleShell({
 
   return (
     <div>
-      <PlaygroundTopHeader onBack={() => onBack()} backText="All Courses">
+      <PlaygroundTopHeader onBack={() => onBack()} backText="All Modules">
         <div style={{ width: 1, height: 16, background: T.slate }} />
         <span style={{ fontSize: 16 }}>{module.icon}</span>
         <div>
@@ -369,47 +417,35 @@ function ModuleShell({
               fontSize: 13,
               fontWeight: 700,
               color: T.white,
-              fontFamily: "'Syne',sans-serif",
+              fontFamily: "'Bricolage Grotesque',sans-serif",
             }}
           >
             {module.title}
           </div>
-          <div style={{ fontSize: 9, color: T.grey }}>
+          <div
+            style={{
+              fontSize: 9,
+              color: T.grey,
+              fontFamily: "'JetBrains Mono',monospace",
+            }}
+          >
             Module {module.id} of {MODULES.length}
           </div>
         </div>
-        <div
+        <span
           style={{
             marginLeft: "auto",
-            display: "flex",
-            gap: 3,
-            background: T.card,
-            padding: 5,
-            borderRadius: 10,
-            border: `1px solid ${T.slate}`,
+            fontSize: 8,
+            padding: "2px 8px",
+            borderRadius: 8,
+            background: LEVEL_STYLE[module.level].bg,
+            color: LEVEL_STYLE[module.level].text,
+            fontFamily: "'JetBrains Mono',monospace",
+            fontWeight: 700,
           }}
         >
-          {Object.values(PLAT).map((p) => (
-            <button
-              key={p.id}
-              onClick={() => setPlatform(p.id)}
-              style={{
-                padding: "6px 11px",
-                borderRadius: 7,
-                border: "none",
-                background: platform === p.id ? p.bg : "transparent",
-                color: platform === p.id ? p.color : T.grey,
-                fontSize: 10,
-                cursor: "pointer",
-                fontFamily: "monospace",
-                fontWeight: 700,
-                transition: "all .15s",
-              }}
-            >
-              {p.icon} {p.label}
-            </button>
-          ))}
-        </div>
+          {LEVEL_STYLE[module.level].label}
+        </span>
       </PlaygroundTopHeader>
 
       <div
@@ -417,10 +453,9 @@ function ModuleShell({
           textAlign: "center",
           padding: "24px 20px 12px",
           borderBottom: `1px solid ${T.slate}30`,
-          background: `linear-gradient(to bottom, ${module?.color}08, transparent)`,
+          background: `linear-gradient(to bottom, ${module.color}08, transparent)`,
         }}
       >
-        {/* <div style={{ fontSize: 22, marginBottom: 6 }}>{module?.icon}</div> */}
         <h1
           style={{
             fontFamily: "'Bricolage Grotesque',sans-serif",
@@ -431,16 +466,24 @@ function ModuleShell({
             color: "#f1f5f9",
           }}
         >
-          {module?.title}
+          {module.title}
         </h1>
-        <div style={{ fontSize: 13, color: T.grey, marginTop: 4 }}>
-          {module?.subtitle}
+        <div
+          style={{
+            fontSize: 13,
+            color: T.grey,
+            marginTop: 4,
+            fontFamily: "'Onest',sans-serif",
+          }}
+        >
+          {module.desc}
         </div>
       </div>
 
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "24px 20px" }}>
-        <Comp platform={platform} />
+        <Comp />
       </div>
+
       <div
         style={{
           maxWidth: 900,
@@ -463,7 +506,7 @@ function ModuleShell({
               background: T.surface,
               color: T.grey,
               fontSize: 10,
-              fontFamily: "monospace",
+              fontFamily: "'JetBrains Mono',monospace",
               textAlign: "left",
               display: "flex",
               gap: 8,
@@ -501,7 +544,7 @@ function ModuleShell({
               background: T.surface,
               color: T.grey,
               fontSize: 10,
-              fontFamily: "monospace",
+              fontFamily: "'JetBrains Mono',monospace",
               textAlign: "right",
               display: "flex",
               gap: 8,
@@ -531,8 +574,8 @@ function ModuleShell({
   );
 }
 
-export default function SQLPlayground() {
-  const [platform, setPlatform] = useState("mysql");
+// ─── Page ─────────────────────────────────────────────────────────────────────
+export default function PythonPlayground() {
   const [current, setCurrent] = useState<any>(null);
 
   const handleBack = (mod?: any) => {
@@ -543,22 +586,16 @@ export default function SQLPlayground() {
   return (
     <div
       style={{
-        fontFamily: "'DM Sans',sans-serif",
-        // background: T.bg,
+        fontFamily: "'Onest',sans-serif",
         minHeight: "100vh",
         color: T.white,
       }}
     >
       <style>{GLOBAL_STYLES}</style>
       {!current ? (
-        <Catalog onSelect={(m) => setCurrent(m)} platform={platform} />
+        <Catalog onSelect={(m) => setCurrent(m)} />
       ) : (
-        <ModuleShell
-          module={current}
-          onBack={handleBack}
-          platform={platform}
-          setPlatform={setPlatform}
-        />
+        <ModuleShell module={current} onBack={handleBack} />
       )}
     </div>
   );

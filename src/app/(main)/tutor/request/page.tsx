@@ -7,6 +7,8 @@ import { Calendar, Clock, User, Check, Info } from "lucide-react";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 import { ErrorState } from "@/components/ErrorState";
 import { DeclineRequestButton } from "./DeclineRequestButton";
+import { Button } from "@/components/ui/button";
+import { Kbd } from "@/components/ui/kbd";
 
 async function getRequests(tutorId: string) {
   return await prisma.sessionRequest.findMany({
@@ -37,7 +39,7 @@ export default async function TutorRequestsPage() {
     requests = await getRequests(session.user.id);
   } catch (error) {
     console.error("Error fetching tutor requests:", error);
-    requests = null; // Ensure it's null to trigger ErrorState
+    requests = null;
   }
 
   return (
@@ -61,7 +63,7 @@ export default async function TutorRequestsPage() {
           Session Requests
         </h1>
         {requests && (
-          <p className="text-muted-foreground p-2 rounded-md hidden md:block">
+          <p className="text-muted-foreground p-2 text-sm rounded-md hidden md:block">
             {requests.length} pending requests
           </p>
         )}
@@ -83,22 +85,16 @@ export default async function TutorRequestsPage() {
           {requests.map((request: any) => (
             <div
               key={request.id}
-              className="bg-card border border-gray-200 rounded-xl p-6 shadow-sm"
+              className="border border-input rounded-xl p-6"
             >
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="space-y-4 flex-1">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                      {request.student.name?.[0] ||
-                        request.student.email[0].toUpperCase()}
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-lg">{request.title}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Requested by:{" "}
-                        {request.student.name || request.student.email}
-                      </p>
-                    </div>
+                  <div className="flex flex-col gap-3">
+                    <h3 className="">{request.title}</h3>
+                    <p className="text-muted-foreground">
+                      Requested by:{" "}
+                      {request.student.name || request.student.email}
+                    </p>
                   </div>
 
                   <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
@@ -113,8 +109,11 @@ export default async function TutorRequestsPage() {
                   </div>
 
                   {request.message && (
-                    <div className="p-2 text-md italic">
-                      "{request.message}"
+                    <div className="mt-4">
+                      <p className="text-sm text-muted-foreground">
+                        Additional Info:
+                      </p>
+                      <p className="">"{request.message}"</p>
                     </div>
                   )}
                 </div>
@@ -123,10 +122,11 @@ export default async function TutorRequestsPage() {
                   <DeclineRequestButton requestId={request.id} />
                   <Link
                     href={`/tutor/sessions/new?studentEmail=${encodeURIComponent(request.student.email)}&title=${encodeURIComponent(request.title)}&requestId=${request.id}&preferredDate=${request.preferredDate}&preferredTime=${request.preferredTime}`}
-                    className="btn btn-primary px-4"
                   >
-                    <Check size={18} className="mr-2" />
-                    Accept & Create Session
+                    <Button className="flex gap-0">
+                      <Check size={18} className="mr-2" />
+                      Accept & Create Session
+                    </Button>
                   </Link>
                 </div>
               </div>
