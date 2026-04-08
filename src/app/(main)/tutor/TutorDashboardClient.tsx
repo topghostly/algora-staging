@@ -12,11 +12,7 @@ import {
   createColumnHelper,
   type SortingState,
 } from "@tanstack/react-table";
-import {
-  ArrowUpDown,
-  ExternalLink,
-  Layers,
-} from "lucide-react";
+import { ArrowUpDown, ExternalLink, Layers } from "lucide-react";
 import ConnectCalendarButton from "@/components/ConnectCalendarButton";
 import DisconnectCalendarButton from "@/components/DisconnectCalendarButton";
 import { Button } from "@/components/ui/button";
@@ -124,20 +120,10 @@ const columns = [
     enableSorting: false,
     cell: (info) =>
       info.getValue() ? (
-        <a
-          href={info.getValue()!}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            color: "var(--primary)",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "0.25rem",
-            fontSize: "0.85rem",
-          }}
-          className="btn btn-outline rounded-md"
-        >
-          Join <ExternalLink size={12} />
+        <a href={info.getValue()!} target="_blank" rel="noopener noreferrer">
+          <Button variant={"outline"} className="flex gap-2 items-center">
+            Join <ExternalLink size={12} />
+          </Button>
         </a>
       ) : (
         <span style={{ color: "var(--muted)", fontSize: "0.85rem" }}>—</span>
@@ -147,11 +133,11 @@ const columns = [
 
 const Stats = ({ value, name }: { value: string; name: string }) => {
   return (
-    <div className="flex gap-2 items-end">
-      <p className="text-7xl text-input p-0">{value}</p>
-      <p className="pb-2 text-[#004d40] font-medium tracking-tighter text-sm">
+    <div className="flex gap-1 items-start flex-col card">
+      <p className="text-[#000000] font-medium tracking-tighter text-sm">
         {name}
       </p>
+      <p className="text-6xl text-primary line-clamp-1">{value}</p>
     </div>
   );
 };
@@ -167,6 +153,34 @@ export default function TutorDashboardClient({
   const [sorting, setSorting] = useState<SortingState>([
     { id: "startTime", desc: true },
   ]);
+
+  const now = new Date();
+
+  const upcomingSessions = initialSessions.filter(
+    (s) => s.status === "PENDING" && new Date(s.startTime) > now,
+  );
+
+  const nextSession =
+    upcomingSessions.sort(
+      (a, b) =>
+        new Date(a.startTime).getTime() - new Date(b.startTime).getTime(),
+    )[0] ?? null;
+
+  const totalCompletedMins = initialSessions
+    .filter((s) => s.status === "COMPLETED")
+    .reduce(
+      (acc, s) =>
+        acc +
+        Math.round(
+          (new Date(s.endTime).getTime() - new Date(s.startTime).getTime()) /
+            60000,
+        ),
+      0,
+    );
+  const hoursTaught =
+    totalCompletedMins >= 60
+      ? `${Math.floor(totalCompletedMins / 60)}h ${totalCompletedMins % 60}m`
+      : `0h ${totalCompletedMins}m`;
 
   const table = useReactTable({
     data: initialSessions,
@@ -191,8 +205,7 @@ export default function TutorDashboardClient({
           }}
           className="font-light"
         >
-          Hello, <br />{" "}
-          <span className="font-medium">{user.name}!</span>
+          Hello, <br /> <span className="font-medium">{user.name}!</span>
         </h1>
         <div className="flex gap-2">
           {user.calendarConnected ? (
@@ -208,12 +221,53 @@ export default function TutorDashboardClient({
           </Link>
         </div>
       </div>
-      <div className="flex flex-col md:flex-row gap-3 justify-between bg-primary p-10 rounded-3xl">
-        <Stats value="0" name="Upcoming Sessions" />
+      <div className="flex flex-col md:flex-row gap-5">
+        <Stats
+          value={String(upcomingSessions.length)}
+          name="Upcoming Sessions"
+        />
+        <Stats value={hoursTaught} name="Hours Taught" />
+      </div>
+      <div>
+        <h3 className="mb-4">Next Session</h3>
+        {nextSession ? (
+          <div className="flex justify-between flex-col lg:flex-row">
+            <div className="flex flex-col gap-1">
+              <span className="text-sm text-muted-foreground">
+                Session name
+              </span>
+              <h4 className="font-medium">{nextSession.title}</h4>
+            </div>
 
-        <Stats value="0" name="Total Students" />
+            <div className="flex flex-col gap-1">
+              <span className="text-sm text-muted-foreground">Start time</span>
+              <h4 className="font-medium">{fmt(nextSession.startTime)}</h4>
+            </div>
 
-        <Stats value="0h:0m" name="Hours Taught" />
+            {nextSession.meetingLink ? (
+              <div className="flex flex-col gap-1">
+                <span className="text-sm text-muted-foreground">
+                  Meeting link
+                </span>
+                <a
+                  href={nextSession.meetingLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <h4 className="font-medium  text-blue-600 hover:underline">
+                    {nextSession.meetingLink}
+                  </h4>
+                </a>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                No meeting link yet
+              </p>
+            )}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">No upcoming sessions.</p>
+        )}
       </div>
 
       {/* Sessions Table */}

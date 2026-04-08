@@ -7,6 +7,7 @@ import { BookOpen, ArrowRight, Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ErrorState } from "@/components/ErrorState";
 import GlobalLoader from "@/components/GlobalLoader";
+import { Button } from "@/components/ui/button";
 
 interface EnrolledTrack {
   id: string;
@@ -191,20 +192,8 @@ export default function Dashboard() {
                       <BookOpen size={14} /> {enrollment.track._count.modules}{" "}
                       Modules
                     </span>
-                    <Link
-                      href={`/tracks/${enrollment.track.id}`}
-                      style={{
-                        color: "var(--primary)",
-                        fontWeight: 600,
-                        fontSize: "0.9rem",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.25rem",
-                      }}
-                      className="btn btn-outline rounded-lg"
-                    >
-                      Continue
-                      {/* <ArrowRight size={14} /> */}
+                    <Link href={`/tracks/${enrollment.track.id}`}>
+                      <Button variant={"outline"}>Continue</Button>
                     </Link>
                   </div>
                 </div>

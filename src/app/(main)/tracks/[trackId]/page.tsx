@@ -11,11 +11,11 @@ import {
   PlayCircle,
   FileText,
   Lock,
-  MoveLeft,
 } from "lucide-react";
 import EnrollButton from "@/components/EnrollButton";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 import { ErrorState } from "@/components/ErrorState";
+import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
@@ -231,13 +231,12 @@ export default async function TrackOverviewPage({
                     />
                   </div>
                 </div>
-                <Link
-                  href={firstLessonUrl}
-                  className="btn btn-primary rounded-full w-full justify-center text-center"
-                >
-                  {progressPercentage > 0
-                    ? "Continue Learning"
-                    : "Start Learning"}
+                <Link href={firstLessonUrl}>
+                  <Button>
+                    {progressPercentage > 0
+                      ? "Continue Learning"
+                      : "Start Learning"}
+                  </Button>
                 </Link>
               </>
             ) : (
@@ -347,13 +346,10 @@ export default async function TrackOverviewPage({
                           {isEnrolled && (
                             <Link
                               href={`/tracks/${track.id}/lessons/${lesson.id}`}
-                              className="btn btn-outline rounded-lg"
-                              style={{
-                                fontSize: "0.8rem",
-                                padding: "0.25rem 0.75rem",
-                              }}
                             >
-                              {isCompleted ? "Review" : "Start"}
+                              <Button variant={"outline"}>
+                                {isCompleted ? "Review" : "Start"}
+                              </Button>
                             </Link>
                           )}
                         </div>
