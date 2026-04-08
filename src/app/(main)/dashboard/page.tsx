@@ -76,7 +76,6 @@ export default function Dashboard() {
 
   return (
     <div className="container" style={{ padding: "4rem 0" }}>
-      {/* <BreadcrumbNav items={[{ label: "Dashboard" }]} className="mb-4" /> */}
       <div style={{ marginBottom: "3rem" }}>
         <p
           style={{
@@ -87,7 +86,7 @@ export default function Dashboard() {
         </p>
         <h1 className="font-light">
           Welcome, <br />{" "}
-          <span className="font-medium">{session?.user?.name}</span>!
+          <span className="font-medium">{session?.user?.name}</span>
         </h1>
       </div>
 
@@ -138,13 +137,31 @@ export default function Dashboard() {
               {enrollments.map((enrollment) => (
                 <div
                   key={enrollment.id}
-                  className="card"
+                  className="card relative"
                   style={{
                     display: "flex",
                     boxShadow: "none",
                     flexDirection: "column",
                   }}
                 >
+                  <span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      xmlnsXlink="http://www.w3.org/1999/xlink"
+                      fill="var(--primary)"
+                      version="1.1"
+                      id="Capa_1"
+                      // width="45px"
+                      // height="45px"
+                      viewBox="0 0 26.514 26.515"
+                      xmlSpace="preserve"
+                      className="w-[30px] md:w-[45px] absolute top-0 right-[5px]"
+                    >
+                      <g>
+                        <path d="M23.649,1.501l-0.002,23.514c0,0.56-0.312,1.072-0.809,1.331c-0.494,0.257-1.095,0.219-1.554-0.104l-8.028-5.618   l-8.031,5.618c-0.257,0.182-0.56,0.271-0.86,0.271c-0.236,0-0.475-0.056-0.692-0.169c-0.495-0.259-0.808-0.771-0.808-1.331   L2.868,1.5c0-0.829,0.672-1.5,1.5-1.5h2.451v13.258c0,0.828,0.672,1.5,1.5,1.5s1.5-0.672,1.5-1.5V0.001h12.33   c0.396,0,0.779,0.158,1.061,0.439C23.492,0.721,23.649,1.103,23.649,1.501z" />
+                      </g>
+                    </svg>
+                  </span>
                   <div style={{ marginBottom: "1rem" }}>
                     <h3
                       style={{

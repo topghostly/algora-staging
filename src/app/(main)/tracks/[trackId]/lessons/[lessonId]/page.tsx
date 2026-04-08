@@ -3,23 +3,13 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
-import {
-  CheckCircle,
-  Circle,
-  ChevronLeft,
-  ChevronRight,
-  PlayCircle,
-  FileText,
-  MoveLeft,
-  ChevronUp,
-  ChevronDown,
-} from "lucide-react";
+import { PlayCircle } from "lucide-react";
 import LessonCompleteButton from "@/components/LessonCompleteButton";
 import { ErrorState } from "@/components/ErrorState";
 import LessonLayout from "@/components/LessonLayout";
 import TextLessonContent from "@/components/TextLessonContent";
 import QuizViewer from "@/components/QuizViewer";
-import ProgressTrigger from "@/components/ProgressTrigger";
+import LessonTransitionWrapper from "@/components/LessonTransitionWrapper";
 
 export const dynamic = "force-dynamic";
 
@@ -28,24 +18,6 @@ interface LessonPageProps {
     trackId: string;
     lessonId: string;
   }>;
-}
-
-function getEmbedUrl(url: string) {
-  if (!url) return "";
-
-  // Handle standard YouTube links (youtube.com/watch?v=...)
-  if (url.includes("youtube.com/watch?v=")) {
-    const videoId = url.split("v=")[1].split("&")[0];
-    return `https://www.youtube.com/embed/${videoId}`;
-  }
-
-  // Handle short YouTube links (youtu.be/...)
-  if (url.includes("youtu.be/")) {
-    const videoId = url.split("youtu.be/")[1].split("?")[0];
-    return `https://www.youtube.com/embed/${videoId}`;
-  }
-
-  return url;
 }
 
 async function getLessonData(
@@ -74,7 +46,6 @@ async function getLessonData(
 
   if (!track) return null;
 
-  // Find the current lesson
   let currentLesson = null;
   let nextLesson = null;
   let prevLesson = null;
@@ -141,23 +112,23 @@ export default async function LessonPage({ params }: LessonPageProps) {
 
   return (
     <LessonLayout track={track} currentLesson={currentLesson}>
-      <div className="flex flex-col min-h-[calc(100vh-116px)]">
-        {prevLesson && (
-          <Link href={`/tracks/${track.id}/lessons/${prevLesson.id}`}>
-            <div className="py-2 bg-secondary from-gray-500 via-green-500 to-emerald-400 flex flex-col gap-0 justify-center items-center cursor-pointer">
-              <ChevronUp color="white" size={20} />
-              <p
-                className="text-sm underline"
-                style={{
-                  color: "white",
-                }}
-              >
-                {prevLesson.title}
-              </p>
-            </div>
-          </Link>
-        )}
-
+      <LessonTransitionWrapper
+        prevUrl={
+          prevLesson
+            ? `/tracks/${track.id}/lessons/${prevLesson.id}`
+            : undefined
+        }
+        prevTitle={prevLesson?.title}
+        nextUrl={
+          nextLesson
+            ? `/tracks/${track.id}/lessons/${nextLesson.id}`
+            : undefined
+        }
+        nextTitle={nextLesson?.title}
+        lessonId={currentLesson.id}
+        isCompleted={isCompleted}
+        lessonType={currentLesson.type}
+      >
         {currentLesson.type !== "QUIZ" && (
           <div className="mb-8 bg-white md:bg-secondary from-zinc-500 via-stone-600 to-zinc-900 py-8 md:py-18">
             <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -235,47 +206,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
             </>
           )}
         </div>
-
-        <div className="mt-auto">
-          <ProgressTrigger
-            lessonId={currentLesson.id}
-            isCompleted={isCompleted}
-            lessonType={currentLesson.type}
-          >
-            <div>
-              {nextLesson ? (
-                <Link href={`/tracks/${track.id}/lessons/${nextLesson.id}`}>
-                  <div className="py-2 bg-secondary from-gray-500 via-green-500 to-emerald-400 flex flex-col gap-0 justify-center items-center cursor-pointer">
-                    <p
-                      className="text-sm underline"
-                      style={{
-                        color: "white",
-                      }}
-                    >
-                      {nextLesson.title}
-                    </p>
-                    <ChevronDown color="white" size={20} />
-                  </div>
-                </Link>
-              ) : (
-                <Link href="/dashboard">
-                  <div className="py-4 bg-secondary from-gray-500 via-green-500 to-emerald-400 flex flex-col gap-0 justify-center items-center cursor-pointer">
-                    <p
-                      className="text-sm underline"
-                      style={{
-                        color: "white",
-                      }}
-                    >
-                      Complete Track
-                    </p>
-                  </div>
-                </Link>
-              )}
-            </div>
-          </ProgressTrigger>
-        </div>
-      </div>
-      {/* </div> */}
+      </LessonTransitionWrapper>
     </LessonLayout>
   );
 }
