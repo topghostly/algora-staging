@@ -104,6 +104,7 @@ export const config = {
     "/admin/:path*",
     "/auth/:path*",
     "/tutor/:path*",
+    "/tracks/:path*",
     "/api/auth/select-role",
     "/api/auth/forgot-password",
     "/api/auth/reset-password",

@@ -351,10 +351,7 @@ export default function Navbar() {
         title="Sign Out"
         description="Are you sure you want to sign out of your account?"
         confirmText="Sign Out"
-        onConfirm={() => {
-          router.push("/auth/signin");
-          signOut();
-        }}
+        onConfirm={() => signOut({ callbackUrl: "/auth/signin" })}
         variant="destructive"
       />
 

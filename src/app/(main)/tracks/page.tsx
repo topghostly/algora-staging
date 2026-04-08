@@ -40,36 +40,6 @@ const SkeletonTrackCard = () => (
       position: "relative",
     }}
   >
-    {/* <div
-      style={{
-        height: "200px",
-        backgroundColor: "var(--muted-light)",
-        borderRadius: "var(--radius)",
-        marginBottom: "1.5rem",
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
-      <motion.div
-        animate={{
-          x: ["-100%", "100%"],
-        }}
-        transition={{
-          duration: 1.5,
-          repeat: Infinity,
-          ease: "linear",
-        }}
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          background:
-            "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)",
-        }}
-      />
-    </div> */}
     <div
       style={{
         height: "1.5rem",

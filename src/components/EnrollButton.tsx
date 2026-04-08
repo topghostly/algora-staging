@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, Loader } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import { Button } from "./ui/button";
 
 export default function EnrollButton({ trackId }: { trackId: string }) {
   const router = useRouter();
@@ -53,17 +54,10 @@ export default function EnrollButton({ trackId }: { trackId: string }) {
   };
 
   return (
-    <button
+    <Button
       onClick={handleEnroll}
       disabled={loading}
-      className="btn btn-primary rounded-lg "
-      style={{
-        width: "fit-content",
-        justifyContent: "center",
-        cursor: loading ? "not-allowed" : "pointer",
-        opacity: loading ? 0.7 : 1,
-        padding: "10px 20px",
-      }}
+      className="w-fit flex gap-0"
     >
       {loading ? (
         <>
@@ -79,6 +73,6 @@ export default function EnrollButton({ trackId }: { trackId: string }) {
           Start Track <ArrowRight size={18} style={{ marginLeft: "0.5rem" }} />
         </>
       )}
-    </button>
+    </Button>
   );
 }
