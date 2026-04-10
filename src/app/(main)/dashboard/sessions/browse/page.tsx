@@ -5,10 +5,11 @@ import { redirect } from "next/navigation";
 import { bookSession } from "@/app/(main)/actions/booking";
 import Link from "next/link";
 import { Calendar, CircleAlert, Clock, User } from "lucide-react";
-import { toast } from "sonner";
+import { LottieAnimation } from "@/components/NotFoundAnimation";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 import { ErrorState } from "@/components/ErrorState";
 import { SubmitButton } from "./SubmitButton";
+import { Button } from "@/components/ui/button";
 
 async function getAvailableSessions(userId: string) {
   const sessions = await prisma.tutorSession.findMany({
@@ -62,7 +63,7 @@ export default async function BrowseSessionsPage() {
           ]}
           className="mt-8 -mb-12"
         />
-        <div className="flex justify-between items-center my-16">
+        <div className="flex flex-col md:flex-row gap-6 justify-between items-start md:items-center my-16">
           <h1 className="">Request group Session</h1>
           <div className="bg-muted/50 px-4 py-2 rounded-lg text-sm">
             <span className="text-muted-foreground mr-2">Your Plan:</span>
@@ -74,16 +75,21 @@ export default async function BrowseSessionsPage() {
           </div>
         </div>
 
-        <div className="h-[70vh] w-full flex items-center justify-center">
+        <div className="md:h-[60vh] w-full flex items-center justify-center">
           <div className="text-center">
-            <Calendar className="mx-auto h-12 w-12 text-muted-foreground mb-8" />
+            <div className="flex mx-auto h-60 w-60 md:h-72 md:w-72 items-center justify-center overflow-hidden mb-6">
+              <LottieAnimation
+                jsonPath="/json/upgrade-algora.json"
+                fallbackWebm="/videos/empty.webm"
+              />
+            </div>
             <h3 className="mb-2">Upgrade to attend sessions</h3>
             <p className="text-muted-foreground mb-3">
               You need to have a paid subscription to browse and attend
               sessions.
             </p>
-            <Link href="/pricing" className="btn btn-primary">
-              Upgrade your plan
+            <Link href="/pricing">
+              <Button variant={"outline"}>Upgrade your plan</Button>
             </Link>
           </div>
         </div>

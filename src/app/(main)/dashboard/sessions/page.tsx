@@ -8,6 +8,7 @@ import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 import { ErrorState } from "@/components/ErrorState";
 import { Button } from "@/components/ui/button";
 import { Suspense } from "react";
+import { LottieAnimation } from "@/components/NotFoundAnimation";
 
 async function getUserBookings(userId: string) {
   return await prisma.sessionEnrollment.findMany({
@@ -131,7 +132,12 @@ async function BookingsSection({ userId }: { userId: string }) {
 
         <div className="h-[40vh] w-full flex items-center justify-center">
           <div className="text-center">
-            <Calendar className="mx-auto h-12 w-12 text-muted-foreground mb-8" />
+            <div className="flex mx-auto h-60 w-60 md:h-72 md:w-72 items-center justify-center overflow-hidden mb-6">
+              <LottieAnimation
+                jsonPath="/json/empty.json"
+                fallbackWebm="/videos/empty.webm"
+              />
+            </div>
             <h3 className="text-2xl font-medium mb-2">
               No Group sessions available
             </h3>
@@ -139,7 +145,7 @@ async function BookingsSection({ userId }: { userId: string }) {
               You haven't any upcoming group sessions.
             </p>
             <Link href="/dashboard/sessions/browse">
-              <Button variant="default">Find a group session</Button>
+              <Button variant="outline">Find a group session</Button>
             </Link>
           </div>
         </div>

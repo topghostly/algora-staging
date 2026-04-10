@@ -1,5 +1,4 @@
 import { test, expect } from "@playwright/test";
-import { TEST_IDS } from "./global-setup";
 import { AUTH_STATE_PATHS } from "./helpers/auth";
 
 // ── Tutor: session list page ───────────────────────────────────────────────────
@@ -86,20 +85,20 @@ test.describe("Learner – browse sessions (BASIC)", () => {
   });
 });
 
-// ── Session booking API ───────────────────────────────────────────────────────
+// ── Session booking – FREE learner restrictions ───────────────────────────────
 test.describe("Session booking – FREE learner restrictions", () => {
   test.use({ storageState: AUTH_STATE_PATHS.learner });
 
-  test("FREE learner cannot book a GROUP session via API", async ({
-    request,
+  test("FREE learner sees upgrade gate instead of book button on browse page", async ({
+    page,
   }) => {
-    const res = await request.post("/api/session/book", {
-      data: { sessionId: TEST_IDS.groupSession },
-    });
+    await page.goto("/dashboard/sessions/browse");
+    await expect(page).toHaveURL(/\/dashboard\/sessions\/browse/);
 
-    // Expect a 4xx indicating tier restriction or redirect
-    // The server action throws; if accessed via API it should 403/400
-    expect([400, 403, 404, 405]).toContain(res.status());
+    // FREE tier should show an upgrade prompt, not a functional book button
+    await expect(
+      page.getByRole("link", { name: /upgrade your plan/i })
+    ).toBeVisible({ timeout: 10_000 });
   });
 });
 
