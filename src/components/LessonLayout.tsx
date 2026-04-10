@@ -136,7 +136,8 @@ export default function LessonLayout({
             Back to Catalogue
           </button>
         </div>
-        {children}
+
+        <div className="">{children}</div>
       </main>
     </div>
   );

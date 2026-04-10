@@ -42,7 +42,7 @@ export default function NewTrackPage() {
   }
 
   return (
-    <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+    <div className="px-page" style={{ maxWidth: "800px", margin: "0 auto" }}>
       <div style={{ marginBottom: "2rem" }}>
         <BreadcrumbNav
           items={[

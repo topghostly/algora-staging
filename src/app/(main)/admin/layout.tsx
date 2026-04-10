@@ -19,8 +19,8 @@ export default async function AdminLayout({
       <AdminSidebar />
 
       {/* Main Content */}
-      <main className="flex-1 p-4 md:p-8 bg-muted-light">
-        <div style={{ maxWidth: "1000px", margin: "0 auto" }}>{children}</div>
+      <main className="flex-1 container py-8">
+        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>{children}</div>
       </main>
     </div>
   );

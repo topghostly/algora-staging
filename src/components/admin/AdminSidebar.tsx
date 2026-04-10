@@ -40,7 +40,6 @@ const sidebarItems = [
 
 export default function AdminSidebar() {
   const pathname = usePathname();
-  const [isSignOutDialogOpen, setIsSignOutDialogOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
@@ -63,7 +62,7 @@ export default function AdminSidebar() {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-[250px] p-3 bg-background border-r border-border transition-transform duration-300 transform lg:relative lg:translate-x-0 lg:z-auto flex flex-col h-screen ${
+        className={`fixed inset-y-0 left-0 z-50 w-[200px] p-3 bg-background border-r border-border transition-transform duration-300 transform lg:relative lg:translate-x-0 lg:z-auto flex flex-col h-screen ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -76,15 +75,6 @@ export default function AdminSidebar() {
             justifyContent: "space-between",
           }}
         >
-          <h2
-            style={{
-              fontSize: "1.25rem",
-              fontWeight: 500,
-              color: "var(--primary)",
-            }}
-          >
-            Algora Admin
-          </h2>
           <button
             onClick={() => setIsSidebarOpen(false)}
             className="lg:hidden p-1 hover:bg-muted rounded-md transition-colors"
@@ -110,53 +100,23 @@ export default function AdminSidebar() {
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: "0.75rem",
-                  padding: "0.75rem",
-                  borderRadius: "var(--radius)",
+                  gap: "0.6rem",
+                  padding: "0.5rem",
+                  borderRadius: "6px",
                   color: isActive ? "var(--primary)" : "var(--muted)",
                   backgroundColor: isActive
                     ? "var(--primary-light)"
                     : "transparent",
-                  fontWeight: 500,
                   transition: "all 0.2s ease",
+                  fontSize: 14,
                 }}
               >
-                <item.icon size={20} />
+                <item.icon size={16} />
                 {item.title}
               </Link>
             );
           })}
         </nav>
-
-        {/* <button
-        onClick={() => setIsSignOutDialogOpen(true)}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "0.75rem",
-          padding: "0.75rem",
-          borderRadius: "var(--radius)",
-          color: "var(--error)",
-          backgroundColor: "transparent",
-          border: "none",
-          fontWeight: 500,
-          cursor: "pointer",
-          marginTop: "auto",
-        }}
-      >
-        <LogOut size={20} />
-        Sign Out
-      </button> */}
-
-        <ConfirmationDialog
-          isOpen={isSignOutDialogOpen}
-          onOpenChange={setIsSignOutDialogOpen}
-          title="Sign Out"
-          description="Are you sure you want to sign out of the admin panel?"
-          confirmText="Sign Out"
-          onConfirm={() => signOut({ callbackUrl: "/auth/signin" })}
-          variant="destructive"
-        />
       </aside>
     </>
   );

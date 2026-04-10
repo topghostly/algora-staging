@@ -11,6 +11,7 @@ import {
   type SortingState,
 } from "@tanstack/react-table";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 export type HistoryRow = {
   id: string;
@@ -23,16 +24,16 @@ export type HistoryRow = {
 };
 
 const statusStyles: Record<string, { bg: string; color: string }> = {
-  PENDING:   { bg: "rgba(234,179,8,0.1)",   color: "#92400e" },
-  ACCEPTED:  { bg: "rgba(34,197,94,0.1)",   color: "#166534" },
-  COMPLETED: { bg: "rgba(34,197,94,0.1)",   color: "#166534" },
-  REJECTED:  { bg: "rgba(239,68,68,0.1)",   color: "#991b1b" },
-  CANCELLED: { bg: "rgba(239,68,68,0.1)",   color: "#991b1b" },
-  EXPIRED:   { bg: "rgba(156,163,175,0.2)", color: "#6b7280" },
+  PENDING: { bg: "rgba(234,179,8,0.1)", color: "#92400e" },
+  ACCEPTED: { bg: "rgba(34,197,94,0.1)", color: "#166534" },
+  COMPLETED: { bg: "rgba(34,197,94,0.1)", color: "#166534" },
+  REJECTED: { bg: "rgba(239,68,68,0.1)", color: "#991b1b" },
+  CANCELLED: { bg: "rgba(239,68,68,0.1)", color: "#991b1b" },
+  EXPIRED: { bg: "rgba(156,163,175,0.2)", color: "#6b7280" },
 };
 
 const kindStyles: Record<string, { bg: string; color: string }> = {
-  "Group Session":  { bg: "rgba(147,51,234,0.1)", color: "#7e22ce" },
+  "Group Session": { bg: "rgba(147,51,234,0.1)", color: "#7e22ce" },
   "1-on-1 Request": { bg: "rgba(59,130,246,0.1)", color: "#1d4ed8" },
 };
 
@@ -43,7 +44,10 @@ const columns = [
     header: "Type",
     cell: (info) => {
       const val = info.getValue();
-      const style = kindStyles[val] ?? { bg: "var(--muted-light)", color: "var(--muted)" };
+      const style = kindStyles[val] ?? {
+        bg: "var(--muted-light)",
+        color: "var(--muted)",
+      };
       return (
         <span
           style={{
@@ -63,9 +67,7 @@ const columns = [
   }),
   columnHelper.accessor("title", {
     header: "Title",
-    cell: (info) => (
-      <span style={{ fontWeight: 500 }}>{info.getValue()}</span>
-    ),
+    cell: (info) => <span style={{ fontWeight: 500 }}>{info.getValue()}</span>,
   }),
   columnHelper.accessor("tutor", {
     header: "Tutor",
@@ -90,7 +92,10 @@ const columns = [
     header: "Status",
     cell: (info) => {
       const val = info.getValue();
-      const style = statusStyles[val] ?? { bg: "var(--muted-light)", color: "var(--muted)" };
+      const style = statusStyles[val] ?? {
+        bg: "var(--muted-light)",
+        color: "var(--muted)",
+      };
       return (
         <span
           style={{
@@ -156,7 +161,9 @@ export default function HistoryTable({ rows }: { rows: HistoryRow[] }) {
                       fontWeight: 500,
                       color: "var(--muted)",
                       whiteSpace: "nowrap",
-                      cursor: header.column.getCanSort() ? "pointer" : "default",
+                      cursor: header.column.getCanSort()
+                        ? "pointer"
+                        : "default",
                       userSelect: "none",
                     }}
                   >
@@ -167,7 +174,10 @@ export default function HistoryTable({ rows }: { rows: HistoryRow[] }) {
                         gap: "0.35rem",
                       }}
                     >
-                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
                       {header.column.getCanSort() && (
                         <ArrowUpDown size={13} style={{ opacity: 0.4 }} />
                       )}
@@ -200,9 +210,15 @@ export default function HistoryTable({ rows }: { rows: HistoryRow[] }) {
                   {row.getVisibleCells().map((cell) => (
                     <td
                       key={cell.id}
-                      style={{ padding: "0.875rem 1.5rem", whiteSpace: "nowrap" }}
+                      style={{
+                        padding: "0.875rem 1.5rem",
+                        whiteSpace: "nowrap",
+                      }}
                     >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
                     </td>
                   ))}
                 </tr>
@@ -229,22 +245,22 @@ export default function HistoryTable({ rows }: { rows: HistoryRow[] }) {
             {table.getPageCount()}
           </span>
           <div style={{ display: "flex", gap: "0.5rem" }}>
-            <button
+            <Button
+              variant={"outline"}
+              size={"sm"}
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
-              className="btn btn-outline"
-              style={{ padding: "0.3rem 0.75rem", fontSize: "0.8rem" }}
             >
               Previous
-            </button>
-            <button
+            </Button>
+            <Button
+              variant={"outline"}
+              size={"sm"}
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
-              className="btn btn-outline"
-              style={{ padding: "0.3rem 0.75rem", fontSize: "0.8rem" }}
             >
               Next
-            </button>
+            </Button>
           </div>
         </div>
       )}

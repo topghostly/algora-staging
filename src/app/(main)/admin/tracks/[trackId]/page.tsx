@@ -65,7 +65,7 @@ export default async function AdminTrackPage({ params }: AdminTrackPageProps) {
   // }
 
   return (
-    <div>
+    <div className="px-page">
       <div style={{ marginBottom: "2rem" }}>
         <BreadcrumbNav
           items={[

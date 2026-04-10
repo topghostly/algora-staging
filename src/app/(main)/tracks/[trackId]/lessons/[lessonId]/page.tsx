@@ -130,7 +130,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
         lessonType={currentLesson.type}
       >
         {currentLesson.type !== "QUIZ" && (
-          <div className="mb-8 bg-white md:bg-secondary from-zinc-500 via-stone-600 to-zinc-900 py-8 md:py-18">
+          <div className="mb-8 bg-white md:bg-secondary from-zinc-500 via-stone-600 to-zinc-900 py-8 md:py-18 px-page">
             <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
               <h1 className="text-black md:text-white">
                 {currentLesson.title}
@@ -146,7 +146,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
         )}
 
         {/* Content Viewer */}
-        <div className="mb-12 max-w-6xl w-full bg-red mx-auto">
+        <div className="mb-12 max-w-6xl w-full bg-red mx-auto px-page">
           {!hasAccess ? (
             <div className="p-8 md:p-12 border border-border rounded-2xl text-center bg-muted/30">
               <div className="mb-6">

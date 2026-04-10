@@ -57,9 +57,7 @@ export default function Navbar() {
             href="/"
             style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
           >
-            <div
-              style={{ position: "relative", width: "50px", height: "50px" }}
-            >
+            <div className="relative w-[40px] h-[40px] md:w-[50px] md:h-[50px]">
               <Image
                 src="/images/svg/Algora-image.svg"
                 alt="Algora Logo"
@@ -69,7 +67,7 @@ export default function Navbar() {
             </div>
           </Link>
           {session && (
-            <div className="mr-2">
+            <div className="mr-2 hidden lg:block">
               <Badge variant="outline" className="rounded-full">
                 {session?.user.role}
               </Badge>

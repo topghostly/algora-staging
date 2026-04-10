@@ -12,6 +12,7 @@ import {
 import { ConfirmationDialog } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 interface User {
   id: string;
@@ -102,10 +103,7 @@ export default function UserTable({ users }: UserTableProps) {
   };
 
   return (
-    <div
-      className="card overflow-x-auto"
-      style={{ padding: 0, border: "none" }}
-    >
+    <div className=" overflow-x-auto">
       <table style={{ minWidth: "900px", borderCollapse: "collapse" }}>
         <thead>
           <tr
@@ -292,7 +290,9 @@ export default function UserTable({ users }: UserTableProps) {
                       gap: "0.5rem",
                     }}
                   >
-                    <button
+                    <Button
+                      variant={"outline"}
+                      size={"icon"}
                       onClick={() =>
                         handleAction({
                           title: "Change User Role",
@@ -302,14 +302,15 @@ export default function UserTable({ users }: UserTableProps) {
                           variant: "default",
                         })
                       }
-                      className="btn btn-outline "
                       style={{ padding: "0.4rem", height: "auto" }}
                       title="Change Role"
                       disabled={user.role === "ADMIN" || user.role == null}
                     >
                       <UserCog size={16} />
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      variant={"outline"}
+                      size={"icon"}
                       onClick={() =>
                         handleAction({
                           title: user.suspended
@@ -323,14 +324,15 @@ export default function UserTable({ users }: UserTableProps) {
                           variant: user.suspended ? "default" : "destructive",
                         })
                       }
-                      className="btn btn-outline"
                       style={{ padding: "0.4rem", height: "auto" }}
                       title={user.suspended ? "Unsuspend User" : "Suspend User"}
                       disabled={user.disabled || user.role === "ADMIN"}
                     >
                       <Ban size={16} />
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      variant={"outline"}
+                      size={"icon"}
                       onClick={() =>
                         handleAction({
                           title: "Delete User",
@@ -340,7 +342,6 @@ export default function UserTable({ users }: UserTableProps) {
                           variant: "destructive",
                         })
                       }
-                      className="btn btn-outline"
                       style={{
                         padding: "0.4rem",
                         height: "auto",
@@ -350,7 +351,7 @@ export default function UserTable({ users }: UserTableProps) {
                       disabled={user.disabled || user.role === "ADMIN"}
                     >
                       <Trash2 size={16} />
-                    </button>
+                    </Button>
                   </div>
                 </td>
               </tr>

@@ -1,0 +1,22 @@
+name: Session Expire — Attendance Emails
+
+on:
+  schedule:
+    # Every 10 minutes
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  notify-ended-sessions:
+    name: Notify tutors of sessions that just ended
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Call expire endpoint
+        run: |
+          response=$(curl --silent --show-error --fail \
+            --max-time 30 \
+            --header "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.APP_URL }}/api/session/expire")
+          echo "$response"

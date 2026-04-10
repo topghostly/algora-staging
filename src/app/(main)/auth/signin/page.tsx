@@ -381,6 +381,7 @@ function SignInForm() {
 
 export default function SignIn() {
   return (
+    <div className="px-page">
     <Suspense
       fallback={
         <div style={{ color: "white", textAlign: "center", marginTop: "4rem" }}>
@@ -390,5 +391,6 @@ export default function SignIn() {
     >
       <SignInForm />
     </Suspense>
+    </div>
   );
 }

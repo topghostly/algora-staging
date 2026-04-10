@@ -338,6 +338,7 @@ function SignUpForm() {
 
 export default function SignUp() {
   return (
+    <div className="px-page">
     <Suspense
       fallback={
         <div style={{ color: "white", textAlign: "center", marginTop: "4rem" }}>
@@ -347,5 +348,6 @@ export default function SignUp() {
     >
       <SignUpForm />
     </Suspense>
+    </div>
   );
 }

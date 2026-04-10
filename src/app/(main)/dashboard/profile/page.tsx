@@ -82,7 +82,7 @@ export default async function ProfilePage() {
   if (!session?.user) redirect("/auth/signin");
 
   return (
-    <div className="container py-8 max-w-4xl">
+    <div className="container px-page py-8 max-w-4xl">
       <BreadcrumbNav
         items={[
           { label: "Dashboard", href: "/dashboard" },

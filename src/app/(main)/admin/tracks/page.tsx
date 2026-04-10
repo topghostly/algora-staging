@@ -27,7 +27,7 @@ export default async function AdminTracksPage() {
   }
 
   return (
-    <div>
+    <div className="px-page">
       <BreadcrumbNav
         items={[
           { label: "Admin Dashboard", href: "/admin" },
@@ -59,10 +59,7 @@ export default async function AdminTracksPage() {
           <ErrorState message="We couldn't load the tracks at this time. Please try again." />
         </div>
       ) : (
-        <div
-          className="card overflow-x-auto"
-          style={{ padding: 0, border: "none" }}
-        >
+        <div className="overflow-x-auto">
           <table
             style={{ minWidth: "800px", borderCollapse: "collapse" }}
             className="w-full"
@@ -78,7 +75,6 @@ export default async function AdminTracksPage() {
                 <th
                   style={{
                     padding: "1rem",
-                    fontWeight: 600,
                     fontSize: "0.9rem",
                   }}
                 >
@@ -87,7 +83,6 @@ export default async function AdminTracksPage() {
                 <th
                   style={{
                     padding: "1rem",
-                    fontWeight: 600,
                     fontSize: "0.9rem",
                   }}
                 >
@@ -96,7 +91,6 @@ export default async function AdminTracksPage() {
                 <th
                   style={{
                     padding: "1rem",
-                    fontWeight: 600,
                     fontSize: "0.9rem",
                   }}
                 >
@@ -105,7 +99,6 @@ export default async function AdminTracksPage() {
                 <th
                   style={{
                     padding: "1rem",
-                    fontWeight: 600,
                     fontSize: "0.9rem",
                   }}
                 >
@@ -114,7 +107,6 @@ export default async function AdminTracksPage() {
                 <th
                   style={{
                     padding: "1rem",
-                    fontWeight: 600,
                     fontSize: "0.9rem",
                   }}
                 >
@@ -123,7 +115,6 @@ export default async function AdminTracksPage() {
                 <th
                   style={{
                     padding: "1rem",
-                    fontWeight: 600,
                     fontSize: "0.9rem",
                     textAlign: "right",
                   }}

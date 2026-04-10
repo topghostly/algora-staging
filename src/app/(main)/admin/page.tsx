@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
-import { BreadcrumbNav } from "@/components/BreadcrumbNav";
-import { Users, BookOpen, PlayCircle, DollarSign } from "lucide-react";
+import { Users, BookOpen, PlayCircle } from "lucide-react";
 import { ErrorState } from "@/components/ErrorState";
+import ActivityTable, { type ActivityRow } from "./ActivityTable";
 
 export const dynamic = "force-dynamic";
 
@@ -12,22 +12,15 @@ async function getAdminStats() {
       prisma.track.count(),
       prisma.lesson.count(),
       prisma.activityLog.findMany({
-        take: 10,
+        take: 100,
         orderBy: { createdAt: "desc" },
         include: {
-          user: {
-            select: { name: true, email: true },
-          },
+          user: { select: { name: true, email: true } },
         },
       }),
     ]);
 
-  return {
-    userCount,
-    trackCount,
-    lessonCount,
-    recentActivities,
-  };
+  return { userCount, trackCount, lessonCount, recentActivities };
 }
 
 export default async function AdminDashboardPage() {
@@ -38,146 +31,64 @@ export default async function AdminDashboardPage() {
     console.error("Error fetching admin stats:", error);
   }
 
-  const formatAction = (action: string) => {
-    return action
-      .replace(/_/g, " ")
-      .toLowerCase()
-      .replace(/\b\w/g, (l) => l.toUpperCase());
-  };
+  const activityRows: ActivityRow[] = (stats?.recentActivities ?? []).map(
+    (a) => ({
+      id: a.id,
+      action: a.action,
+      userName: a.user?.name ?? null,
+      userEmail: a.user?.email ?? null,
+      entityType: a.entityType ?? null,
+      entityId: a.entityId ?? null,
+      metadata: (a.metadata as Record<string, unknown>) ?? null,
+      createdAt: a.createdAt,
+    }),
+  );
 
   return (
-    <div>
-      <h1 style={{ fontSize: "2rem", fontWeight: 500, marginBottom: "2rem" }}>
-        Dashboard
+    <div className="px-page flex flex-col gap-10">
+      <p className="text-muted mb-0 md:mb-6">Admin Dashboard </p>
+      <h1
+        style={{
+          marginBottom: "0.5rem",
+        }}
+        className="font-light"
+      >
+        Hello, <br /> <span className="font-medium">Admin User</span>
       </h1>
 
       {!stats ? (
-        <div className="card p-12">
+        <div className="">
           <ErrorState message="We couldn't load the dashboard stats. Please try again later." />
         </div>
       ) : (
-        <>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-              gap: "1.5rem",
-              marginBottom: "3rem",
-            }}
-          >
-            <div
-              className="card"
-              style={{
-                padding: "1.5rem",
-                display: "flex",
-                alignItems: "center",
-                gap: "1rem",
-              }}
-            >
-              <div
-                style={{
-                  padding: "1rem",
-                  borderRadius: "50%",
-                  backgroundColor: "rgba(var(--primary-rgb), 0.1)",
-                  color: "var(--primary)",
-                }}
-              >
-                <Users size={24} />
-              </div>
-              <div>
-                <div style={{ fontSize: "0.9rem", color: "var(--muted)" }}>
-                  Total Users
-                </div>
-                <div style={{ fontSize: "1.5rem", fontWeight: 500 }}>
+        <div className="">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            <div className="card flex items-center gap-4 p-6 max-w-full ">
+              <div className="w-full">
+                <p className="text-sm text-muted">Total Users</p>
+                <p className="text-6xl w-full flex justify-end">
                   {stats.userCount}
-                </div>
+                </p>
               </div>
             </div>
 
-            <div
-              className="card"
-              style={{
-                padding: "1.5rem",
-                display: "flex",
-                alignItems: "center",
-                gap: "1rem",
-              }}
-            >
-              <div
-                style={{
-                  padding: "1rem",
-                  borderRadius: "50%",
-                  backgroundColor: "#e0f2fe",
-                  color: "#0284c7",
-                }}
-              >
-                <BookOpen size={24} />
-              </div>
-              <div>
-                <div style={{ fontSize: "0.9rem", color: "var(--muted)" }}>
-                  Active Tracks
-                </div>
-                <div style={{ fontSize: "1.5rem", fontWeight: 500 }}>
+            <div className="card flex items-center gap-4 p-6 w-full">
+              <div className="w-full">
+                <p className="text-sm text-muted">Active Tracks</p>
+                <p className="text-6xl w-full flex justify-end">
                   {stats.trackCount}
-                </div>
+                </p>
               </div>
             </div>
 
-            <div
-              className="card"
-              style={{
-                padding: "1.5rem",
-                display: "flex",
-                alignItems: "center",
-                gap: "1rem",
-              }}
-            >
-              <div
-                style={{
-                  padding: "1rem",
-                  borderRadius: "50%",
-                  backgroundColor: "#dcfce7",
-                  color: "#16a34a",
-                }}
-              >
-                <PlayCircle size={24} />
-              </div>
-              <div>
-                <div style={{ fontSize: "0.9rem", color: "var(--muted)" }}>
-                  Total Lessons
-                </div>
-                <div style={{ fontSize: "1.5rem", fontWeight: 500 }}>
+            <div className="card flex items-center gap-4 p-6 w-full">
+              <div className="w-full">
+                <p className="text-sm text-muted">Total Lessons</p>
+                <p className="text-6xl w-full flex justify-end">
                   {stats.lessonCount}
-                </div>
+                </p>
               </div>
             </div>
-
-            {/* <div
-              className="card"
-              style={{
-                padding: "1.5rem",
-                display: "flex",
-                alignItems: "center",
-                gap: "1rem",
-              }}
-            >
-              <div
-                style={{
-                  padding: "1rem",
-                  borderRadius: "50%",
-                  backgroundColor: "#fef9c3",
-                  color: "#ca8a04",
-                }}
-              >
-                <DollarSign size={24} />
-              </div>
-              <div>
-                <div style={{ fontSize: "0.9rem", color: "var(--muted)" }}>
-                  Revenue
-                </div>
-                <div style={{ fontSize: "1.5rem", fontWeight: 500 }}>$0.00</div>
-              </div>
-            </div> */}
           </div>
 
           <h2
@@ -189,124 +100,10 @@ export default async function AdminDashboardPage() {
           >
             Recent Activity
           </h2>
-          <div className="card overflow-x-auto" style={{ padding: 0 }}>
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
-              <thead>
-                <tr
-                  style={{
-                    borderBottom: "1px solid var(--border)",
-                    backgroundColor: "var(--muted-light)",
-                  }}
-                >
-                  <th
-                    style={{
-                      padding: "1rem",
-                      textAlign: "left",
-                      fontSize: "0.9rem",
-                      fontWeight: 600,
-                    }}
-                  >
-                    Action
-                  </th>
-                  <th
-                    style={{
-                      padding: "1rem",
-                      textAlign: "left",
-                      fontSize: "0.9rem",
-                      fontWeight: 600,
-                    }}
-                  >
-                    User
-                  </th>
-                  <th
-                    style={{
-                      padding: "1rem",
-                      textAlign: "left",
-                      fontSize: "0.9rem",
-                      fontWeight: 600,
-                    }}
-                  >
-                    Entity
-                  </th>
-                  <th
-                    style={{
-                      padding: "1rem",
-                      textAlign: "right",
-                      fontSize: "0.9rem",
-                      fontWeight: 600,
-                    }}
-                  >
-                    Time
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {stats.recentActivities.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={4}
-                      style={{
-                        padding: "2rem",
-                        textAlign: "center",
-                        color: "var(--muted)",
-                      }}
-                    >
-                      No recent activity found.
-                    </td>
-                  </tr>
-                ) : (
-                  stats.recentActivities.map((activity: any) => (
-                    <tr
-                      key={activity.id}
-                      style={{ borderBottom: "1px solid var(--border)" }}
-                    >
-                      <td style={{ padding: "1rem" }}>
-                        <span style={{ fontWeight: 500, fontSize: "0.9rem" }}>
-                          {formatAction(activity.action)}
-                        </span>
-                      </td>
-                      <td style={{ padding: "1rem" }}>
-                        <div
-                          style={{ display: "flex", flexDirection: "column" }}
-                        >
-                          <span style={{ fontSize: "0.9rem" }}>
-                            {activity.user?.name || "System"}
-                          </span>
-                          <span
-                            style={{
-                              fontSize: "0.75rem",
-                              color: "var(--muted)",
-                            }}
-                          >
-                            {activity.user?.email || ""}
-                          </span>
-                        </div>
-                      </td>
-                      <td style={{ padding: "1rem" }}>
-                        <span
-                          style={{ fontSize: "0.85rem", color: "var(--muted)" }}
-                        >
-                          {activity.entityType}:{" "}
-                          {activity.entityId?.slice(0, 8)}...
-                        </span>
-                      </td>
-                      <td
-                        style={{
-                          padding: "1rem",
-                          textAlign: "right",
-                          fontSize: "0.85rem",
-                          color: "var(--muted)",
-                        }}
-                      >
-                        {new Date(activity.createdAt).toLocaleString()}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+          <div className="">
+            <ActivityTable rows={activityRows} />
           </div>
-        </>
+        </div>
       )}
     </div>
   );

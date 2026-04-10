@@ -42,7 +42,7 @@ export default async function AdminUsersPage() {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-6 px-page">
       <BreadcrumbNav
         items={[
           { label: "Admin Dashboard", href: "/admin" },

@@ -90,7 +90,7 @@ export default async function SessionHistoryPage() {
   const userId = session.user.id;
 
   return (
-    <div className="container">
+    <div className="container px-page">
       <BreadcrumbNav
         items={[
           { label: "Dashboard", href: "/dashboard" },

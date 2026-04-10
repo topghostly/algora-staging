@@ -130,7 +130,7 @@ export default function NewSessionPage() {
   }
 
   return (
-    <div className="w-full mx-auto">
+    <div className="w-full mx-auto px-page">
       <BreadcrumbNav
         items={[
           { label: "Tutor Dashboard", href: "/tutor" },

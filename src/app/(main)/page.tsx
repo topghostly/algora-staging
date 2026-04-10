@@ -54,7 +54,7 @@ export default function Home() {
   return (
     <>
       <LoadingScreen />
-      <main className="py-6">
+      <main className="py-6 px-page">
         {/* Hero Section */}
         <section className="lg:py-15 py-10">
           <div className="container flex flex-col lg:grid lg:grid-cols-[1fr_1.2fr] gap-10">

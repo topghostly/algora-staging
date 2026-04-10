@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertCircle, RefreshCcw } from "lucide-react";
+import { Button } from "./ui/button";
 
 interface ErrorStateProps {
   message?: string;
@@ -20,7 +21,7 @@ export function ErrorState({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center py-12 px-6 text-center animate-in fade-in duration-500">
+    <div className="flex flex-col items-center justify-center py-6 px-3 md:py-12 md:px-6 text-center animate-in fade-in duration-500">
       <div className="bg-red-50 p-3 rounded-full mb-4">
         <AlertCircle size={32} className="text-red-600" />
       </div>
@@ -28,13 +29,10 @@ export function ErrorState({
       <p className="text-muted-foreground mb-6 max-w-sm mx-auto text-sm">
         {message}
       </p>
-      <button
-        onClick={handleReload}
-        className="btn btn-outline flex rounded-lg items-center gap-2 px-6 py-2 text-sm h-auto"
-      >
+      <Button onClick={handleReload} variant={"outline"} size={"sm"}>
         <RefreshCcw size={16} />
         Retry
-      </button>
+      </Button>
     </div>
   );
 }

@@ -44,7 +44,7 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div>
+    <div className="px-page">
       <div style={containerStyle} className="card">
         <h3 className="text-center">Reset Password</h3>
         <p className="text-center text-muted-foreground mb-6">

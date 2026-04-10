@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { ErrorState } from "@/components/ErrorState";
 import GlobalLoader from "@/components/GlobalLoader";
 import { Button } from "@/components/ui/button";
+import { LottieAnimation } from "@/components/NotFoundAnimation";
 
 interface EnrolledTrack {
   id: string;
@@ -75,8 +76,8 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="container" style={{ padding: "4rem 0" }}>
-      <div style={{ marginBottom: "3rem" }}>
+    <div className="container px-page">
+      <div className="my-16">
         <p
           style={{
             marginBottom: "3rem",
@@ -219,8 +220,13 @@ export default function Dashboard() {
           ) : (
             <div className="h-[50vh] w-full flex items-center justify-center">
               <div className="text-center">
-                <BookOpen className="mx-auto h-12 w-12 text-muted-foreground mb-8" />
-                <h3 className="text-2xl font-medium mb-2">
+                <div className="flex mx-auto h-60 w-60 md:h-72 md:w-72 items-center justify-center overflow-hidden mb-6 scale-150">
+                  <LottieAnimation
+                    jsonPath="/json/fixed_loop_color_changed.json"
+                    fallbackWebm="/videos/empty.webm"
+                  />
+                </div>
+                <h3 className="text-2xl font-medium mb-2 -mt-6">
                   You haven't enrolled in any tracks yet.
                 </h3>
                 <p className="text-muted-foreground mb-3">

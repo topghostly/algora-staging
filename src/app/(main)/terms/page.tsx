@@ -11,7 +11,7 @@ export default function TermsOfServicePage() {
   return (
     <>
       <main
-        className="mx-auto max-w-4xl"
+        className="mx-auto max-w-4xl px-page"
         style={{ paddingTop: "4rem", paddingBottom: "4rem" }}
       >
         <h1 className="mb-8">Terms of Service</h1>

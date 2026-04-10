@@ -41,7 +41,7 @@ export default async function RequestSessionPage() {
   } catch (error) {
     console.error("Error fetching request data:", error);
     return (
-      <div className="container py-10">
+      <div className="container px-page py-10">
         <ErrorState message="We couldn't load the request form. Please try again later." />
       </div>
     );
@@ -52,14 +52,14 @@ export default async function RequestSessionPage() {
   if (user.credits1on1 < 1) {
     return (
       <>
-        <div className="container ">
+        <div className="container px-page">
           <BreadcrumbNav
             items={[
               { label: "Dashboard", href: "/dashboard" },
               { label: "Sessions", href: "/dashboard/sessions" },
               { label: "Request" },
             ]}
-            className="mt-8 -mb-12"
+            className="my-16"
           />
           <div className="flex justify-between items-center my-16">
             <h1 className="text-3xl font-medium">Request a 1-on-1 Session</h1>
@@ -99,18 +99,18 @@ export default async function RequestSessionPage() {
     );
   }
   return (
-    <div className="container py-10">
+    <div className="container px-page">
       <BreadcrumbNav
         items={[
           { label: "Dashboard", href: "/dashboard" },
           { label: "Sessions", href: "/dashboard/sessions" },
           { label: "Request" },
         ]}
-        className="mt-8 -mb-12"
+        className="my-16"
       />
-      <div className="flex justify-between items-center my-16">
+      <div className="flex flex-col md:flex-row gap-6 justify-between mb-10 md:items-center">
         <h1 className="text-3xl font-medium">Request a 1-on-1 Session</h1>
-        <div className="bg-muted/50 px-4 py-2 rounded-lg text-sm">
+        <div className="bg-muted/50 px-4 py-2 rounded-lg text-sm w-fit">
           <span className="text-muted-foreground mr-2">Your Plan:</span>
           <span className="font-semibold mr-4">{user.subscriptionTier}</span>
           <span className="text-muted-foreground mr-2">1-on-1 Credits:</span>
