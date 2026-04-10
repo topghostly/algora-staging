@@ -1,0 +1,22 @@
+name: Session Daily Check — Reminders & Auto-Cancel
+
+on:
+  schedule:
+    # Once daily at midnight UTC
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  daily-session-check:
+    name: Resend reminders and auto-cancel stale sessions
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Call daily-check endpoint
+        run: |
+          response=$(curl --silent --show-error --fail \
+            --max-time 30 \
+            --header "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.APP_URL }}/api/session/daily-check")
+          echo "$response"

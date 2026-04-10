@@ -37,6 +37,8 @@ export default async function TutorDashboardPage() {
   }));
 
   return (
-    <TutorDashboardClient initialSessions={sessions} user={session.user} />
+    <div className="px-page">
+      <TutorDashboardClient initialSessions={sessions} user={session.user} />
+    </div>
   );
 }

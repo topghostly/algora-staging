@@ -589,7 +589,15 @@ export default function TrackEditor({ track }: { track: Track }) {
               borderRadius: "200px",
             }}
           >
-            {isLoading ? <Loader size={18} className="animate-spin" style={{ marginRight: "0.5rem" }} /> : <Save size={18} style={{ marginRight: "0.5rem" }} />}
+            {isLoading ? (
+              <Loader
+                size={18}
+                className="animate-spin"
+                style={{ marginRight: "0.5rem" }}
+              />
+            ) : (
+              <Save size={18} style={{ marginRight: "0.5rem" }} />
+            )}
             {isLoading ? "Saving..." : "Save Changes"}
           </button>
         </div>
@@ -695,11 +703,11 @@ export default function TrackEditor({ track }: { track: Track }) {
               <div
                 style={{ display: "flex", alignItems: "center", gap: "1rem" }}
               >
-                <GripVertical
+                {/* <GripVertical
                   size={20}
                   color="var(--muted)"
                   style={{ cursor: "grab" }}
-                />
+                /> */}
                 <h4>{module.title}</h4>
               </div>
               <div

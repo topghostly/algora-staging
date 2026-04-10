@@ -1,6 +1,7 @@
 "use client";
 
-import { GalleryVertical, ArrowUpDown, History } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   useReactTable,
   getCoreRowModel,
@@ -248,22 +249,22 @@ export default function SubscriptionHistory({ transactions }: Props) {
               {table.getPageCount()}
             </span>
             <div style={{ display: "flex", gap: "0.5rem" }}>
-              <button
+              <Button
+                variant={"outline"}
+                size={"sm"}
                 onClick={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}
-                className="btn btn-outline"
-                style={{ padding: "0.3rem 0.75rem", fontSize: "0.8rem" }}
               >
                 Previous
-              </button>
-              <button
+              </Button>
+              <Button
+                variant={"outline"}
+                size={"sm"}
                 onClick={() => table.nextPage()}
                 disabled={!table.getCanNextPage()}
-                className="btn btn-outline"
-                style={{ padding: "0.3rem 0.75rem", fontSize: "0.8rem" }}
               >
                 Next
-              </button>
+              </Button>
             </div>
           </div>
         )}

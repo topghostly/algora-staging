@@ -46,7 +46,7 @@ export default function EmailNotVerifiedPage() {
 
   return (
     <div
-      className="container"
+      className="container px-page"
       style={{
         maxWidth: "520px",
         margin: "2rem auto",

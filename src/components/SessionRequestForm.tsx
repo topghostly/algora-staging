@@ -92,7 +92,7 @@ export function SessionRequestForm({ tutors }: SessionRequestFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-6">
+    <form onSubmit={handleSubmit} className="mb-4 flex flex-col gap-6">
       <div className="space-y-2">
         <label className="text-sm font-semibold" htmlFor="specialty">
           Select Specialty
@@ -321,7 +321,11 @@ export function SessionRequestForm({ tutors }: SessionRequestFormProps) {
         <FormFieldError error={errors.message} />
       </div>
 
-      <Button type="submit" disabled={isPending} className="w-fit text-base flex items-center gap-2">
+      <Button
+        type="submit"
+        disabled={isPending}
+        className="w-fit text-base flex items-center gap-2"
+      >
         {isPending && <Loader size={18} className="animate-spin" />}
         {isPending ? "Submitting..." : "Submit Request"}
       </Button>

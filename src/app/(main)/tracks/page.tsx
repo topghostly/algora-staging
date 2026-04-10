@@ -14,6 +14,7 @@ import EnrollButton from "@/components/EnrollButton";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { ErrorState } from "@/components/ErrorState";
+import { Button } from "@/components/ui/button";
 
 interface Track {
   id: string;
@@ -194,12 +195,12 @@ export default function TracksPage() {
   };
 
   return (
-    <main style={{ padding: "4rem 0" }}>
+    <main className="px-page container">
       <section
         style={{
           textAlign: "center",
         }}
-        className="py-10md:py-22"
+        className="py-16"
       >
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
           <h1 style={{ marginBottom: "1rem" }}>Learning Tracks</h1>
@@ -316,7 +317,7 @@ export default function TracksPage() {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(450px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))",
                 gap: "1rem",
               }}
             >
@@ -340,33 +341,8 @@ export default function TracksPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="card"
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          justifyContent: "space-between",
-                          height: "100%",
-                          gap: "20px",
-                        }}
+                        className="card flex flex-col justify-between h-full gap-4"
                       >
-                        {/* <div
-                        style={{
-                          height: "200px",
-                          borderRadius: "var(--radius) var(--radius) 0 0",
-                          margin: "-1.5rem -1.5rem 1.5rem -1.5rem",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          backgroundColor: "var(--muted-light)",
-                        }}
-                      >
-                        <BookOpen
-                          size={64}
-                          color="var(--primary)"
-                          opacity={0.5}
-                        />
-                      </div> */}
-
                         <div className="h-16">
                           <h3
                             style={{
@@ -407,7 +383,6 @@ export default function TracksPage() {
                             display: "flex",
                             alignItems: "center",
                             gap: "1.5rem",
-                            // marginBottom: "1rem",
                             fontSize: "0.9rem",
                             color: "var(--muted)",
                           }}
@@ -477,8 +452,8 @@ export default function TracksPage() {
       </section>
       <div className="block md:hidden mt-15">
         <div className="flex justify-center">
-          <Link href="/tracks" className="btn btn-outline px-3 py-2 text-sm">
-            Explore All Tracks
+          <Link href="/tracks">
+            <Button variant={"outline"}>Explore All Tracks</Button>
           </Link>
         </div>
       </div>

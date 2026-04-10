@@ -19,7 +19,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="container max-w-md py-12">
+    <div className="container px-page max-w-md py-12">
       <div className="card p-6">
         <h1 className="text-2xl font-bold mb-6">Support: Reset Password</h1>
 

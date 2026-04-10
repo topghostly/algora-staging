@@ -105,7 +105,7 @@ function VerifyEmailContent() {
 export default function VerifyEmailPage() {
   return (
     <div
-      className="container"
+      className="container px-page"
       style={{
         maxWidth: "420px",
         margin: "2rem auto",

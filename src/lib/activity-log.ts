@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 
-export type ActivityAction = 
+export type ActivityAction =
   | "USER_REGISTERED"
   | "USER_LOGIN"
   | "PROFILE_UPDATED"
@@ -14,6 +14,10 @@ export type ActivityAction =
   | "TRACK_DELETED"
   | "SESSION_CREATED"
   | "SESSION_DELETED"
+  | "SESSION_COMPLETED"
+  | "SESSION_CANCELLED"
+  | "SESSION_ATTENDANCE_EMAIL_SENT"
+  | "SESSION_ATTENDANCE_REMINDER_SENT"
   | "LESSON_COMPLETED";
 
 interface LogActivityOptions {

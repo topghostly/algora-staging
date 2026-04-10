@@ -138,6 +138,10 @@ button {
   margin: 0 auto;
 }
 
+.px-page {
+  padding-inline: clamp(1rem, 5vw, 2rem);
+}
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -171,11 +175,9 @@ button {
 }
 
 .card {
-  background-color: var(--background);
-  border: 1px solid var(--border);
+  border: 1px solid var(--input);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   overflow: hidden;
 }
 
@@ -194,6 +196,7 @@ button {
 .text-muted-foreground {
   color: var(--muted);
 }
+
 
 .text-primary {
   color: var(--primary);

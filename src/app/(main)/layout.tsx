@@ -67,7 +67,7 @@ export default function RootLayout({
         <Providers>
           <div className="flex flex-col min-h-screen">
             <Navbar />
-            <main className="grow px-[clamp(1rem,5vw,2rem)]">{children}</main>
+            <main className="grow">{children}</main>
             <Toaster />
           </div>
         </Providers>

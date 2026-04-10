@@ -124,9 +124,9 @@ export default async function TrackOverviewPage({
   }
 
   return (
-    <main className="container" style={{ padding: "4rem 0" }}>
+    <main className="container px-page">
       {/* Header Section */}
-      <div style={{ marginBottom: "4rem" }}>
+      <div className="my-16">
         <div
           style={{
             display: "flex",

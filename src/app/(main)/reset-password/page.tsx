@@ -166,6 +166,7 @@ function ResetPasswordForm() {
 
 export default function ResetPassword() {
   return (
+    <div className="px-page">
     <Suspense
       fallback={
         <div className="flex justify-center mt-16">
@@ -175,5 +176,6 @@ export default function ResetPassword() {
     >
       <ResetPasswordForm />
     </Suspense>
+    </div>
   );
 }

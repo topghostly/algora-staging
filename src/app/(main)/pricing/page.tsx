@@ -38,7 +38,7 @@ export default function PricingPage() {
   // };
 
   return (
-    <main className="container" style={{ padding: "6rem 0 10rem 0" }}>
+    <main className="container px-page" style={{ padding: "6rem 0 10rem 0" }}>
       {isLoading && (
         <div className="fixed w-full h-full top-0 left-0 bg-background/90 z-60">
           <div className="w-full h-full flex justify-center items-center flex-col gap-2">

@@ -8,6 +8,7 @@ import { Calendar, CircleAlert, Clock, User } from "lucide-react";
 import { toast } from "sonner";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 import { ErrorState } from "@/components/ErrorState";
+import { SubmitButton } from "./SubmitButton";
 
 async function getAvailableSessions(userId: string) {
   const sessions = await prisma.tutorSession.findMany({
@@ -52,7 +53,7 @@ export default async function BrowseSessionsPage() {
 
   if (session.user.subscriptionTier === "FREE") {
     return (
-      <div className="container">
+      <div className="container px-page">
         <BreadcrumbNav
           items={[
             { label: "Dashboard", href: "/dashboard" },
@@ -108,7 +109,7 @@ export default async function BrowseSessionsPage() {
 
   if (!availableSessions || !user) {
     return (
-      <div className="container">
+      <div className="container px-page">
         <BreadcrumbNav
           items={[
             { label: "Dashboard", href: "/dashboard" },
@@ -125,18 +126,18 @@ export default async function BrowseSessionsPage() {
   }
 
   return (
-    <div className="container">
+    <div className="container px-page">
       <BreadcrumbNav
         items={[
           { label: "Dashboard", href: "/dashboard" },
           { label: "Sessions", href: "/dashboard/sessions" },
           { label: "Browse" },
         ]}
-        className="mt-8 -mb-12"
+        className="my-16"
       />
-      <div className="flex justify-between items-center my-16">
+      <div className="flex flex-col md:flex-row gap-6 justify-between md:items-center my-16">
         <h1 className="">Available Sessions</h1>
-        <div className="bg-muted/50 px-4 py-2 rounded-lg text-sm">
+        <div className="bg-muted/50 px-4 py-2 rounded-lg text-sm w-fit">
           <span className="text-muted-foreground mr-2">Your Plan:</span>
           <span className="font-semibold mr-4">{user.subscriptionTier}</span>
           <span className="text-muted-foreground mr-2">1-on-1 Credits:</span>
@@ -172,21 +173,21 @@ export default async function BrowseSessionsPage() {
             }
 
             return (
-              <div key={s.id} className="card p-6 flex flex-col">
+              <div
+                key={s.id}
+                className="border border-input rounded-lg p-6 flex flex-col"
+              >
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                    {s.tutor.name?.[0] || "T"}
-                  </div>
                   <div>
-                    <h3 className="font-semibold">{s.title}</h3>
+                    <h3 className="">{s.title}</h3>
                     <p className="text-sm text-muted-foreground">
                       {s.tutor.name}
                     </p>
                   </div>
                 </div>
 
-                <div className="space-y-3 mb-6 flex-1">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="flex flex-col gap-2 text-sm mb-6 flex-1">
+                  <div className="flex items-center gap-2 text-muted-foreground">
                     <Calendar size={16} />
                     <span>{new Date(s.startTime).toLocaleDateString()}</span>
                   </div>
@@ -220,9 +221,7 @@ export default async function BrowseSessionsPage() {
 
                 {canBook ? (
                   <form action={bookSession.bind(null, s.id)}>
-                    <button type="submit" className="btn btn-primary w-full">
-                      {actionLabel}
-                    </button>
+                    <SubmitButton label={actionLabel} />
                   </form>
                 ) : (
                   <Link
