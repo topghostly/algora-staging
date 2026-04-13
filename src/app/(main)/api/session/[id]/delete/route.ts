@@ -18,6 +18,8 @@ export async function DELETE(
 
   const { id } = await params;
 
+  let calendarDisconnected = false;
+
   try {
     const tutorSession = await prisma.tutorSession.findUnique({
       where: { id },
@@ -96,6 +98,7 @@ export async function DELETE(
 
               revalidatePath("/tutor");
               revalidatePath("/tutor", "layout");
+              calendarDisconnected = true;
               // Continue with local deletion even if calendar fails
             } else {
               throw refreshError;
@@ -115,6 +118,21 @@ export async function DELETE(
         );
 
         if (!res.ok) {
+          if (res.status === 401) {
+             await prisma.user.update({
+                where: { id: session.user.id },
+                data: {
+                  calendarConnected: false,
+                  calendarConnectedAt: null,
+                  googleAccessToken: null,
+                  googleRefreshToken: null,
+                  googleTokenExpiresAt: null,
+                },
+              });
+              revalidatePath("/tutor");
+              revalidatePath("/tutor", "layout");
+              calendarDisconnected = true;
+          }
           const errorText = await res.text();
           console.error("Google Calendar event deletion failed:", errorText);
           // Don't throw here to allow local session deletion to proceed
@@ -166,7 +184,7 @@ export async function DELETE(
     // @ts-ignore
     revalidateTag(`tutor-sessions-${session.user.id}`);
     revalidatePath("/tutor/sessions");
-    return NextResponse.json({ message: "Session deleted successfully" });
+    return NextResponse.json({ message: "Session deleted successfully", calendarDisconnected });
   } catch (error: any) {
     console.error("Session deletion error:", error);
     return NextResponse.json(

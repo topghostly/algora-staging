@@ -2,10 +2,11 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { Mail, Loader, ArrowRight, MoveLeft } from "lucide-react";
+import { Loader } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { LottieAnimation } from "@/components/NotFoundAnimation";
 
 export default function EmailNotVerifiedPage() {
   const { data: session } = useSession();
@@ -13,7 +14,6 @@ export default function EmailNotVerifiedPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // console.log(!!session?.user?.emailVerified);
     if (session?.user?.emailVerified) {
       router.push("/dashboard");
     }
@@ -48,55 +48,43 @@ export default function EmailNotVerifiedPage() {
     <div
       className="container px-page"
       style={{
-        maxWidth: "520px",
         margin: "2rem auto",
       }}
     >
-      <div className="card" style={{ border: "none", boxShadow: "none" }}>
-        <div className="mb-10">
-          {" "}
-          <Link
-            href="/tracks"
-            style={{
-              color: "var(--muted)",
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-            }}
-          >
-            <MoveLeft size={16} />
-            Back to Tracks
-          </Link>
+      <div className=" min-h-[80vh] mx-auto flex justify-center items-center flex-col text-center">
+        <div className="flex mx-auto h-50 w-50 md:h-60 md:w-60 items-center justify-center overflow-hidden mb-6 scale-150">
+          <LottieAnimation
+            jsonPath="/json/email.json"
+            fallbackWebm="/videos/empty.webm"
+          />
         </div>
+        <h2 className="mb-4">Verify your email</h2>
 
-        <h1
-          style={{
-            fontSize: "2rem",
-            marginBottom: "1.5rem",
-          }}
-        >
-          Verify your email
-        </h1>
-
-        <p className="text-muted-foreground mb-8 text-xl">
+        <p className="text-muted-foreground mb-4 max-w-[500px]">
           We've sent a verification link to{" "}
           <strong>{session?.user?.email}</strong>. Please check your inbox and
           verify your account to access all features.
         </p>
 
         <div className="flex flex-col gap-3 mb-8">
-          <button
+          <Button
+            variant={"outline"}
             onClick={handleResendEmail}
             disabled={loading}
-            className="btn btn-primary rounded-lg"
-            style={{
-              padding: "10px 20px",
-              width: "fit-content",
-              justifyContent: "center",
-            }}
           >
-            {loading ? <><Loader size={16} className="animate-spin" style={{ marginRight: "0.4rem" }} />Sending...</> : "Resend Verification Email"}
-          </button>
+            {loading ? (
+              <>
+                <Loader
+                  size={16}
+                  className="animate-spin"
+                  style={{ marginRight: "0.4rem" }}
+                />
+                Sending...
+              </>
+            ) : (
+              "Resend Verification Email"
+            )}
+          </Button>
         </div>
       </div>
     </div>

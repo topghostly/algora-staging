@@ -9,6 +9,7 @@ import SessionDelete from "@/components/sessionDelete";
 import { ErrorState } from "@/components/ErrorState";
 import { getCachedTutorSessions } from "@/lib/tutor-cache";
 import { prisma } from "@/lib/prisma";
+import { LottieAnimation } from "@/components/NotFoundAnimation";
 
 export default async function TutorSessionsPage() {
   const session = await getServerSession(authOptions);
@@ -85,7 +86,12 @@ export default async function TutorSessionsPage() {
         ) : sessions.length === 0 ? (
           <div className="h-[50vh] w-full flex items-center justify-center">
             <div className="text-center">
-              <Info className="mx-auto h-12 w-12 text-muted-foreground mb-8" />
+              <div className="flex mx-auto h-60 w-60 md:h-72 md:w-72 items-center justify-center overflow-hidden mb-6">
+                <LottieAnimation
+                  jsonPath="/json/empty.json"
+                  fallbackWebm="/videos/empty.webm"
+                />
+              </div>
               <h3 className="text-2xl font-medium mb-2">
                 You haven't created any sessions yet.
               </h3>

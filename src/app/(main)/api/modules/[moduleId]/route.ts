@@ -36,7 +36,7 @@ export async function PUT(
 }
 
 export async function DELETE(
-  req: Request,
+  _req: Request,
   { params }: { params: Promise<{ moduleId: string }> },
 ) {
   try {
@@ -53,7 +53,7 @@ export async function DELETE(
       where: { id: moduleId },
       include: {
         lessons: {
-          select: { contentUrl: true, type: true },
+          select: { id: true, contentUrl: true, type: true },
         },
       },
     });
@@ -64,6 +64,13 @@ export async function DELETE(
           await deleteFromS3(lesson.contentUrl);
         }
       }
+    }
+
+    const lessonIds = moduleWithLessons?.lessons.map((l: any) => l.id) ?? [];
+
+    if (lessonIds.length > 0) {
+      await prisma.progress.deleteMany({ where: { lessonId: { in: lessonIds } } });
+      await prisma.lesson.deleteMany({ where: { moduleId } });
     }
 
     await prisma.module.delete({

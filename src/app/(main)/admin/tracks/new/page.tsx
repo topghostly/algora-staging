@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, Save, Loader } from "lucide-react";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
+import { Button } from "@/components/ui/button";
 
 export default function NewTrackPage() {
   const router = useRouter();
@@ -127,12 +128,11 @@ export default function NewTrackPage() {
               marginTop: "1rem",
             }}
           >
-            <Link href="/admin/tracks" className="btn btn-outline rounded-full">
-              Cancel
+            <Link href="/admin/tracks">
+              <Button variant={"outline"}>Cancel</Button>
             </Link>
-            <button
+            <Button
               type="submit"
-              className="btn btn-primary rounded-full"
               disabled={isLoading}
               style={{
                 minWidth: "140px",
@@ -148,7 +148,7 @@ export default function NewTrackPage() {
                   Create Track
                 </>
               )}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

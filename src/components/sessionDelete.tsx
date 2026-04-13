@@ -4,12 +4,14 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { ConfirmationDialog } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { Loader } from "lucide-react";
 
 const SessionDelete = ({ id }: { id: string }) => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
+  const { update } = useSession();
 
   const handleDeleteSession = async () => {
     setIsDeleting(true);
@@ -20,8 +22,15 @@ const SessionDelete = ({ id }: { id: string }) => {
       if (!res.ok) {
         throw new Error("Failed to delete session");
       }
+      const data = await res.json();
       toast.success("Session deleted successfully");
-      router.refresh();
+      if (data.calendarDisconnected) {
+        await update();
+        toast.error("Calendar connection expired. Please reconnect your Google Calendar.", { duration: 6000 });
+        router.push("/tutor");
+      } else {
+        router.refresh();
+      }
     } catch (error) {
       console.log(error);
       toast.error("Failed to delete session");
@@ -42,10 +51,10 @@ const SessionDelete = ({ id }: { id: string }) => {
         }}
       >
         {isDeleting ? (
-          <>
+          <div className="flex gap-2">
             <Loader className="animate-spin" size={16} />
             <span>Deleting...</span>
-          </>
+          </div>
         ) : (
           "Delete"
         )}

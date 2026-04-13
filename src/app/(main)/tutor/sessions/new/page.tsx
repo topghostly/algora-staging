@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 import { z } from "zod";
@@ -43,6 +44,7 @@ function SubmitButton({ loading }: { loading: boolean }) {
 export default function NewSessionPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { update } = useSession();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<SessionErrors>({});
 
@@ -107,8 +109,11 @@ export default function NewSessionPage() {
           (result.error?.includes("Calendar not connected") ||
             result.error?.includes("Calendar connection expired"))
         ) {
-          toast.error(result.error);
-          router.push("/tutor/sessions");
+          await update();
+          toast.error(
+            "Google Calendar connection expired. Please reconnect your calendar manually.",
+          );
+          router.push("/tutor");
           return;
         }
         throw new Error(result.error || "Failed to create session");

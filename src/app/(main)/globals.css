@@ -654,6 +654,115 @@ uuuuuu .text-blue-700 {
   }
 }
 
+/* Site Banner */
+@keyframes banner-gradient-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.site-banner {
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: linear-gradient(
+    270deg,
+    #2dd4bf,
+    #0d9488,
+    #94700d,
+    #0d8f94,
+    #2dd4bf
+  );
+  background-size: 400% 400%;
+  animation: banner-gradient-shift 12s ease infinite;
+  padding: 0.6rem 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.site-banner__link {
+  color: white;
+  text-decoration: none;
+  flex: 1;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.site-banner__link:hover .site-banner__message {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.site-banner__static {
+  flex: 1;
+  text-align: center;
+  display: flex ;
+  align-items: center;
+  justify-content: center;
+}
+
+.site-banner__message {
+  font-size: 0.8rem;
+  /* font-weight: 500; */
+  color: white;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+}
+
+.site-banner__close {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.site-banner__close:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+@media (max-width: 768px) {
+  .site-banner {
+    position: fixed;
+    top: auto;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 95vw;
+    border-radius: 12px;
+    background: #0d9488;
+    background-size: unset;
+    animation: none;
+    border: 1.5px solid #2dd4bf;
+    padding: 0.65rem 1rem 0.65rem 1rem;
+    box-shadow: 0 4px 24px rgba(13, 148, 136, 0.25);
+  }
+  .site-banner__close{
+    right: 0.3rem
+  }
+}
+
 /* Hide Scrollbar */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;

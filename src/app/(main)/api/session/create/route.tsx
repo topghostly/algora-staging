@@ -193,6 +193,30 @@ export async function POST(req: Request) {
       },
     );
     if (!res.ok) {
+      if (res.status === 401) {
+        await prisma.user.update({
+          where: { id: session.user.id },
+          data: {
+            calendarConnected: false,
+            calendarConnectedAt: null,
+            googleAccessToken: null,
+            googleRefreshToken: null,
+            googleTokenExpiresAt: null,
+          },
+        });
+
+        revalidatePath("/tutor");
+        revalidatePath("/tutor", "layout");
+
+        return NextResponse.json(
+          {
+            error:
+              "Google Calendar connection expired. Please reconnect your calendar manually.",
+          },
+          { status: 401 },
+        );
+      }
+
       const error = await res.text();
       throw new Error(error);
     }

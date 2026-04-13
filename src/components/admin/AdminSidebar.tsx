@@ -7,6 +7,7 @@ import {
   BookOpen,
   Users,
   Settings,
+  Megaphone,
   Menu,
   X,
   LogOut,
@@ -30,6 +31,11 @@ const sidebarItems = [
     title: "Users",
     href: "/admin/users",
     icon: Users,
+  },
+  {
+    title: "Banner",
+    href: "/admin/banner",
+    icon: Megaphone,
   },
   {
     title: "Settings",

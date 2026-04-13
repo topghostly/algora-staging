@@ -86,28 +86,44 @@ export async function DELETE(
 
     const { trackId } = await params;
 
-    // Cleanup all S3 assets for lessons in this track
-    const trackWithLessons = await prisma.track.findUnique({
+    // Fetch all modules and lessons to clean up S3 assets and cascade deletes
+    const trackWithData = await prisma.track.findUnique({
       where: { id: trackId },
       include: {
         modules: {
           include: {
             lessons: {
-              select: { contentUrl: true, type: true },
+              select: { id: true, contentUrl: true, type: true },
             },
           },
         },
       },
     });
 
-    if (trackWithLessons) {
-      for (const module of trackWithLessons.modules) {
-        for (const lesson of module.lessons) {
-          if (lesson.contentUrl && lesson.type === "TEXT") {
-            await deleteFromS3(lesson.contentUrl);
-          }
+    if (trackWithData) {
+      const allLessons = trackWithData.modules.flatMap((m) => m.lessons);
+      const lessonIds = allLessons.map((l) => l.id);
+      const moduleIds = trackWithData.modules.map((m) => m.id);
+
+      // Clean up S3 assets
+      for (const lesson of allLessons) {
+        if (lesson.contentUrl && lesson.type === "TEXT") {
+          await deleteFromS3(lesson.contentUrl);
         }
       }
+
+      // Delete child records before parents
+      if (lessonIds.length > 0) {
+        await prisma.progress.deleteMany({ where: { lessonId: { in: lessonIds } } });
+        await prisma.lesson.deleteMany({ where: { moduleId: { in: moduleIds } } });
+      }
+      if (moduleIds.length > 0) {
+        await prisma.certificate.deleteMany({ where: { moduleId: { in: moduleIds } } });
+        await prisma.module.deleteMany({ where: { trackId } });
+      }
+      await prisma.enrollment.deleteMany({ where: { trackId } });
+      await prisma.badge.deleteMany({ where: { trackId } });
+      await prisma.certificate.deleteMany({ where: { trackId } });
     }
 
     await prisma.track.delete({

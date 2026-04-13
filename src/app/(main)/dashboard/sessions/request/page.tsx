@@ -8,6 +8,8 @@ import { ArrowLeft, Calendar, Diameter } from "lucide-react";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 import { SessionRequestForm } from "@/components/SessionRequestForm";
 import { ErrorState } from "@/components/ErrorState";
+import { LottieAnimation } from "@/components/NotFoundAnimation";
+import { Button } from "@/components/ui/button";
 
 async function getTutors() {
   return await prisma.user.findMany({
@@ -75,9 +77,14 @@ export default async function RequestSessionPage() {
             </div>
           </div>
         </div>
-        <div className="h-[70vh] w-full flex items-center justify-center">
+        <div className="h-[50vh] w-full flex items-center justify-center">
           <div className="text-center">
-            <Diameter className="mx-auto h-12 w-12 text-muted-foreground mb-8" />
+            <div className="flex mx-auto h-60 w-60 md:h-72 md:w-72 items-center justify-center overflow-hidden mb-6">
+              <LottieAnimation
+                jsonPath="/json/upgrade-algora.json"
+                fallbackWebm="/videos/empty.webm"
+              />
+            </div>
             <h3 className="text-2xl font-medium mb-2">
               {!["FREE", "BASIC"].includes(user.subscriptionTier)
                 ? "No credits left"
@@ -89,8 +96,8 @@ export default async function RequestSessionPage() {
                 : "Upgrade to a PRO plan to get 1-on-1 sessions"}
             </p>
             {["FREE", "BASIC"].includes(user.subscriptionTier) && (
-              <Link href="/pricing" className="btn btn-primary">
-                Upgrade your plan
+              <Link href="/pricing">
+                <Button variant={"outline"}>Upgrade your plan</Button>
               </Link>
             )}
           </div>

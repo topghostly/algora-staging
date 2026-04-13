@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import QuizEditor from "./QuizEditor";
 import MarkdownEditor from "./MarkdownEditor";
+import { Button } from "../ui/button";
 
 interface Lesson {
   id: string;
@@ -60,6 +61,8 @@ interface LessonItemProps {
   editingLessonId: string | null;
   startEditingLesson: (lesson: Lesson) => void;
   handleDeleteLesson: (lessonId: string) => void;
+  isDeletingLesson: boolean;
+  lessonToDeleteId: string | null;
   editLessonContent: string;
   setEditLessonContent: (val: string) => void;
   editLessonTextContent: string;
@@ -81,6 +84,8 @@ function LessonItem({
   editingLessonId,
   startEditingLesson,
   handleDeleteLesson,
+  isDeletingLesson,
+  lessonToDeleteId,
   editLessonContent,
   setEditLessonContent,
   editLessonTextContent,
@@ -149,8 +154,13 @@ function LessonItem({
             className="btn btn-outline rounded-lg"
             style={{ color: "var(--error)" }}
             title="Delete Lesson"
+            disabled={isDeletingLesson && lessonToDeleteId === lesson.id}
           >
-            <Trash2 size={16} />
+            {!isDeletingLesson && lessonToDeleteId === lesson.id ? (
+              <Loader size={16} className="animate-spin" />
+            ) : (
+              <Trash2 size={16} />
+            )}
           </button>
         </div>
       </div>
@@ -280,7 +290,12 @@ export default function TrackEditor({ track }: { track: Track }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeletingLesson, setIsDeletingLesson] = useState(false);
   const [lessonToDeleteId, setLessonToDeleteId] = useState<string | null>(null);
+  const [isModuleDeleteDialogOpen, setIsModuleDeleteDialogOpen] =
+    useState(false);
+  const [isDeletingModule, setIsDeletingModule] = useState(false);
+  const [moduleToDeleteId, setModuleToDeleteId] = useState<string | null>(null);
 
   // Form State
   const [title, setTitle] = useState(track.title);
@@ -356,12 +371,17 @@ export default function TrackEditor({ track }: { track: Track }) {
     }
   }
 
-  async function handleDeleteModule(moduleId: string) {
-    if (!confirm("Are you sure? This will delete all lessons in this module."))
-      return;
+  function handleDeleteModule(moduleId: string) {
+    setModuleToDeleteId(moduleId);
+    setIsModuleDeleteDialogOpen(true);
+  }
 
+  async function confirmDeleteModule() {
+    if (!moduleToDeleteId) return;
+
+    setIsDeletingModule(true);
     try {
-      const res = await fetch(`/api/modules/${moduleId}`, {
+      const res = await fetch(`/api/modules/${moduleToDeleteId}`, {
         method: "DELETE",
       });
 
@@ -371,6 +391,10 @@ export default function TrackEditor({ track }: { track: Track }) {
     } catch (error) {
       console.error(error);
       toast.error("Error deleting module");
+    } finally {
+      setIsDeletingModule(false);
+      setIsModuleDeleteDialogOpen(false);
+      setModuleToDeleteId(null);
     }
   }
 
@@ -411,7 +435,7 @@ export default function TrackEditor({ track }: { track: Track }) {
 
   async function confirmDeleteLesson() {
     if (!lessonToDeleteId) return;
-
+    setIsDeletingLesson(true);
     try {
       const res = await fetch(`/api/lessons/${lessonToDeleteId}`, {
         method: "DELETE",
@@ -424,6 +448,7 @@ export default function TrackEditor({ track }: { track: Track }) {
       console.error(error);
       toast.error("Error deleting lesson");
     } finally {
+      setIsDeletingLesson(false);
       setIsDeleteDialogOpen(false);
       setLessonToDeleteId(null);
     }
@@ -657,25 +682,21 @@ export default function TrackEditor({ track }: { track: Track }) {
             <input
               autoFocus
               placeholder="Module Title"
-              className="input"
+              className="w-full h-8 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               value={newModuleTitle}
               onChange={(e) => setNewModuleTitle(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleAddModule()}
             />
-            <button
-              onClick={handleAddModule}
-              className="btn btn-primary"
-              style={{ padding: "0.5rem" }}
-            >
+            <Button onClick={handleAddModule}>
               <Check size={18} />
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setIsAddingModule(false)}
-              className="btn btn-outline"
-              style={{ padding: "0.5rem" }}
+              variant={"outline"}
+              // style={{ padding: "0.5rem" }}
             >
               <X size={18} />
-            </button>
+            </Button>
           </div>
         )}
       </div>
@@ -727,8 +748,13 @@ export default function TrackEditor({ track }: { track: Track }) {
                   className="btn-icon"
                   style={{ color: "var(--error)" }}
                   title="Delete Module"
+                  disabled={isDeletingModule && moduleToDeleteId === module.id}
                 >
-                  <Trash2 size={18} />
+                  {isDeletingModule && moduleToDeleteId === module.id ? (
+                    <Loader size={18} className="animate-spin" />
+                  ) : (
+                    <Trash2 size={18} />
+                  )}
                 </button>
               </div>
             </div>
@@ -750,6 +776,8 @@ export default function TrackEditor({ track }: { track: Track }) {
                     editingLessonId={editingLessonId}
                     startEditingLesson={startEditingLesson}
                     handleDeleteLesson={handleDeleteLesson}
+                    isDeletingLesson={isDeletingLesson}
+                    lessonToDeleteId={lessonToDeleteId}
                     editLessonContent={editLessonContent}
                     setEditLessonContent={setEditLessonContent}
                     editLessonTextContent={editLessonTextContent}
@@ -790,24 +818,24 @@ export default function TrackEditor({ track }: { track: Track }) {
                   <input
                     autoFocus
                     placeholder="Lesson Title"
-                    className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="w-full h-8 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     style={{ flex: 1 }}
                     value={newLessonTitle}
                     onChange={(e) => setNewLessonTitle(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleAddLesson()}
                   />
-                  <button
+                  <Button
                     onClick={handleAddLesson}
                     className="btn btn-primary rounded-lg"
                   >
                     <Check size={18} />
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() => setAddingLessonToModuleId(null)}
                     className="btn btn-outline rounded-lg"
                   >
                     <X size={18} />
-                  </button>
+                  </Button>
                 </div>
               )}
 
@@ -828,25 +856,67 @@ export default function TrackEditor({ track }: { track: Track }) {
           </div>
         ))}
       </div>
+      {/* Module delete dialog */}
       <AlertDialog
-        open={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
+        open={isModuleDeleteDialogOpen}
+        onOpenChange={(open) => {
+          if (!isDeletingModule) {
+            setIsModuleDeleteDialogOpen(open);
+            if (!open) setModuleToDeleteId(null);
+          }
+        }}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogTitle>Delete module?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              lesson and all associated student progress.
+              This will permanently delete the module and all its lessons,
+              including all associated student progress. This cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeletingModule}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeleteModule}
+              disabled={isDeletingModule}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 flex items-center gap-2"
+            >
+              {isDeletingModule ? "Deleting..." : "Delete Module"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Lesson delete dialog */}
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={(open) => {
+          if (!isDeletingLesson) {
+            setIsDeleteDialogOpen(open);
+            if (!open) setLessonToDeleteId(null);
+          }
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete lesson?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete the lesson and all associated student
+              progress. This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeletingLesson}>
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDeleteLesson}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={isDeletingLesson}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 flex items-center gap-2"
             >
-              Delete Lesson
+              {isDeletingLesson ? "Deleting..." : "Delete Lesson"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

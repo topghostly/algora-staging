@@ -18,7 +18,9 @@ export type ActivityAction =
   | "SESSION_CANCELLED"
   | "SESSION_ATTENDANCE_EMAIL_SENT"
   | "SESSION_ATTENDANCE_REMINDER_SENT"
-  | "LESSON_COMPLETED";
+  | "LESSON_COMPLETED"
+  | "BANNER_CREATED"
+  | "BANNER_DELETED";
 
 interface LogActivityOptions {
   userId?: string;

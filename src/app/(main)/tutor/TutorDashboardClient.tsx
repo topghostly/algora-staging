@@ -121,7 +121,11 @@ const columns = [
     cell: (info) =>
       info.getValue() ? (
         <a href={info.getValue()!} target="_blank" rel="noopener noreferrer">
-          <Button variant={"outline"} className="flex gap-2 items-center">
+          <Button
+            variant={"outline"}
+            size={"sm"}
+            className="flex gap-2 items-center"
+          >
             Join <ExternalLink size={12} />
           </Button>
         </a>
@@ -231,7 +235,7 @@ export default function TutorDashboardClient({
       <div>
         <h3 className="mb-4">Next Session</h3>
         {nextSession ? (
-          <div className="flex justify-between flex-col lg:flex-row">
+          <div className="flex justify-between gap-4 flex-col lg:flex-row">
             <div className="flex flex-col gap-1">
               <span className="text-sm text-muted-foreground">
                 Session name

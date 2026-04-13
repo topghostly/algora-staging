@@ -6,6 +6,7 @@ import localFont from "next/font/local";
 import { Providers } from "@/components/Providers";
 import Navbar from "@/components/Navbar";
 import { Toaster } from "@/components/ui/Toaster";
+import Banner from "@/components/Banner";
 
 // const outfit = Nata_Sans({ subsets: ["latin"] });
 
@@ -66,6 +67,7 @@ export default function RootLayout({
       <body className={euclid.className} suppressHydrationWarning>
         <Providers>
           <div className="flex flex-col min-h-screen">
+            <Banner />
             <Navbar />
             <main className="grow">{children}</main>
             <Toaster />

@@ -7,8 +7,8 @@ import { sendEmail } from "@/lib/email";
 import { SessionAttendanceEmail } from "@/components/emails/SessionAttendanceEmail";
 import React from "react";
 
-// Small scheduling variance buffer — catches sessions the cron may have slightly missed
-const WINDOW_MINUTES = 15;
+// Covers the full 2-hour cron interval plus a 5-minute scheduling variance buffer
+const WINDOW_MINUTES = 125;
 
 export async function GET(req: Request) {
   if (!verifyCronAuth(req.headers.get("authorization"))) {

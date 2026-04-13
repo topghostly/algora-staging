@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { Plus, Edit, Eye, Trash2 } from "lucide-react";
+import { Plus, Edit, Eye } from "lucide-react";
+import { TrackDeleteButton } from "@/components/admin/TrackDeleteButton";
 import { formatDate } from "@/lib/utils";
 import { ErrorState } from "@/components/ErrorState";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
@@ -200,6 +201,7 @@ export default async function AdminTracksPage() {
                         >
                           <Edit size={16} />
                         </Link>
+                        <TrackDeleteButton trackId={track.id} />
                       </div>
                     </td>
                   </tr>
