@@ -9,26 +9,17 @@ import { Suspense } from "react";
 import HistoryTable, { type HistoryRow } from "./HistoryTable";
 
 async function getSessionHistory(userId: string): Promise<HistoryRow[]> {
-  const [enrollments, requests] = await Promise.all([
-    prisma.sessionEnrollment.findMany({
-      where: { userId },
-      include: {
-        session: {
-          include: { tutor: true },
-        },
-      },
-      orderBy: { enrolledAt: "desc" },
-    }),
-    prisma.sessionRequest.findMany({
-      where: { studentId: userId },
-      include: { tutor: true },
-      orderBy: { createdAt: "desc" },
-    }),
-  ]);
+  const enrollments = await prisma.sessionEnrollment.findMany({
+    where: { userId },
+    include: {
+      session: { include: { tutor: true } },
+    },
+    orderBy: { enrolledAt: "desc" },
+  });
 
-  const enrollmentRows: HistoryRow[] = enrollments.map((e) => ({
+  return enrollments.map((e) => ({
     id: e.id,
-    kind: "Group Session",
+    kind: e.session.type === "ONE_ON_ONE" ? "1-on-1 Session" : "Group Session",
     title: e.session.title,
     tutor: e.session.tutor.name || e.session.tutor.email || "Algora Tutor",
     displayDate: new Date(e.session.startTime).toLocaleDateString("en-GB", {
@@ -39,20 +30,6 @@ async function getSessionHistory(userId: string): Promise<HistoryRow[]> {
     sortDate: e.session.startTime,
     status: e.session.status,
   }));
-
-  const requestRows: HistoryRow[] = requests.map((r) => ({
-    id: r.id,
-    kind: "1-on-1 Request",
-    title: r.title,
-    tutor: r.tutor.name || r.tutor.email || "Algora Tutor",
-    displayDate: `${r.preferredDate} · ${r.preferredTime}`,
-    sortDate: r.createdAt,
-    status: r.status,
-  }));
-
-  return [...enrollmentRows, ...requestRows].sort(
-    (a, b) => b.sortDate.getTime() - a.sortDate.getTime(),
-  );
 }
 
 async function HistorySection({ userId }: { userId: string }) {
@@ -70,8 +47,6 @@ async function HistorySection({ userId }: { userId: string }) {
   return (
     <div
       style={{
-        border: "1px solid var(--border)",
-        borderRadius: "0.5rem",
         overflow: "hidden",
       }}
     >
@@ -97,27 +72,24 @@ export default async function SessionHistoryPage() {
           { label: "Sessions", href: "/dashboard/sessions" },
           { label: "History" },
         ]}
-        className="mt-8 -mb-12"
+        className="my-16"
       />
       <div className="my-16">
-        <h1 className="text-[2rem] font-medium mb-1">Session History</h1>
+        <h1 className="text-[2rem] font-medium mb-3">Session History</h1>
         <p className="text-muted-foreground text-sm mb-10">
           All your group sessions, 1-on-1 requests, and their outcomes.
         </p>
-
-        <Suspense
-          fallback={
-            <div className="flex items-center justify-center py-24">
-              <Loader
-                size={28}
-                className="animate-spin text-muted-foreground"
-              />
-            </div>
-          }
-        >
-          <HistorySection userId={userId} />
-        </Suspense>
       </div>
+
+      <Suspense
+        fallback={
+          <div className="flex items-center justify-center py-24">
+            <Loader size={28} className="animate-spin text-muted-foreground" />
+          </div>
+        }
+      >
+        <HistorySection userId={userId} />
+      </Suspense>
     </div>
   );
 }

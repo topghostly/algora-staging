@@ -15,6 +15,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { ErrorState } from "@/components/ErrorState";
 import { Button } from "@/components/ui/button";
+import { LottieAnimation } from "@/components/NotFoundAnimation";
 
 interface Track {
   id: string;
@@ -420,11 +421,14 @@ export default function TracksPage() {
                     gridColumn: "1 / -1",
                     textAlign: "center",
                     padding: "4rem",
-                    backgroundColor: "var(--muted-light)",
-                    borderRadius: "var(--radius)",
-                    border: "1px dashed var(--border)",
                   }}
                 >
+                  <div className="flex mx-auto h-60 w-60 md:h-72 md:w-72 items-center justify-center overflow-hidden mb-6">
+                    <LottieAnimation
+                      jsonPath="/json/empty.json"
+                      fallbackWebm="/videos/empty.webm"
+                    />
+                  </div>
                   <h3 style={{ marginBottom: "1rem" }}>
                     {debouncedQuery
                       ? `No tracks found matching "${debouncedQuery}"`

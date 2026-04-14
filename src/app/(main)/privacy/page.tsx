@@ -117,9 +117,10 @@ export default function PrivacyPolicyPage() {
               <p>
                 <strong>Google Calendar Specifics:</strong> With your explicit
                 consent, we access your calendar only to create and manage
-                events related to sessions booked through Algora. We do not
-                read, modify, or delete any events, or access any other
-                calendars that are not created by our platform.
+                events for sessions booked on our platform. This includes
+                generating a Google Meet link for the meeting. We do not read
+                your existing personal events, nor do we access, store, or share
+                your Google Meet recordings or chat logs.
               </p>
             </li>
             <li>

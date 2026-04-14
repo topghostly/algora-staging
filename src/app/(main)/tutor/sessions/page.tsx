@@ -10,6 +10,7 @@ import { ErrorState } from "@/components/ErrorState";
 import { getCachedTutorSessions } from "@/lib/tutor-cache";
 import { prisma } from "@/lib/prisma";
 import { LottieAnimation } from "@/components/NotFoundAnimation";
+import { Button } from "@/components/ui/button";
 
 export default async function TutorSessionsPage() {
   const session = await getServerSession(authOptions);
@@ -18,11 +19,11 @@ export default async function TutorSessionsPage() {
     redirect("/auth/signin");
   }
 
-  let sessions = null;
+  let sessions: Awaited<ReturnType<typeof getCachedTutorSessions>> | null = null;
   let pendingRequestsCount = 0;
 
   try {
-    [sessions, pendingRequestsCount] = await Promise.all([
+    const [allSessions, pendingCount] = await Promise.all([
       getCachedTutorSessions(session.user.id),
       prisma.sessionRequest.count({
         where: {
@@ -31,6 +32,8 @@ export default async function TutorSessionsPage() {
         },
       }),
     ]);
+    sessions = allSessions.filter((s) => s.status === "PENDING");
+    pendingRequestsCount = pendingCount;
   } catch (error) {
     console.error("Error fetching tutor sessions:", error);
     // Keep them null to trigger ErrorState
@@ -135,14 +138,9 @@ export default async function TutorSessionsPage() {
                     Booked
                   </p>
                   <div className="flex gap-2 mt-2">
-                    <button
-                      className="btn btn-outline btn-sm"
-                      style={{
-                        borderRadius: "8px",
-                      }}
-                    >
+                    <Button variant={"outline"} size={"sm"}>
                       Edit
-                    </button>
+                    </Button>
                     <SessionDelete id={s.id} />
                   </div>
                 </div>

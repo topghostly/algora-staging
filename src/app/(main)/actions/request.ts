@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { logActivity } from "@/lib/activity-log";
 
 export async function createSessionRequest(formData: FormData) {
   const session = await getServerSession(authOptions);
@@ -84,21 +85,57 @@ export async function updateRequestStatus(
     throw new Error("Unauthorized or request not found");
   }
 
-  if (status === "REJECTED" && request.status !== "REJECTED") {
-    await prisma.$transaction([
-      prisma.sessionRequest.update({
-        where: { id: requestId },
-        data: { status },
-      }),
-      prisma.user.update({
+  if (status === "REJECTED") {
+    const startTime = new Date(
+      `${request.preferredDate}T${request.preferredTime}:00`,
+    );
+    const endTime = new Date(startTime.getTime() + 60 * 60 * 1000);
+
+    await prisma.$transaction(async (tx) => {
+      const cancelledSession = await tx.tutorSession.create({
+        data: {
+          title: request.title,
+          tutorId: request.tutorId,
+          startTime,
+          endTime,
+          type: "ONE_ON_ONE",
+          status: "CANCELLED",
+        },
+      });
+
+      await tx.sessionEnrollment.create({
+        data: {
+          userId: request.studentId,
+          sessionId: cancelledSession.id,
+        },
+      });
+
+      await tx.user.update({
         where: { id: request.studentId },
         data: { credits1on1: { increment: 1 } },
-      }),
-    ]);
+      });
+
+      await tx.sessionRequest.delete({
+        where: { id: requestId },
+      });
+    });
+
+    void logActivity({
+      userId: session.user.id,
+      action: "SESSION_REQUEST_REJECTED",
+      entityType: "SESSION_REQUEST",
+      entityId: requestId,
+      metadata: {
+        title: request.title,
+        studentId: request.studentId,
+        preferredDate: request.preferredDate,
+        preferredTime: request.preferredTime,
+      },
+    });
   } else {
-    await prisma.sessionRequest.update({
+    // ACCEPTED: TutorSession + SessionEnrollment already created by /api/session/create
+    await prisma.sessionRequest.delete({
       where: { id: requestId },
-      data: { status },
     });
   }
 

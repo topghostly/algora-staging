@@ -4,9 +4,10 @@ import { useState } from "react";
 import { signOut } from "next-auth/react";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
+import { ConfirmationDialog } from "@/components/ui/alert-dialog";
 
 export default function DeleteAccountButton() {
-  const [showConfirm, setShowConfirm] = useState(false);
+  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleDelete = async () => {
@@ -27,41 +28,21 @@ export default function DeleteAccountButton() {
     }
   };
 
-  if (showConfirm) {
-    return (
-      <div className="flex items-center gap-2">
-        <span className="text-sm text-muted-foreground">Are you sure?</span>
-        <button
-          onClick={handleDelete}
-          disabled={loading}
-          className="btn-outline text-red-500 border-red-500 hover:bg-red-500 hover:text-white text-sm px-3 py-1.5 rounded-md duration-200"
-        >
-          {loading ? "Deleting..." : "Yes, delete"}
-        </button>
-        <button
-          onClick={() => setShowConfirm(false)}
-          disabled={loading}
-          className="btn-outline text-sm px-3 py-1.5 rounded-md duration-200"
-        >
-          Cancel
-        </button>
-      </div>
-    );
-  }
-
   return (
-    // <button
-    //   onClick={() => setShowConfirm(true)}
-    //   className="btn-outline text-red-500 border-red-500 hover:bg-red-500 hover:text-white text-sm px-3 py-1.5 rounded-md duration-200"
-    // >
-    //   Delete Account
-    // </button>
-    <Button
-      variant={"destructive"}
-      size={"sm"}
-      onClick={() => setShowConfirm(true)}
-    >
-      Delete Account
-    </Button>
+    <>
+      <Button variant="destructive" size="sm" onClick={() => setOpen(true)}>
+        Delete Account
+      </Button>
+
+      <ConfirmationDialog
+        isOpen={open}
+        onOpenChange={setOpen}
+        title="Delete Account"
+        description="Are you sure you want to delete your account? This action cannot be undone and you will lose all your data."
+        confirmText={loading ? "Deleting..." : "Yes, delete"}
+        onConfirm={handleDelete}
+        variant="destructive"
+      />
+    </>
   );
 }

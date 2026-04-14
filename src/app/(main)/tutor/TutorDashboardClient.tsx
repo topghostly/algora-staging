@@ -12,7 +12,7 @@ import {
   createColumnHelper,
   type SortingState,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ExternalLink, Layers } from "lucide-react";
+import { ArrowUpDown, ExternalLink, Layers, VideoOff } from "lucide-react";
 import ConnectCalendarButton from "@/components/ConnectCalendarButton";
 import DisconnectCalendarButton from "@/components/DisconnectCalendarButton";
 import { Button } from "@/components/ui/button";
@@ -119,7 +119,7 @@ const columns = [
     header: "Link",
     enableSorting: false,
     cell: (info) =>
-      info.getValue() ? (
+      info.getValue() && info.row.original.status === "PENDING" ? (
         <a href={info.getValue()!} target="_blank" rel="noopener noreferrer">
           <Button
             variant={"outline"}
@@ -130,7 +130,9 @@ const columns = [
           </Button>
         </a>
       ) : (
-        <span style={{ color: "var(--muted)", fontSize: "0.85rem" }}>—</span>
+        <span style={{ color: "var(--muted)", fontSize: "0.85rem" }}>
+          <VideoOff size={17} />
+        </span>
       ),
   }),
 ];

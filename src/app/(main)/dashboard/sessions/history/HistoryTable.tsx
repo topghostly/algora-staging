@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 
 export type HistoryRow = {
   id: string;
-  kind: "Group Session" | "1-on-1 Request";
+  kind: "Group Session" | "1-on-1 Session";
   title: string;
   tutor: string;
   displayDate: string;
@@ -34,7 +34,7 @@ const statusStyles: Record<string, { bg: string; color: string }> = {
 
 const kindStyles: Record<string, { bg: string; color: string }> = {
   "Group Session": { bg: "rgba(147,51,234,0.1)", color: "#7e22ce" },
-  "1-on-1 Request": { bg: "rgba(59,130,246,0.1)", color: "#1d4ed8" },
+  "1-on-1 Session": { bg: "rgba(59,130,246,0.1)", color: "#1d4ed8" },
 };
 
 const columnHelper = createColumnHelper<HistoryRow>();

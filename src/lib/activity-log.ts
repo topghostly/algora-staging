@@ -20,7 +20,8 @@ export type ActivityAction =
   | "SESSION_ATTENDANCE_REMINDER_SENT"
   | "LESSON_COMPLETED"
   | "BANNER_CREATED"
-  | "BANNER_DELETED";
+  | "BANNER_DELETED"
+  | "SESSION_REQUEST_REJECTED";
 
 interface LogActivityOptions {
   userId?: string;

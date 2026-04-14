@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { updateRequestStatus } from "@/app/(main)/actions/request";
 import { decrypt, encrypt } from "@/lib/crypto";
 import { refreshGoogleAccessToken } from "@/lib/refreshGooglAccessToken";
 import { sendEmail } from "@/lib/email";
 import SessionConfirmationEmail from "@/components/emails/SessionConfirmationEmail";
+import { logActivity } from "@/lib/activity-log";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -236,10 +238,7 @@ export async function POST(req: Request) {
     });
 
     if (requestId) {
-      await prisma.sessionRequest.update({
-        where: { id: requestId },
-        data: { status: "ACCEPTED" },
-      });
+      await updateRequestStatus(requestId, "ACCEPTED");
 
       // Auto-enroll the student
       if (student) {
@@ -289,6 +288,20 @@ export async function POST(req: Request) {
       ),
     });
 
+    void logActivity({
+      userId: session.user.id,
+      action: "SESSION_CREATED",
+      entityType: "SESSION",
+      entityId: newSession.id,
+      metadata: {
+        title,
+        type,
+        startTime,
+        endTime,
+        ...(type === "ONE_ON_ONE" && { studentEmail }),
+      },
+    });
+
     revalidatePath("/tutor/sessions");
     revalidatePath("/tutor");
 
@@ -306,7 +319,7 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error("Session creation error details:", error);
     return NextResponse.json(
-      { error: error.message || "Internal server error" },
+      { error: "Something went wrong. Please try again." },
       { status: 500 },
     );
   }

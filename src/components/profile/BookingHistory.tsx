@@ -1,4 +1,4 @@
-import { Calendar, CalendarCheck2, Clock } from "lucide-react";
+import { Calendar, Clock } from "lucide-react";
 
 interface Booking {
   id: string;

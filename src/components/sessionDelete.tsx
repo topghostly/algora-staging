@@ -6,6 +6,7 @@ import { ConfirmationDialog } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Loader } from "lucide-react";
+import { Button } from "./ui/button";
 
 const SessionDelete = ({ id }: { id: string }) => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -19,21 +20,24 @@ const SessionDelete = ({ id }: { id: string }) => {
       const res = await fetch(`/api/session/${id}/delete`, {
         method: "DELETE",
       });
-      if (!res.ok) {
-        throw new Error("Failed to delete session");
-      }
       const data = await res.json();
-      toast.success("Session deleted successfully");
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to cancel session");
+      }
+      toast.success(data.message ?? "Session cancelled successfully");
       if (data.calendarDisconnected) {
         await update();
-        toast.error("Calendar connection expired. Please reconnect your Google Calendar.", { duration: 6000 });
+        toast.error(
+          "Calendar connection expired. Please reconnect your Google Calendar.",
+          { duration: 6000 },
+        );
         router.push("/tutor");
       } else {
         router.refresh();
       }
-    } catch (error) {
-      console.log(error);
-      toast.error("Failed to delete session");
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message || "Failed to cancel session");
     } finally {
       setIsDeleting(false);
       setIsConfirmOpen(false);
@@ -42,30 +46,28 @@ const SessionDelete = ({ id }: { id: string }) => {
 
   return (
     <>
-      <button
-        className="btn btn-outline btn-sm text-red-500 hover:bg-red-50 hover:border-red-200"
+      <Button
         onClick={() => setIsConfirmOpen(true)}
         disabled={isDeleting}
-        style={{
-          borderRadius: "8px",
-        }}
+        variant={"destructive"}
+        size={"sm"}
       >
         {isDeleting ? (
           <div className="flex gap-2">
             <Loader className="animate-spin" size={16} />
-            <span>Deleting...</span>
+            <span>Cancelling...</span>
           </div>
         ) : (
-          "Delete"
+          "Cancel Session"
         )}
-      </button>
+      </Button>
 
       <ConfirmationDialog
         isOpen={isConfirmOpen}
         onOpenChange={setIsConfirmOpen}
-        title="Delete Session"
-        description="Are you sure you want to delete this session? This action will also remove the event from your Google Calendar and cannot be undone."
-        confirmText={isDeleting ? "Deleting..." : "Delete"}
+        title="Cancel Session"
+        description="Are you sure you want to cancel this session? The event will be removed from Google Calendar and enrolled students will be refunded their credit."
+        confirmText={isDeleting ? "Cancelling..." : "Cancel Session"}
         onConfirm={handleDeleteSession}
         variant="destructive"
       />

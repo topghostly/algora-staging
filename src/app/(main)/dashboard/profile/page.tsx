@@ -46,7 +46,7 @@ async function ProfileSections({ userId }: { userId: string }) {
           subscriptionTier={user.subscriptionTier}
           credits1on1={user.credits1on1}
         />
-        <BookingHistory bookings={user.bookings} />
+        <BookingHistory bookings={[]} />
       </div>
     </>
   );

@@ -3,12 +3,11 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Calendar, Clock, User, Check, Info } from "lucide-react";
+import { Calendar, Clock, Check, Info } from "lucide-react";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 import { ErrorState } from "@/components/ErrorState";
 import { DeclineRequestButton } from "./DeclineRequestButton";
 import { Button } from "@/components/ui/button";
-import { Kbd } from "@/components/ui/kbd";
 
 async function getRequests(tutorId: string) {
   return await prisma.sessionRequest.findMany({

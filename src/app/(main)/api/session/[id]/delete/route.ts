@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { decrypt, encrypt } from "@/lib/crypto";
 import { refreshGoogleAccessToken } from "@/lib/refreshGooglAccessToken";
 import { revalidatePath, revalidateTag } from "next/cache";
+import { logActivity } from "@/lib/activity-log";
 
 export async function DELETE(
   req: Request,
@@ -25,9 +26,11 @@ export async function DELETE(
       where: { id },
       select: {
         id: true,
+        title: true,
+        type: true,
         googleEventId: true,
         tutorId: true,
-        type: true,
+        status: true,
         sessionEnrollments: {
           select: { userId: true },
         },
@@ -42,49 +45,91 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const tutor = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: {
-        googleAccessToken: true,
-        googleRefreshToken: true,
-        googleTokenExpiresAt: true,
-      },
-    });
+    if (tutorSession.status === "CANCELLED") {
+      return NextResponse.json(
+        { error: "Session is already cancelled" },
+        { status: 409 },
+      );
+    }
 
-    if (tutorSession.googleEventId && tutor?.googleAccessToken) {
-      try {
-        let accessToken = decrypt(tutor.googleAccessToken);
+    // Attempt to remove the Google Calendar event — non-fatal if it fails
+    if (tutorSession.googleEventId) {
+      const tutor = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: {
+          googleAccessToken: true,
+          googleRefreshToken: true,
+          googleTokenExpiresAt: true,
+        },
+      });
 
-        // Refresh token if it's expired or about to expire (5 min buffer)
-        const EXPIRATION_BUFFER = 300; // 5 minutes
-        if (
-          tutor.googleTokenExpiresAt &&
-          tutor.googleRefreshToken &&
-          tutor.googleTokenExpiresAt * 1000 <
-            Date.now() + EXPIRATION_BUFFER * 1000
-        ) {
-          try {
-            const refreshed = await refreshGoogleAccessToken(
-              decrypt(tutor.googleRefreshToken),
+      if (tutor?.googleAccessToken) {
+        try {
+          let accessToken = decrypt(tutor.googleAccessToken);
+
+          const EXPIRATION_BUFFER = 300;
+          if (
+            tutor.googleTokenExpiresAt &&
+            tutor.googleRefreshToken &&
+            tutor.googleTokenExpiresAt * 1000 <
+              Date.now() + EXPIRATION_BUFFER * 1000
+          ) {
+            try {
+              const refreshed = await refreshGoogleAccessToken(
+                decrypt(tutor.googleRefreshToken),
+              );
+
+              await prisma.user.update({
+                where: { id: session.user.id },
+                data: {
+                  googleAccessToken: encrypt(refreshed.access_token),
+                  googleTokenExpiresAt: refreshed.expires_at,
+                },
+              });
+
+              accessToken = refreshed.access_token;
+            } catch (refreshError: any) {
+              console.error(
+                "Token refresh error during cancellation:",
+                refreshError,
+              );
+
+              if (
+                refreshError.error === "invalid_grant" ||
+                refreshError.message?.includes("invalid_grant")
+              ) {
+                await prisma.user.update({
+                  where: { id: session.user.id },
+                  data: {
+                    calendarConnected: false,
+                    calendarConnectedAt: null,
+                    googleAccessToken: null,
+                    googleRefreshToken: null,
+                    googleTokenExpiresAt: null,
+                  },
+                });
+
+                revalidatePath("/tutor");
+                revalidatePath("/tutor", "layout");
+                calendarDisconnected = true;
+              } else {
+                throw refreshError;
+              }
+            }
+          }
+
+          if (!calendarDisconnected) {
+            const res = await fetch(
+              `https://www.googleapis.com/calendar/v3/calendars/primary/events/${tutorSession.googleEventId}?sendUpdates=all`,
+              {
+                method: "DELETE",
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+              },
             );
 
-            await prisma.user.update({
-              where: { id: session.user.id },
-              data: {
-                googleAccessToken: encrypt(refreshed.access_token),
-                googleTokenExpiresAt: refreshed.expires_at,
-              },
-            });
-
-            accessToken = refreshed.access_token;
-          } catch (refreshError: any) {
-            console.error("Token refresh error during deletion:", refreshError);
-
-            // If the refresh token is revoked or invalid, disconnect the calendar
-            if (
-              refreshError.error === "invalid_grant" ||
-              refreshError.message?.includes("invalid_grant")
-            ) {
+            if (!res.ok && res.status === 401) {
               await prisma.user.update({
                 where: { id: session.user.id },
                 data: {
@@ -95,100 +140,82 @@ export async function DELETE(
                   googleTokenExpiresAt: null,
                 },
               });
-
               revalidatePath("/tutor");
               revalidatePath("/tutor", "layout");
               calendarDisconnected = true;
-              // Continue with local deletion even if calendar fails
-            } else {
-              throw refreshError;
+            } else if (!res.ok) {
+              console.error(
+                "Google Calendar event removal failed:",
+                await res.text(),
+              );
             }
           }
+        } catch (calendarError) {
+          // Calendar errors are non-fatal — we still cancel the session locally
+          console.error("Calendar removal error (continuing):", calendarError);
         }
-
-        const res = await fetch(
-          `https://www.googleapis.com/calendar/v3/calendars/primary/events/${tutorSession.googleEventId}?sendUpdates=all`,
-          {
-            method: "DELETE",
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              "Content-Type": "application/json",
-            },
-          },
-        );
-
-        if (!res.ok) {
-          if (res.status === 401) {
-             await prisma.user.update({
-                where: { id: session.user.id },
-                data: {
-                  calendarConnected: false,
-                  calendarConnectedAt: null,
-                  googleAccessToken: null,
-                  googleRefreshToken: null,
-                  googleTokenExpiresAt: null,
-                },
-              });
-              revalidatePath("/tutor");
-              revalidatePath("/tutor", "layout");
-              calendarDisconnected = true;
-          }
-          const errorText = await res.text();
-          console.error("Google Calendar event deletion failed:", errorText);
-          // Don't throw here to allow local session deletion to proceed
-        }
-      } catch (externalError) {
-        console.error(
-          "External deletion error (continuing locally):",
-          externalError,
-        );
       }
     }
 
-    const operations = [
-      prisma.booking.deleteMany({
-        where: { tutorSessionId: id },
-      }),
-      prisma.sessionEnrollment.deleteMany({
-        where: { sessionId: id },
-      }),
-      prisma.tutorSession.delete({
-        where: { id },
-      }),
-    ];
-
-    if (
+    // Build the cancellation transaction
+    const enrolledStudentId =
       tutorSession.type === "ONE_ON_ONE" &&
       tutorSession.sessionEnrollments.length > 0
-    ) {
-      const studentId = tutorSession.sessionEnrollments[0].userId;
-      operations.push(
-        prisma.user.update({
-          where: { id: studentId },
-          data: { credits1on1: { increment: 1 } },
-        }) as any,
-      );
-      operations.push(
-        prisma.sessionRequest.updateMany({
-          where: {
-            tutorId: tutorSession.tutorId,
-            studentId,
-            status: "ACCEPTED",
-          },
-          data: { status: "REJECTED" },
-        }) as any,
-      );
-    }
+        ? tutorSession.sessionEnrollments[0].userId
+        : null;
 
-    await prisma.$transaction(operations);
+    await prisma.$transaction([
+      // Mark the session as cancelled — bookings and enrollments are preserved
+      prisma.tutorSession.update({
+        where: { id },
+        data: { status: "CANCELLED" },
+      }),
+
+      // Refund the student's credit if this was a booked 1-on-1
+      ...(enrolledStudentId
+        ? [
+            prisma.user.update({
+              where: { id: enrolledStudentId },
+              data: { credits1on1: { increment: 1 } },
+            }),
+            // Mark the accepted request back to REJECTED so the student can rebook
+            prisma.sessionRequest.updateMany({
+              where: {
+                tutorId: tutorSession.tutorId,
+                studentId: enrolledStudentId,
+                status: "ACCEPTED",
+              },
+              data: { status: "REJECTED" },
+            }),
+          ]
+        : []),
+    ]);
+
+    // Fire-and-forget — must not block the response
+    void logActivity({
+      userId: session.user.id,
+      action: "SESSION_CANCELLED",
+      entityType: "SESSION",
+      entityId: id,
+      metadata: {
+        title: tutorSession.title,
+        type: tutorSession.type,
+        ...(enrolledStudentId && { refundedStudentId: enrolledStudentId }),
+      },
+    });
+
     // @ts-ignore
     revalidateTag(`tutor-sessions-${session.user.id}`);
     revalidatePath("/tutor/sessions");
-    return NextResponse.json({ message: "Session deleted successfully", calendarDisconnected });
-  } catch (error: any) {
-    console.error("Session deletion error:", error);
+
+    return NextResponse.json({
+      message: "Session cancelled successfully",
+      calendarDisconnected,
+    });
+  } catch (error) {
+    console.error("Session cancellation error:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Something went wrong. Please try again." },
       { status: 500 },
     );
   }
