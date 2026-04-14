@@ -29,8 +29,8 @@ export async function createSession(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
-  // Combine date and time
-  const startDateTime = new Date(`${date}T${startTimeStr}`);
+  // Combine date and time (using explicit +01:00 offset for Lagos timezone to avoid Vercel UTC misparsing)
+  const startDateTime = new Date(`${date}T${startTimeStr}:00+01:00`);
   const duration = parseInt(durationStr);
   const endDateTime = new Date(startDateTime.getTime() + duration * 60000);
 

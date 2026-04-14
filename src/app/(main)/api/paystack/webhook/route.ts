@@ -49,6 +49,17 @@ export async function POST(req: Request) {
         const { updated, tier } = await updateSubscription(reference, user.id);
 
         if (updated) {
+          const creditsByTier: Record<string, number> = {
+            PRO_LITE: 1,
+            PRO_PLUS: 4,
+          };
+          const credits = creditsByTier[tier] ?? 0;
+
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { credits1on1: credits },
+          });
+
           // Send renewal email if it is an automated charge (no frontend metadata), else send normal success email
           const isAutomatedRenewal = !data.metadata;
           const nextPaymentDateStr = verification.data.next_payment_date;

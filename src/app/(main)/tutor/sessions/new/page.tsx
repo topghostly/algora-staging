@@ -81,8 +81,8 @@ export default function NewSessionPage() {
       validation.data;
 
     try {
-      // Calculate start and end times
-      const startDateTime = new Date(`${date}T${startTime}`);
+      // Calculate start and end times explicitly with Lagos (+01:00) timezone to ensure consistency
+      const startDateTime = new Date(`${date}T${startTime}:00+01:00`);
       const durationMs = parseInt(duration) * 60 * 1000;
       const endDateTime = new Date(startDateTime.getTime() + durationMs);
 

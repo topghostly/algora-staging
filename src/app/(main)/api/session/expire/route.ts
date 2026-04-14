@@ -26,6 +26,7 @@ export async function GET(req: Request) {
   try {
     const now = new Date();
     const windowStart = new Date(now.getTime() - WINDOW_MINUTES * 60 * 1000);
+    console.log(`Now: ${now}, windowStart: ${windowStart}`);
 
     // Sessions that ended within the last WINDOW_MINUTES and are still PENDING
     const sessions = await prisma.tutorSession.findMany({
@@ -40,6 +41,8 @@ export async function GET(req: Request) {
         tutor: { select: { id: true, name: true, email: true } },
       },
     });
+
+    console.log(`The sessions found are: ${JSON.stringify(sessions)}`);
 
     if (sessions.length === 0) {
       return NextResponse.json({ success: true, emailsSent: 0 });
