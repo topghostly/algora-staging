@@ -4,9 +4,10 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { GraduationCap, Users, ArrowRight, Loader } from "lucide-react";
+import { GraduationCap, Users, Loader } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 export default function SelectRolePage() {
   const { data: session, update } = useSession();
@@ -59,7 +60,7 @@ export default function SelectRolePage() {
       >
         <div className="text-center flex flex-col gap-4">
           <h1 className="tracking-tight text-foreground">
-            How will you use <span className="text-primary">Algora</span>?
+            How will you use <span className="">Algora</span>?
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Choose the path that best describes your goals. You can always
@@ -172,25 +173,17 @@ export default function SelectRolePage() {
         </div>
 
         <div className="flex justify-center pt-8">
-          <button
+          <Button
+            variant={"outline"}
             disabled={!selectedRole || loading}
             onClick={handleSelectRole}
-            className={cn(
-              "px-6 py-3 rounded-full font-semibold transition-all flex items-center gap-3",
-              !selectedRole || loading
-                ? "bg-muted text-white cursor-not-allowed"
-                : "bg-primary text-primary-foreground hover:scale-105 active:scale-95 ",
-            )}
           >
             {loading ? (
               <Loader className="w-6 h-6 animate-spin" />
             ) : (
-              <>
-                Continue to Dashboard
-                {/* <ArrowRight className="w-5 h-5" /> */}
-              </>
+              <>Continue to Dashboard</>
             )}
-          </button>
+          </Button>
         </div>
       </motion.div>
     </div>

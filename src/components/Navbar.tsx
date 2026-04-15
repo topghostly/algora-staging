@@ -67,7 +67,7 @@ export default function Navbar() {
               />
             </div>
           </Link>
-          {session && (
+          {session?.user.role && (
             <div className="mr-2 hidden lg:block">
               <Badge variant="outline" className="rounded-full">
                 {session?.user.role}

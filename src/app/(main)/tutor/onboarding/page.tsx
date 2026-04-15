@@ -34,7 +34,9 @@ import { z } from "zod";
 import { FormFieldError } from "@/components/ui/form-error";
 
 const onboardingSchema = z.object({
-  specialties: z.array(z.string()).min(1, "Please select at least one specialty."),
+  specialties: z
+    .array(z.string())
+    .min(1, "Please select at least one specialty."),
   tutorBio: z.string().min(10, "Bio must be at least 10 characters.").max(1000),
 });
 
