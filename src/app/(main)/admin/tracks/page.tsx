@@ -1,10 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { Plus, Edit, Eye } from "lucide-react";
-import { TrackDeleteButton } from "@/components/admin/TrackDeleteButton";
-import { formatDate } from "@/lib/utils";
+import { Plus } from "lucide-react";
 import { ErrorState } from "@/components/ErrorState";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
+import TracksTable from "./TracksTable";
 
 export const dynamic = "force-dynamic";
 
@@ -60,156 +59,7 @@ export default async function AdminTracksPage() {
           <ErrorState message="We couldn't load the tracks at this time. Please try again." />
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table
-            style={{ minWidth: "800px", borderCollapse: "collapse" }}
-            className="w-full"
-          >
-            <thead>
-              <tr
-                style={{
-                  borderBottom: "1px solid var(--border)",
-                  backgroundColor: "var(--muted-light)",
-                  textAlign: "left",
-                }}
-              >
-                <th
-                  style={{
-                    padding: "1rem",
-                    fontSize: "0.9rem",
-                  }}
-                >
-                  Title
-                </th>
-                <th
-                  style={{
-                    padding: "1rem",
-                    fontSize: "0.9rem",
-                  }}
-                >
-                  Status
-                </th>
-                <th
-                  style={{
-                    padding: "1rem",
-                    fontSize: "0.9rem",
-                  }}
-                >
-                  Modules
-                </th>
-                <th
-                  style={{
-                    padding: "1rem",
-                    fontSize: "0.9rem",
-                  }}
-                >
-                  Students
-                </th>
-                <th
-                  style={{
-                    padding: "1rem",
-                    fontSize: "0.9rem",
-                  }}
-                >
-                  Created
-                </th>
-                <th
-                  style={{
-                    padding: "1rem",
-                    fontSize: "0.9rem",
-                    textAlign: "right",
-                  }}
-                >
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {tracks.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={6}
-                    style={{
-                      padding: "3rem",
-                      textAlign: "center",
-                      color: "var(--muted)",
-                    }}
-                  >
-                    No tracks found. Create your first one!
-                  </td>
-                </tr>
-              ) : (
-                tracks.map((track) => (
-                  <tr
-                    key={track.id}
-                    style={{ borderBottom: "1px solid var(--border)" }}
-                  >
-                    <td style={{ padding: "1rem", fontWeight: 500 }}>
-                      {track.title}
-                    </td>
-                    <td style={{ padding: "1rem" }}>
-                      <span
-                        style={{
-                          padding: "0.25rem 0.75rem",
-                          borderRadius: "999px",
-                          fontSize: "0.8rem",
-                          fontWeight: 500,
-                          backgroundColor: track.published
-                            ? "#dcfce7"
-                            : "#f3f4f6",
-                          color: track.published ? "#16a34a" : "#6b7280",
-                        }}
-                      >
-                        {track.published ? "Published" : "Draft"}
-                      </span>
-                    </td>
-                    <td style={{ padding: "1rem" }}>{track._count.modules}</td>
-                    <td style={{ padding: "1rem" }}>
-                      {track._count.enrollments}
-                    </td>
-                    <td
-                      style={{
-                        padding: "1rem",
-                        fontSize: "0.9rem",
-                        color: "var(--muted)",
-                      }}
-                    >
-                      {new Date(track.createdAt).toLocaleDateString()}
-                    </td>
-                    <td style={{ padding: "1rem", textAlign: "right" }}>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "flex-end",
-                          gap: "0.5rem",
-                        }}
-                      >
-                        <Link
-                          href={`/tracks/${track.id}`}
-                          target="_blank"
-                          className="btn btn-outline rounded-lg"
-                          style={{ padding: "0.6rem", height: "auto" }}
-                          title="View Public Page"
-                        >
-                          <Eye size={16} />
-                        </Link>
-                        <Link
-                          href={`/admin/tracks/${track.id}`}
-                          className="btn btn-outline rounded-lg"
-                          style={{ padding: "0.6rem", height: "auto" }}
-                          title="Edit Content"
-                        >
-                          <Edit size={16} />
-                        </Link>
-                        <TrackDeleteButton trackId={track.id} />
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+        <TracksTable tracks={tracks} />
       )}
     </div>
   );

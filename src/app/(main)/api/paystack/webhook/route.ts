@@ -12,9 +12,8 @@ export async function POST(req: Request) {
   const bodyText = await req.text();
   const signature = req.headers.get("x-paystack-signature");
 
-  // Only verify signature if it exists. If it doesn't, we assume it's an internal call
-  // and proceed to verify transaction reference with Paystack API.
-  if (signature && !verifyPaystackSignature(bodyText, signature)) {
+  // Verify that the Paystack signature is valid and present.
+  if (!signature || !verifyPaystackSignature(bodyText, signature)) {
     return NextResponse.json({ message: "Invalid signature" }, { status: 400 });
   }
 
@@ -49,17 +48,6 @@ export async function POST(req: Request) {
         const { updated, tier } = await updateSubscription(reference, user.id);
 
         if (updated) {
-          const creditsByTier: Record<string, number> = {
-            PRO_LITE: 1,
-            PRO_PLUS: 4,
-          };
-          const credits = creditsByTier[tier] ?? 0;
-
-          await prisma.user.update({
-            where: { id: user.id },
-            data: { credits1on1: credits },
-          });
-
           // Send renewal email if it is an automated charge (no frontend metadata), else send normal success email
           const isAutomatedRenewal = !data.metadata;
           const nextPaymentDateStr = verification.data.next_payment_date;
@@ -98,10 +86,36 @@ export async function POST(req: Request) {
 
     case "invoice.payment_failed":
     case "charge.failed": {
+      const reference = data.reference;
+
+      if (reference) {
+        const existingFailure = await prisma.paymentTransaction.findUnique({
+          where: { reference },
+        });
+
+        if (existingFailure) {
+          break; // Already processed this failure
+        }
+      }
+
       const email = data.customer?.email;
       if (!email) break;
+
       const user = await prisma.user.findUnique({ where: { email } });
+
       if (user && user.subscriptionTier !== "FREE") {
+        if (reference) {
+          await prisma.paymentTransaction.create({
+            data: {
+              userId: user.id,
+              reference: reference,
+              paystackTransactionId: data.id?.toString(),
+              amount: (data.amount || 0) / 100,
+              status: "failed",
+            },
+          });
+        }
+
         await sendEmail({
           to: user.email,
           subject: "Action Required: Subscription Payment Failed",
@@ -119,7 +133,9 @@ export async function POST(req: Request) {
       const email = data.customer?.email;
       if (!email) break;
       const user = await prisma.user.findUnique({ where: { email } });
-      if (user) {
+
+      // Ensure we only process if the user is not already FREE to avoid duplicate emails
+      if (user && user.subscriptionTier !== "FREE") {
         await prisma.user.update({
           where: { id: user.id },
           data: {

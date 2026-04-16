@@ -54,6 +54,7 @@ export default function PricingCard({
   const { data: session, update } = useSession();
   const router = useRouter();
   const [isCancelling, setIsCancelling] = useState(false);
+  const [isPaymentPending, setIsPaymentPending] = useState(false);
 
   const [showCancelDialog, setShowCancelDialog] = useState(false);
 
@@ -71,7 +72,7 @@ export default function PricingCard({
     try {
       if (tier) {
         try {
-          await fetch("/api/paystack/webhook", {
+          const response = await fetch("/api/paystack/webhook", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -83,6 +84,9 @@ export default function PricingCard({
               },
             }),
           });
+          if (!response.ok) {
+            throw new Error(`Subscription update failed (${response.status})`);
+          }
         } catch (error) {
           console.error("Failed to update subscription:", error);
           toast.error(
@@ -93,6 +97,7 @@ export default function PricingCard({
           );
           return;
         } finally {
+          setIsPaymentPending(false);
           setIsLoading(false);
         }
         toast.success(
@@ -122,6 +127,8 @@ export default function PricingCard({
       }
     } catch (error) {
       console.error("Failed to update subscription:", error);
+      setIsPaymentPending(false);
+      setIsLoading(false);
 
       // Log the failure in the database
       await recordTransaction({
@@ -141,8 +148,10 @@ export default function PricingCard({
     }
   };
 
-  const onClose = async () => {
-    console.log("Payment modal closed by user");
+  const onClose = () => {
+    setIsPaymentPending(false);
+    setIsLoading(false);
+    toast.info("Payment was not completed.", { duration: 4000 });
   };
 
   const handleCancelClick = () => {
@@ -172,6 +181,7 @@ export default function PricingCard({
     }
 
     if (planCode) {
+      setIsPaymentPending(true);
       setIsLoading(true);
       initializePayment({ onSuccess, onClose });
     } else if (buttonLink) {
@@ -343,7 +353,7 @@ export default function PricingCard({
       {title !== "Free" ? (
         <button
           onClick={isCurrentPlan ? handleCancelClick : handleClick}
-          disabled={isCancelling}
+          disabled={isCancelling || isPaymentPending || session?.user?.cancelAtPeriodEnd === true && isCurrentPlan}
           className={`btn rounded-lg ${variant === "primary" ? "btn-primary" : "btn-outline"} `}
           style={{
             width: "100%",
@@ -351,8 +361,8 @@ export default function PricingCard({
             justifyContent: "center",
             padding: "0.75rem",
             marginTop: "auto",
-            opacity: isCancelling ? 0.7 : 1,
-            cursor: isCancelling ? "not-allowed" : "pointer",
+            opacity: isCancelling || isPaymentPending || (session?.user?.cancelAtPeriodEnd && isCurrentPlan) ? 0.7 : 1,
+            cursor: isCancelling || isPaymentPending || (session?.user?.cancelAtPeriodEnd && isCurrentPlan) ? "not-allowed" : "pointer",
             display: "flex",
             alignItems: "center",
             gap: "0.5rem",

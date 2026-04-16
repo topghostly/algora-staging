@@ -130,11 +130,11 @@ export default async function LessonPage({ params }: LessonPageProps) {
         lessonType={currentLesson.type}
       >
         {currentLesson.type !== "QUIZ" && (
-          <div className="mb-8 bg-white md:bg-secondary from-zinc-500 via-stone-600 to-zinc-900 py-8 md:py-18 px-page">
+          <div className="mb-8 bg-white md:bg-secondary from-zinc-500 via-stone-600 to-zinc-900 py-6 md:py-10 px-page">
             <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <h1 className="text-black md:text-white">
+              <h2 className="text-black md:text-white">
                 {currentLesson.title}
-              </h1>
+              </h2>
               {hasAccess && currentLesson.type !== "QUIZ" && isCompleted && (
                 <LessonCompleteButton
                   lessonId={currentLesson.id}

@@ -100,9 +100,7 @@ export async function updateSubscription(reference: string, userId: string) {
         subscriptionId: verification.data.subscription_code || null,
         subscriptionPeriodEnd: subscriptionPeriodEnd,
         cancelAtPeriodEnd: false, // Reset cancellation flag on new payment/update
-        credits1on1: {
-          increment: creditsToAdd,
-        },
+        credits1on1: creditsToAdd,
       },
     });
 
