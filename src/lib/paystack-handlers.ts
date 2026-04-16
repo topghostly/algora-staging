@@ -6,7 +6,7 @@ import SubscriptionPaymentFailedEmail from "@/components/emails/SubscriptionPaym
 import SubscriptionCancelledEmail from "@/components/emails/SubscriptionCancelledEmail";
 import { updateSubscription } from "@/app/(main)/actions/subscription";
 
-export async function handleChargeSuccess(data: any) {
+export async function handleChargeSuccess(data: any): Promise<{ alreadyProcessed: boolean } | void> {
   const reference = data.reference as string;
   const email = data.customer?.email as string | undefined;
 
@@ -23,7 +23,7 @@ export async function handleChargeSuccess(data: any) {
 
   if (existingTransaction) {
     console.log(`charge.success: transaction ${reference} already processed`);
-    return;
+    return { alreadyProcessed: true };
   }
 
   const user = await prisma.user.findUnique({

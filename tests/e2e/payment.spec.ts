@@ -60,12 +60,9 @@ test.describe("Paystack webhook – signature validation", () => {
     expect(body.message).toBe("Invalid signature");
   });
 
-  test("accepts payload without signature header and processes gracefully → 200", async ({
+  test("rejects payload without signature header → 400", async ({
     request,
   }) => {
-    // No signature → skips HMAC check, proceeds to verify with Paystack API.
-    // In test env the reference won't exist on Paystack, so it throws internally,
-    // but the webhook still returns 200 (errors are caught and logged).
     const payload = JSON.stringify(
       buildChargeSuccessPayload(
         "NO_SIG_REF_TEST",
@@ -79,7 +76,9 @@ test.describe("Paystack webhook – signature validation", () => {
       headers: { "Content-Type": "application/json" },
     });
 
-    expect(res.status()).toBe(200);
+    expect(res.status()).toBe(400);
+    const body = await res.json();
+    expect(body.message).toBe("Invalid signature");
   });
 });
 

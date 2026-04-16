@@ -20,9 +20,13 @@ export async function POST(req: Request) {
 
   try {
     switch (event) {
-      case "charge.success":
-        await handleChargeSuccess(data);
+      case "charge.success": {
+        const result = await handleChargeSuccess(data);
+        if (result?.alreadyProcessed) {
+          return NextResponse.json({ message: "Transaction already processed" }, { status: 200 });
+        }
         break;
+      }
       case "invoice.payment_failed":
       case "charge.failed":
         await handleChargeFailed(data);
