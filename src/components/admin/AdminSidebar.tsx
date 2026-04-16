@@ -8,6 +8,7 @@ import {
   Users,
   Settings,
   Megaphone,
+  GraduationCap,
   Menu,
   X,
   LogOut,
@@ -31,6 +32,11 @@ const sidebarItems = [
     title: "Users",
     href: "/admin/users",
     icon: Users,
+  },
+  {
+    title: "Tutors",
+    href: "/admin/tutors",
+    icon: GraduationCap,
   },
   {
     title: "Banner",

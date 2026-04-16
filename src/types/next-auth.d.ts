@@ -12,6 +12,8 @@ declare module "next-auth" {
       image: string | null;
       specialties: string[];
       tutorBio: string | null;
+      tutorStatus: string | null;
+      resumeLink: string | null;
       subscriptionPeriodEnd?: Date | string | null;
       cancelAtPeriodEnd?: boolean | null;
     } & DefaultSession["user"];
@@ -27,6 +29,8 @@ declare module "next-auth" {
     hasCompletedOnboarding: boolean;
     specialties: string[];
     tutorBio: string | null;
+    tutorStatus: string | null;
+    resumeLink: string | null;
     subscriptionPeriodEnd?: Date | string | null;
     cancelAtPeriodEnd?: boolean | null;
   }
@@ -42,6 +46,8 @@ declare module "next-auth/jwt" {
     hasCompletedOnboarding: boolean;
     specialties: string[];
     tutorBio: string | null;
+    tutorStatus: string | null;
+    resumeLink: string | null;
     subscriptionPeriodEnd?: Date | string | null;
     cancelAtPeriodEnd?: boolean | null;
   }

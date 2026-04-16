@@ -6,7 +6,11 @@ import { getCachedTutorSessions } from "@/lib/tutor-cache";
 export async function GET() {
   const session = await getServerSession(authOptions);
 
-  if (!session?.user?.id || session.user.role !== "TUTOR") {
+  if (
+    !session?.user?.id ||
+    session.user.role !== "TUTOR" ||
+    session.user.tutorStatus !== "APPROVED"
+  ) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

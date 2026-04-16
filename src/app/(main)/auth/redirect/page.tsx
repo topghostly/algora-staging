@@ -20,11 +20,19 @@ export default function AuthRedirect() {
       case "ADMIN":
         router.replace("/admin");
         break;
-      case "TUTOR":
-        if (!session.user.hasCompletedOnboarding)
+      case "TUTOR": {
+        if (!session.user.hasCompletedOnboarding) {
           router.replace("/tutor/onboarding");
-        else router.replace("/tutor");
+        } else if (
+          session.user.tutorStatus === "PENDING" ||
+          session.user.tutorStatus === "REJECTED"
+        ) {
+          router.replace("/tutor/pending");
+        } else {
+          router.replace("/tutor");
+        }
         break;
+      }
       case "LEARNER":
         router.replace("/dashboard");
         break;

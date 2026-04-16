@@ -36,7 +36,10 @@ export async function POST(req: Request) {
 
     const updatedUser = await prisma.user.update({
       where: { id: session.user.id },
-      data: { role },
+      data: {
+        role,
+        ...(role === "TUTOR" ? { tutorStatus: "PENDING" } : {}),
+      },
     });
 
     // Log the role selection

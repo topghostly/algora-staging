@@ -114,34 +114,34 @@ export default function UserTable({ users }: UserTableProps) {
             }}
           >
             <th
-              style={{ padding: "1rem", fontWeight: 600, fontSize: "0.9rem" }}
+              style={{ padding: "1rem", fontWeight: 500, fontSize: "0.9rem" }}
             >
               User
             </th>
             <th
-              style={{ padding: "1rem", fontWeight: 600, fontSize: "0.9rem" }}
+              style={{ padding: "1rem", fontWeight: 500, fontSize: "0.9rem" }}
             >
               Role
             </th>
             <th
-              style={{ padding: "1rem", fontWeight: 600, fontSize: "0.9rem" }}
+              style={{ padding: "1rem", fontWeight: 500, fontSize: "0.9rem" }}
             >
               Status
             </th>
             <th
-              style={{ padding: "1rem", fontWeight: 600, fontSize: "0.9rem" }}
+              style={{ padding: "1rem", fontWeight: 500, fontSize: "0.9rem" }}
             >
               Subscription
             </th>
             <th
-              style={{ padding: "1rem", fontWeight: 600, fontSize: "0.9rem" }}
+              style={{ padding: "1rem", fontWeight: 500, fontSize: "0.9rem" }}
             >
               Joined
             </th>
             <th
               style={{
                 padding: "1rem",
-                fontWeight: 600,
+                fontWeight: 500,
                 fontSize: "0.9rem",
                 textAlign: "right",
               }}

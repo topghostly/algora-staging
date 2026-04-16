@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { rateLimit } from "@/lib/ratelimit";
 
 const SELECT_ROLE_PATH = "/auth/select-role";
+const TUTOR_PENDING_PATH = "/tutor/pending";
+const TUTOR_ONBOARDING_PATH = "/tutor/onboarding";
 
 export default withAuth(
   async function middleware(req) {
@@ -63,6 +65,21 @@ export default withAuth(
       token?.role !== "ADMIN"
     ) {
       return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
+
+    // Tutor vetting gate: PENDING or REJECTED tutors can only reach onboarding or pending page
+    if (
+      token?.role === "TUTOR" &&
+      (token as any)?.tutorStatus !== "APPROVED" &&
+      pathname.startsWith("/tutor") &&
+      pathname !== TUTOR_PENDING_PATH &&
+      pathname !== TUTOR_ONBOARDING_PATH &&
+      !pathname.startsWith("/tutor/onboarding")
+    ) {
+      // Allow if still in onboarding (no tutorStatus yet means pre-submission)
+      if ((token as any)?.tutorStatus === "PENDING" || (token as any)?.tutorStatus === "REJECTED") {
+        return NextResponse.redirect(new URL(TUTOR_PENDING_PATH, req.url));
+      }
     }
   },
   {

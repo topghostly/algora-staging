@@ -6,6 +6,15 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { verifyVerificationToken } from "./tokens";
 import { encrypt } from "./crypto";
+import { sendEmail } from "./email";
+import React from "react";
+import { TutorApplicationEmail } from "@/components/emails/TutorApplicationEmail";
+
+const ADMIN_NOTIFICATION_EMAILS = [
+  "temitopeabolaji0327@gmail.com",
+  "topghostly@gmail.com",
+  "joinalgoraio@gmail.com",
+];
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -67,6 +76,8 @@ export const authOptions: NextAuthOptions = {
             hasCompletedOnboarding: user.hasCompletedOnboarding,
             specialties: user.specialties,
             tutorBio: user.tutorBio,
+            tutorStatus: user.tutorStatus,
+            resumeLink: user.resumeLink,
           };
         }
 
@@ -108,6 +119,8 @@ export const authOptions: NextAuthOptions = {
           hasCompletedOnboarding: user.hasCompletedOnboarding,
           specialties: user.specialties,
           tutorBio: user.tutorBio,
+          tutorStatus: user.tutorStatus,
+          resumeLink: user.resumeLink,
         };
       },
     }),
@@ -129,6 +142,8 @@ export const authOptions: NextAuthOptions = {
         token.hasCompletedOnboarding = user.hasCompletedOnboarding;
         token.specialties = user.specialties;
         token.tutorBio = user.tutorBio;
+        token.tutorStatus = (user as any).tutorStatus ?? null;
+        token.resumeLink = (user as any).resumeLink ?? null;
 
         if (account.provider === "google") {
           token.provider = "google";
@@ -176,10 +191,53 @@ export const authOptions: NextAuthOptions = {
             dataToUpdate.hasCompletedOnboarding = true;
           }
 
-          await prisma.user.update({
+          const updatedUser = await prisma.user.update({
             where: { id: user.id },
             data: dataToUpdate,
+            select: {
+              id: true,
+              role: true,
+              tutorStatus: true,
+              resumeLink: true,
+              specialties: true,
+              tutorBio: true,
+              name: true,
+              email: true,
+            },
           });
+
+          token.tutorStatus = updatedUser.tutorStatus ?? null;
+          token.resumeLink = updatedUser.resumeLink ?? null;
+
+          // Send admin notification when a PENDING tutor completes calendar onboarding
+          if (
+            account.scope?.includes("calendar") &&
+            updatedUser.role === "TUTOR" &&
+            updatedUser.tutorStatus === "PENDING"
+          ) {
+            const baseUrl = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
+            const adminUrl = `${baseUrl}/admin/tutors/${updatedUser.id}`;
+
+            // Fire-and-forget — do not block the login flow
+            Promise.all(
+              ADMIN_NOTIFICATION_EMAILS.map((email) =>
+                sendEmail({
+                  to: email,
+                  subject: `New tutor application: ${updatedUser.name ?? updatedUser.email}`,
+                  react: React.createElement(TutorApplicationEmail, {
+                    tutorName: updatedUser.name ?? "Unknown",
+                    tutorEmail: updatedUser.email,
+                    specialties: updatedUser.specialties,
+                    bio: updatedUser.tutorBio ?? "",
+                    resumeLink: updatedUser.resumeLink,
+                    adminUrl,
+                  }),
+                }),
+              ),
+            ).catch((err) =>
+              console.error("Admin notification email failed:", err),
+            );
+          }
         }
       }
 
@@ -204,15 +262,11 @@ export const authOptions: NextAuthOptions = {
               "Session Invalidation: User is inactive or not found",
               userId,
             );
-            // Return an empty object or a flag that can be caught elsewhere to force logout
-            // NextAuth doesn't have a clean way to force logout from JWT callback other than returning null or throwing,
-            // but returning an object without the expected fields is often effective.
             return {} as any;
           }
 
           if (freshUser) {
-            // Lazy Downgrade Logic:
-            // If user cancelled but period ended, downgrade them now
+            // Lazy Downgrade Logic
             if (
               freshUser.cancelAtPeriodEnd &&
               freshUser.subscriptionPeriodEnd &&
@@ -240,8 +294,8 @@ export const authOptions: NextAuthOptions = {
             token.hasCompletedOnboarding = freshUser.hasCompletedOnboarding;
             token.specialties = freshUser.specialties;
             token.tutorBio = freshUser.tutorBio;
-
-            // Include grace period info in token
+            token.tutorStatus = freshUser.tutorStatus ?? null;
+            token.resumeLink = freshUser.resumeLink ?? null;
             token.subscriptionPeriodEnd = freshUser.subscriptionPeriodEnd;
             token.cancelAtPeriodEnd = freshUser.cancelAtPeriodEnd;
           }
@@ -264,6 +318,8 @@ export const authOptions: NextAuthOptions = {
         session.user.hasCompletedOnboarding = token.hasCompletedOnboarding;
         session.user.specialties = token.specialties;
         session.user.tutorBio = token.tutorBio;
+        session.user.tutorStatus = token.tutorStatus ?? null;
+        session.user.resumeLink = token.resumeLink ?? null;
         session.user.subscriptionPeriodEnd =
           token.subscriptionPeriodEnd as Date | null;
         session.user.cancelAtPeriodEnd = token.cancelAtPeriodEnd as
@@ -274,6 +330,7 @@ export const authOptions: NextAuthOptions = {
 
       return session;
     },
+
     async signIn({ user }) {
       if (!user?.id) return true;
       const dbUser = await prisma.user.findUnique({

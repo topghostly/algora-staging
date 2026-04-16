@@ -21,7 +21,9 @@ export type ActivityAction =
   | "LESSON_COMPLETED"
   | "BANNER_CREATED"
   | "BANNER_DELETED"
-  | "SESSION_REQUEST_REJECTED";
+  | "SESSION_REQUEST_REJECTED"
+  | "TUTOR_APPROVED"
+  | "TUTOR_REJECTED";
 
 interface LogActivityOptions {
   userId?: string;
