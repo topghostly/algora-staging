@@ -34,7 +34,11 @@ export default function EnrollButton({ trackId }: { trackId: string }) {
       });
 
       if (res.ok) {
-        router.push("/dashboard");
+        if ((session.user as any).role === "TUTOR") {
+          router.push("/tutor");
+        } else {
+          router.push("/dashboard");
+        }
         router.refresh();
       } else {
         const errorData = await res.text();

@@ -72,20 +72,12 @@ export default function PricingCard({
     try {
       if (tier) {
         try {
-          const response = await fetch("/api/paystack/webhook", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              event: "charge.success",
-              data: {
-                reference: reference.reference,
-              },
-            }),
-          });
-          if (!response.ok) {
-            throw new Error(`Subscription update failed (${response.status})`);
+          const result = await updateSubscription(
+            reference.reference,
+            session?.user?.id as string,
+          );
+          if (!result.success) {
+            throw new Error("Subscription update failed");
           }
         } catch (error) {
           console.error("Failed to update subscription:", error);
@@ -353,7 +345,11 @@ export default function PricingCard({
       {title !== "Free" ? (
         <button
           onClick={isCurrentPlan ? handleCancelClick : handleClick}
-          disabled={isCancelling || isPaymentPending || session?.user?.cancelAtPeriodEnd === true && isCurrentPlan}
+          disabled={
+            isCancelling ||
+            isPaymentPending ||
+            (session?.user?.cancelAtPeriodEnd === true && isCurrentPlan)
+          }
           className={`btn rounded-lg ${variant === "primary" ? "btn-primary" : "btn-outline"} `}
           style={{
             width: "100%",
@@ -361,8 +357,18 @@ export default function PricingCard({
             justifyContent: "center",
             padding: "0.75rem",
             marginTop: "auto",
-            opacity: isCancelling || isPaymentPending || (session?.user?.cancelAtPeriodEnd && isCurrentPlan) ? 0.7 : 1,
-            cursor: isCancelling || isPaymentPending || (session?.user?.cancelAtPeriodEnd && isCurrentPlan) ? "not-allowed" : "pointer",
+            opacity:
+              isCancelling ||
+              isPaymentPending ||
+              (session?.user?.cancelAtPeriodEnd && isCurrentPlan)
+                ? 0.7
+                : 1,
+            cursor:
+              isCancelling ||
+              isPaymentPending ||
+              (session?.user?.cancelAtPeriodEnd && isCurrentPlan)
+                ? "not-allowed"
+                : "pointer",
             display: "flex",
             alignItems: "center",
             gap: "0.5rem",

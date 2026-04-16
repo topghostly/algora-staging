@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   useReactTable,
@@ -12,10 +12,18 @@ import {
   createColumnHelper,
   type SortingState,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ExternalLink, Layers, VideoOff } from "lucide-react";
+import {
+  ArrowUpDown,
+  BookOpen,
+  ExternalLink,
+  Layers,
+  Loader,
+  VideoOff,
+} from "lucide-react";
 import ConnectCalendarButton from "@/components/ConnectCalendarButton";
 import DisconnectCalendarButton from "@/components/DisconnectCalendarButton";
 import { Button } from "@/components/ui/button";
+import { ErrorState } from "@/components/ErrorState";
 
 type SessionStatus = "PENDING" | "COMPLETED" | "CANCELLED";
 type SessionType = "GROUP" | "ONE_ON_ONE";
@@ -68,6 +76,19 @@ const duration = (start: string, end: string) => {
   );
   return mins >= 60 ? `${Math.floor(mins / 60)}h ${mins % 60}m` : `${mins}m`;
 };
+
+interface EnrolledTrack {
+  id: string;
+  track: {
+    id: string;
+    title: string;
+    description: string;
+    _count: {
+      modules: number;
+    };
+  };
+  createdAt: string;
+}
 
 const columnHelper = createColumnHelper<TutorSession>();
 
@@ -159,6 +180,33 @@ export default function TutorDashboardClient({
   const [sorting, setSorting] = useState<SortingState>([
     { id: "startTime", desc: true },
   ]);
+  const [enrollments, setEnrollments] = useState<EnrolledTrack[]>([]);
+  const [enrollmentsLoading, setEnrollmentsLoading] = useState(true);
+  const [enrollmentsError, setEnrollmentsError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchEnrollments() {
+      try {
+        const res = await fetch("/api/user/enrollments");
+        if (res.ok) {
+          const data = await res.json();
+          setEnrollments(data);
+          setEnrollmentsError(null);
+        } else {
+          setEnrollmentsError(
+            "Failed to load your learning tracks. Please try again.",
+          );
+        }
+      } catch {
+        setEnrollmentsError(
+          "A network error occurred. Please check your connection and try again.",
+        );
+      } finally {
+        setEnrollmentsLoading(false);
+      }
+    }
+    fetchEnrollments();
+  }, []);
 
   const now = new Date();
 
@@ -447,6 +495,113 @@ export default function TutorDashboardClient({
             </div>
           )}
         </div>
+      </div>
+
+      {/* Enrolled Tracks */}
+      <div className="mt-10">
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "1.5rem",
+          }}
+        >
+          <h3>Your Learning</h3>
+          {/* <Link href="/tracks" className="btn btn-outline rounded-full">
+            Browse All Tracks
+          </Link> */}
+        </div>
+
+        {enrollmentsError ? (
+          <div className="my-8">
+            <ErrorState message={enrollmentsError} />
+          </div>
+        ) : enrollmentsLoading ? (
+          <div className="p-18 text-muted flex justify-center items-center flex-row gap-2">
+            <Loader size={18} className="animate-spin" />
+            Loading your tracks...
+          </div>
+        ) : enrollments.length > 0 ? (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(360px, 1fr))",
+              gap: "1.5rem",
+            }}
+          >
+            {enrollments.map((enrollment) => (
+              <div
+                key={enrollment.id}
+                className="card relative"
+                style={{
+                  display: "flex",
+                  boxShadow: "none",
+                  flexDirection: "column",
+                }}
+              >
+                <div style={{ marginBottom: "1rem" }}>
+                  <h3
+                    style={{
+                      fontSize: "1.25rem",
+                      fontWeight: 500,
+                      marginBottom: "0.5rem",
+                    }}
+                  >
+                    {enrollment.track.title}
+                  </h3>
+                  <p
+                    style={{
+                      color: "var(--muted)",
+                      fontSize: "0.9rem",
+                      lineHeight: 1.5,
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {enrollment.track.description}
+                  </p>
+                </div>
+
+                <div
+                  style={{
+                    marginTop: "auto",
+                    paddingTop: "1rem",
+                    borderTop: "1px solid var(--border)",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: "0.85rem",
+                      color: "var(--muted)",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                    }}
+                  >
+                    <BookOpen size={14} /> {enrollment.track._count.modules}{" "}
+                    Modules
+                  </span>
+                  <Link href={`/tracks/${enrollment.track.id}`}>
+                    <Button variant={"outline"}>Continue</Button>
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            You haven&apos;t enrolled in any tracks yet.{" "}
+            <Link href="/tracks" className="text-primary hover:underline">
+              Explore Tracks
+            </Link>
+          </p>
+        )}
       </div>
     </div>
   );

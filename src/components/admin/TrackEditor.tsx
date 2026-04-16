@@ -76,6 +76,7 @@ interface LessonItemProps {
   isUploading: boolean;
   setEditingLessonId: (id: string | null) => void;
   handleSaveLessonContent: (lesson: Lesson) => void;
+  isSavingLessonContent: boolean;
 }
 
 function LessonItem({
@@ -96,6 +97,7 @@ function LessonItem({
   isUploading,
   setEditingLessonId,
   handleSaveLessonContent,
+  isSavingLessonContent,
 }: LessonItemProps) {
   const controls = useDragControls();
 
@@ -266,6 +268,7 @@ function LessonItem({
           >
             <button
               onClick={() => setEditingLessonId(null)}
+              disabled={isSavingLessonContent}
               className="btn btn-sm btn-outline rounded-full"
             >
               Cancel
@@ -273,9 +276,18 @@ function LessonItem({
             {lesson.type !== "QUIZ" && (
               <button
                 onClick={() => handleSaveLessonContent(lesson)}
+                disabled={isSavingLessonContent}
                 className="btn btn-sm btn-primary rounded-full"
+                style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}
               >
-                Save Content
+                {isSavingLessonContent ? (
+                  <>
+                    <Loader size={14} className="animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  "Save Content"
+                )}
               </button>
             )}
           </div>
@@ -319,6 +331,7 @@ export default function TrackEditor({ track }: { track: Track }) {
   const [newLessonType, setNewLessonType] = useState<"VIDEO" | "TEXT">("VIDEO");
 
   // UI State for editing content
+  const [isSavingLessonContent, setIsSavingLessonContent] = useState(false);
   const [editingLessonId, setEditingLessonId] = useState<string | null>(null);
   const [editLessonContent, setEditLessonContent] = useState("");
   const [editLessonTextContent, setEditLessonTextContent] = useState("");
@@ -455,6 +468,7 @@ export default function TrackEditor({ track }: { track: Track }) {
   }
 
   async function handleSaveLessonContent(lesson: Lesson) {
+    setIsSavingLessonContent(true);
     try {
       const body: Partial<Lesson> = {
         title: lesson.title,
@@ -488,6 +502,8 @@ export default function TrackEditor({ track }: { track: Track }) {
     } catch (error) {
       console.error(error);
       toast.error("Error updating lesson content");
+    } finally {
+      setIsSavingLessonContent(false);
     }
   }
 
@@ -788,6 +804,7 @@ export default function TrackEditor({ track }: { track: Track }) {
                     isUploading={isUploading}
                     setEditingLessonId={setEditingLessonId}
                     handleSaveLessonContent={handleSaveLessonContent}
+                    isSavingLessonContent={isSavingLessonContent}
                   />
                 ))}
               </Reorder.Group>

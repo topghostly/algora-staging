@@ -37,7 +37,7 @@ export default function LessonLayout({
       {/* Mobile Sidebar Toggle */}
       <button
         onClick={() => setIsSidebarOpen(true)}
-        className="lg:hidden fixed bottom-6 left-6 z-40 bg-primary text-primary-foreground p-3 rounded-full shadow-lg hover:scale-105 transition-transform"
+        className="lg:hidden fixed bottom-4 left-4 z-40 bg-primary text-primary-foreground p-3 rounded-full shadow-lg hover:scale-105 transition-transform"
         aria-label="Open lessons menu"
       >
         <Menu size={24} />

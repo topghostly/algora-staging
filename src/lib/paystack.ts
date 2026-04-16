@@ -27,6 +27,8 @@ export const verifyTransaction = async (reference: string) => {
   );
 
   if (!response.ok) {
+    const errorBody = await response.text();
+    console.error(`Paystack verification failed: ${response.status} ${response.statusText}`, errorBody);
     throw new Error(`Failed to verify transaction: ${response.statusText}`);
   }
 

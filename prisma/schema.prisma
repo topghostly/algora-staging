@@ -115,6 +115,7 @@ model PaymentTransaction {
   amount                Float
   currency              String   @default("NGN")
   status                String
+  reason                String?
   planCode              String?
   createdAt             DateTime @default(now())
 }

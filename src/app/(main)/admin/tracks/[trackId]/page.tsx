@@ -53,7 +53,7 @@ export default async function AdminTrackPage({ params }: AdminTrackPageProps) {
           />
           <h2>Edit Track</h2>
         </div>
-        <div className="card p-12">
+        <div className="">
           <ErrorState message="We couldn't load the track data for editing. Please try again." />
         </div>
       </div>

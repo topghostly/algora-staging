@@ -9,7 +9,6 @@ export default function NotFound() {
       <div className="flex h-60 w-60 md:h-72 md:w-72 items-center justify-center overflow-hidden mb-6">
         <NotFoundAnimation />
       </div>
-      <h1 className="text-5xl md:text-7xl tracking-tight mb-2">404</h1>
       <h2 className="text-2xl tracking-tight sm:text-3xl mb-4">
         Page not found
       </h2>

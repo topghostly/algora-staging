@@ -96,7 +96,7 @@ export async function GET(req: Request) {
   } catch (error) {
     console.error("[session/expire] Error:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Internal server error", msg: error },
       { status: 500 },
     );
   }

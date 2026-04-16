@@ -111,6 +111,9 @@ export default function VideoPlayer({
         .plyr__video-embed iframe {
           pointer-events: none !important;
         }
+        .plyr {
+          --plyr-color-main: var(--primary);
+        }
       `}</style>
     </>
   );

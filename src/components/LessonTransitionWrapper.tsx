@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronUp, ChevronDown } from "lucide-react";
 import ProgressTrigger from "@/components/ProgressTrigger";
+import { Button } from "./ui/button";
 
 const STORAGE_KEY = "lesson-nav-dir";
 
@@ -112,43 +113,49 @@ export default function LessonTransitionWrapper({
     <div className="flex flex-col min-h-[calc(100vh-116px)] overflow-hidden relative">
       {/* ── Animated unit: prev nav + lesson content + next nav ── */}
       <div ref={contentRef} className="flex flex-col flex-1">
-        {prevUrl && (
-          <button
-            onClick={() => navigate(prevUrl, "prev")}
-            disabled={navigating}
-            className="w-full py-2 bg-secondary flex flex-col gap-0 justify-center items-center cursor-pointer disabled:opacity-60 shrink-0"
-          >
-            <ChevronUp color="white" size={20} />
-            <p className="text-sm underline text-white">{prevTitle}</p>
-          </button>
-        )}
-
         <div className="flex-1">{children}</div>
 
-        <ProgressTrigger
-          lessonId={lessonId}
-          isCompleted={isCompleted}
-          lessonType={lessonType}
-        >
-          {nextUrl ? (
-            <button
-              onClick={() => navigate(nextUrl, "next")}
-              disabled={navigating}
-              className="w-full py-2 bg-secondary flex flex-col gap-0 justify-center items-center cursor-pointer disabled:opacity-60 shrink-0"
+        <div className="flex justify-center fixed bottom-0 right-0 bg-background w-full lg:w-[calc(100%-300px)] py-4 mt-auto border-t border-input">
+          <div className="flex gap-4">
+            {prevUrl && (
+              <Button
+                onClick={() => navigate(prevUrl, "prev")}
+                variant={"outline"}
+                disabled={navigating}
+                // className="w-fit py-3 px-8 bg-secondary flex flex-col gap-0 justify-center items-center cursor-pointer disabled:opacity-60 shrink-0"
+              >
+                <ChevronUp size={20} />
+                <p className="underline text-sm">{prevTitle && prevTitle.length > 15 ? prevTitle.slice(0, 15) + "…" : prevTitle}</p>
+              </Button>
+            )}
+            <ProgressTrigger
+              lessonId={lessonId}
+              isCompleted={isCompleted}
+              lessonType={lessonType}
             >
-              <p className="text-sm underline text-white">{nextTitle}</p>
-              <ChevronDown color="white" size={20} />
-            </button>
-          ) : (
-            <button
-              onClick={() => navigate("/dashboard", "next")}
-              disabled={navigating}
-              className="w-full py-4 bg-secondary flex flex-col gap-0 justify-center items-center cursor-pointer disabled:opacity-60 shrink-0"
-            >
-              <p className="text-sm underline text-white">Complete Track</p>
-            </button>
-          )}
-        </ProgressTrigger>
+              {nextUrl ? (
+                <Button
+                  onClick={() => navigate(nextUrl, "next")}
+                  variant={"outline"}
+                  disabled={navigating}
+                  // className="w-fit py-2 bg-secondary flex flex-col gap-0 justify-center items-center cursor-pointer disabled:opacity-60 shrink-0"
+                >
+                  <p className="underline text-sm">{nextTitle && nextTitle.length > 15 ? nextTitle.slice(0, 15) + "…" : nextTitle}</p>
+                  <ChevronDown size={20} />
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => navigate("/dashboard", "next")}
+                  variant={"outline"}
+                  disabled={navigating}
+                  // className="w-full py-4 bg-secondary flex flex-col gap-0 justify-center items-center cursor-pointer disabled:opacity-60 shrink-0"
+                >
+                  <p className="underline text-sm">Complete Track</p>
+                </Button>
+              )}
+            </ProgressTrigger>
+          </div>
+        </div>
       </div>
 
       {/* ── Skeleton placeholder ── slides in from the opposite direction,
@@ -161,16 +168,16 @@ export default function LessonTransitionWrapper({
           style={{ opacity: 0 }} // JS animates opacity to 1 once positioned
         >
           {/* Mimic prev nav button — py-2 + chevron (20px) + text-sm ≈ same height */}
-          <div className="w-full shrink-0 bg-secondary flex flex-col gap-0 items-center justify-center py-2">
+          {/* <div className="w-full shrink-0 bg-secondary flex flex-col gap-0 items-center justify-center py-2">
             <div className="h-5 w-5 rounded bg-accent/50 animate-pulse" />
             <div className="mt-0.5 h-3.5 w-28 rounded bg-accent/50 animate-pulse" />
-          </div>
+          </div> */}
 
           {/* Mimic lesson header band: full-width bg-secondary, py-8 md:py-18 */}
-          <div className="w-full shrink-0 bg-secondary py-8 md:py-18 md:block hidden ">
+          <div className="w-full shrink-0 bg-secondary py-6 md:py-10 md:block hidden ">
             <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4 px-4">
               {/* Title */}
-              <div className="h-14 w-2/5 rounded-lg bg-accent animate-pulse" />
+              <div className="h-9 w-2/5 rounded-lg bg-accent animate-pulse" />
               {/* Complete button placeholder */}
               <div className="h-9 w-30 rounded-lg bg-accent/40 animate-pulse hidden md:block" />
             </div>
@@ -193,9 +200,9 @@ export default function LessonTransitionWrapper({
           </div> */}
 
           {/* Mimic next nav button — py-2 + text-sm + chevron ≈ same height */}
-          <div className="w-full shrink-0 bg-secondary flex mt-auto flex-col gap-0 items-center justify-center py-2">
-            <div className="h-3.5 w-36 rounded bg-accent/50 animate-pulse" />
-            <div className="mt-0.5 h-5 w-5 rounded bg-accent/50 animate-pulse" />
+          <div className="w-full h-15 fixed bottom-0 right-0 bg-background border-t border-input flex mt-auto flex-row gap-4 items-center justify-center py-2">
+            <div className="h-10 w-30 rounded bg-accent/50 animate-pulse" />
+            <div className="mt-0.5 h-10 w-30 rounded bg-accent/50 animate-pulse" />
           </div>
         </div>
       )}

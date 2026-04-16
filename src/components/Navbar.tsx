@@ -25,11 +25,9 @@ import { Separator } from "./ui/separator";
 import { Badge } from "@/components/ui/badge";
 import GlowingButton from "./GlowingButton";
 import { QuickSearch } from "./QuickSearch";
-import { Button } from "./ui/button";
 
 export default function Navbar() {
   const { data: session } = useSession();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSignOutDialogOpen, setIsSignOutDialogOpen] = useState(false);
   const router = useRouter();
 
@@ -196,6 +194,12 @@ export default function Navbar() {
                         <div className="dropdown-item">
                           <TicketCheck size={16} />
                           <span>Sessions</span>
+                        </div>
+                      </Link>
+                      <Link href="/tracks">
+                        <div className="dropdown-item">
+                          <Layers size={16} />
+                          <span>Tracks</span>
                         </div>
                       </Link>
                     </>

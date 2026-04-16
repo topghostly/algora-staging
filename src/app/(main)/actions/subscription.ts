@@ -42,7 +42,7 @@ export async function updateSubscription(reference: string, userId: string) {
 
   if (existing) {
     const plan = ALLOWED_PLANS[existing.planCode!];
-    return { success: true, updated: false, tier: plan?.tier || "FREE" };
+    return { success: true, updated: false, tier: plan?.tier || "FREE", subscriptionPeriodEnd: null };
   }
 
   // 1. Verify transaction with Paystack
@@ -115,13 +115,27 @@ export async function updateSubscription(reference: string, userId: string) {
       },
     });
 
+    await tx.activityLog.create({
+      data: {
+        userId: userId,
+        action: "PAYMENT_SUCCESS",
+        entityType: "TRANSACTION",
+        entityId: paystackTransactionId,
+        metadata: {
+          amount,
+          tier,
+          planCode,
+        },
+      },
+    });
+
     return user;
   });
 
   revalidatePath("/pricing");
   revalidatePath("/dashboard");
 
-  return { success: true, updated: true, tier };
+  return { success: true, updated: true, tier, subscriptionPeriodEnd };
   // return { success: true, user: result };
 }
 
@@ -188,6 +202,17 @@ export async function cancelSubscription() {
     where: { id: session.user.id },
     data: {
       cancelAtPeriodEnd: true,
+    },
+  });
+
+  await prisma.activityLog.create({
+    data: {
+      userId: session.user.id,
+      action: "SUBSCRIPTION_CANCELLED_BY_USER",
+      entityType: "SUBSCRIPTION",
+      metadata: {
+        source: "dashboard_ui",
+      },
     },
   });
 
