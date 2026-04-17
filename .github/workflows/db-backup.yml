@@ -33,15 +33,6 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
 
-      - name: Install PostgreSQL 17 Client
-        run: |
-          echo "[INFO] Adding PostgreSQL 17 repository..."
-          sudo install -d /usr/share/postgresql-common/pgdg
-          sudo curl -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc --fail https://www.postgresql.org/media/keys/ACCC4CF8.asc
-          sudo sh -c 'echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-          sudo apt-get update -qq
-          sudo apt-get install -y postgresql-client-17
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -49,10 +40,18 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Execute Backup to S3
+      - name: Dump Database and Upload to S3
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           S3_BUCKET: ${{ secrets.S3_BUCKET }}
         run: |
-          chmod +x scripts/db-backup.sh
-          scripts/db-backup.sh
+          TIMESTAMP=$(date -u +"%Y-%m-%d_%H-%M-%S")
+          BACKUP_FILENAME="db_backup_${TIMESTAMP}.sql.gz"
+
+          echo "[INFO] Running pg_dump via Docker (Postgres 17) and compressing..."
+          docker run --rm postgres:17 pg_dump "$DATABASE_URL" | gzip > "$BACKUP_FILENAME"
+
+          echo "[INFO] Uploading archive to AWS S3 bucket destination..."
+          aws s3 cp "$BACKUP_FILENAME" "s3://${S3_BUCKET}/backups/${BACKUP_FILENAME}" --only-show-errors
+
+          echo "[INFO] Backup process completed successfully!"
