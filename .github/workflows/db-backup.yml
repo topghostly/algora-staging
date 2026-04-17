@@ -1,47 +1,57 @@
-name: Database Backup Scheduler
+name: Database Backup
 
 on:
   schedule:
-    # Run once daily at 03:00 UTC (during typical off-peak database hours)
     - cron: "0 3 * * *"
   workflow_dispatch:
-    # Allows manual triggering from the GitHub Actions UI for testing or emergency backups
 
-# Apply security best practices: explicitly restrict permissions
 permissions:
   contents: read
 
 jobs:
   db-backup:
-    name: Backup Production Database to S3
+    name: Backup Production Database
     runs-on: ubuntu-latest
-    timeout-minutes: 15 # Defensive timeout to prevent runaway jobs from consuming Action minutes
-
-    # Restrict execution to exclusively run on the main branch
-    if: github.ref == 'refs/heads/main'
+    timeout-minutes: 15
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install PostgreSQL Client
+      - name: Validate required secrets
         run: |
-          sudo apt-get update
-          sudo apt-get install -y postgresql-client
+          for var in DATABASE_URL S3_BUCKET AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_REGION; do
+            if [ -z "${!var}" ]; then
+              echo "::error::Required secret missing: ${var}"
+              exit 1
+            fi
+          done
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
 
-      - name: Configure AWS Credentials Securely
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Execute Backup Script
+      - name: Dump Database and Upload to S3
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           S3_BUCKET: ${{ secrets.S3_BUCKET }}
         run: |
-          # Ensure execution permissions for the script
-          chmod +x scripts/db-backup.sh
-          # Run the pipeline securely
-          scripts/db-backup.sh
+          TIMESTAMP=$(date -u +"%Y-%m-%d_%H-%M-%S")
+          BACKUP_FILENAME="db_backup_${TIMESTAMP}.sql.gz"
+
+          echo "[INFO] Running pg_dump via Docker (Postgres 17) and compressing..."
+          docker run --rm postgres:17 pg_dump "$DATABASE_URL" | gzip > "$BACKUP_FILENAME"
+
+          echo "[INFO] Uploading archive to AWS S3 bucket destination..."
+          aws s3 cp "$BACKUP_FILENAME" "s3://${S3_BUCKET}/backups/${BACKUP_FILENAME}" --only-show-errors
+
+          echo "[INFO] Backup process completed successfully!"
