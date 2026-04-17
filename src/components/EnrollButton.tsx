@@ -15,13 +15,24 @@ export default function EnrollButton({ trackId }: { trackId: string }) {
   const handleEnroll = async () => {
     console.log(session);
     if (!session) {
-      console.log("No session");
+      toast.error("Please sign in to enroll in a track");
       router.push("/auth/signin");
       return;
     }
 
     if (!(session.user as any).emailVerified) {
+      toast.error("Please verify your email to enroll in a track");
       router.push("/email-not-verified");
+      return;
+    }
+
+    if (
+      (session.user as any).role === "TUTOR" &&
+      (session.user as any).tutorStatus !== "APPROVED"
+    ) {
+      toast.error(
+        "Your tutor application is not approved yet. Please wait for approval.",
+      );
       return;
     }
 

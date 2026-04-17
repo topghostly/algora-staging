@@ -127,6 +127,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Prevent layout shift of sticky elements when Radix UI Dialogs conditionally remove scrollbar */
+body[data-scroll-locked] nav {
+  padding-right: var(--removed-body-scroll-bar-size, 0px) !important;
+}
+
 button {
   cursor: pointer;
   font-family: inherit;

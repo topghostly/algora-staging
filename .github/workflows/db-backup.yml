@@ -1,0 +1,47 @@
+name: Database Backup Scheduler
+
+on:
+  schedule:
+    # Run once daily at 03:00 UTC (during typical off-peak database hours)
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+    # Allows manual triggering from the GitHub Actions UI for testing or emergency backups
+
+# Apply security best practices: explicitly restrict permissions
+permissions:
+  contents: read
+
+jobs:
+  db-backup:
+    name: Backup Production Database to S3
+    runs-on: ubuntu-latest
+    timeout-minutes: 15 # Defensive timeout to prevent runaway jobs from consuming Action minutes
+
+    # Restrict execution to only when the environment is 'production'
+    if: vars.NODE_ENV == 'production'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install PostgreSQL Client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Configure AWS Credentials Securely
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Execute Backup Script
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+        run: |
+          # Ensure execution permissions for the script
+          chmod +x scripts/db-backup.sh
+          # Run the pipeline securely
+          scripts/db-backup.sh
