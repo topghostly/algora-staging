@@ -17,17 +17,59 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15 # Defensive timeout to prevent runaway jobs from consuming Action minutes
 
-    # Restrict execution to only when the environment is 'production'
-    if: vars.NODE_ENV == 'production'
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Validate environment and secrets
+        env:
+          NODE_ENV_VAR: ${{ vars.NODE_ENV }}
+          HAS_DB_URL: ${{ secrets.DATABASE_URL != '' }}
+          HAS_S3_BUCKET: ${{ secrets.S3_BUCKET != '' }}
+          HAS_AWS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
+          HAS_AWS_SECRET: ${{ secrets.AWS_SECRET_ACCESS_KEY != '' }}
+          HAS_AWS_REGION: ${{ secrets.AWS_REGION != '' }}
+        run: |
+          echo "--- Environment Diagnostics ---"
+          echo "Trigger event     : ${{ github.event_name }}"
+          echo "Repository        : ${{ github.repository }}"
+          echo "Runner OS         : ${{ runner.os }}"
+          echo "vars.NODE_ENV     : '${NODE_ENV_VAR}'"
+          echo ""
+          echo "--- Secret presence checks (true = set, false = missing) ---"
+          echo "DATABASE_URL      : ${HAS_DB_URL}"
+          echo "S3_BUCKET         : ${HAS_S3_BUCKET}"
+          echo "AWS_ACCESS_KEY_ID : ${HAS_AWS_KEY}"
+          echo "AWS_SECRET_ACCESS_KEY: ${HAS_AWS_SECRET}"
+          echo "AWS_REGION        : ${HAS_AWS_REGION}"
+          echo ""
+
+          # Fail loudly if NODE_ENV is not 'production' rather than silently skipping.
+          # A skipped job shows green in GitHub Actions, masking the misconfiguration.
+          if [ "${NODE_ENV_VAR}" != "production" ]; then
+            echo "::error::vars.NODE_ENV is '${NODE_ENV_VAR}', expected 'production'."
+            echo "::error::Set the NODE_ENV repository variable to 'production' under Settings → Secrets and variables → Actions → Variables."
+            exit 1
+          fi
+
+          # Fail early if any required secret is missing.
+          MISSING=0
+          for var in HAS_DB_URL HAS_S3_BUCKET HAS_AWS_KEY HAS_AWS_SECRET HAS_AWS_REGION; do
+            val="${!var}"
+            if [ "$val" != "true" ]; then
+              echo "::error::Required secret is not set: ${var}"
+              MISSING=1
+            fi
+          done
+          [ "$MISSING" -eq 1 ] && exit 1
+
+          echo "[OK] All pre-flight checks passed."
+
       - name: Install PostgreSQL Client
         run: |
-          sudo apt-get update
+          sudo apt-get update -qq
           sudo apt-get install -y postgresql-client
+          echo "[INFO] pg_dump version: $(pg_dump --version)"
 
       - name: Configure AWS Credentials Securely
         uses: aws-actions/configure-aws-credentials@v4
@@ -36,12 +78,29 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: Verify AWS credentials and S3 bucket access
+        env:
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+        run: |
+          echo "[INFO] Verifying AWS identity..."
+          aws sts get-caller-identity
+          echo ""
+          echo "[INFO] Verifying S3 bucket access (listing backups/ prefix)..."
+          aws s3 ls "s3://${S3_BUCKET}/backups/" --human-readable || echo "[WARN] No existing backups found or bucket prefix does not exist yet."
+
       - name: Execute Backup Script
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           S3_BUCKET: ${{ secrets.S3_BUCKET }}
         run: |
-          # Ensure execution permissions for the script
           chmod +x scripts/db-backup.sh
-          # Run the pipeline securely
           scripts/db-backup.sh
+
+      - name: Confirm upload in S3
+        env:
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+        run: |
+          echo "[INFO] Listing the 5 most recent backups in s3://${S3_BUCKET}/backups/ ..."
+          aws s3 ls "s3://${S3_BUCKET}/backups/" --human-readable \
+            | sort -k1,2 -r \
+            | head -5
