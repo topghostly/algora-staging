@@ -42,7 +42,12 @@ export async function updateSubscription(reference: string, userId: string) {
 
   if (existing) {
     const plan = ALLOWED_PLANS[existing.planCode!];
-    return { success: true, updated: false, tier: plan?.tier || "FREE", subscriptionPeriodEnd: null };
+    return {
+      success: true,
+      updated: false,
+      tier: plan?.tier || "FREE",
+      subscriptionPeriodEnd: null,
+    };
   }
 
   // 1. Verify transaction with Paystack

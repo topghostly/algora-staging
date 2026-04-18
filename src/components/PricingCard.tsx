@@ -71,26 +71,12 @@ export default function PricingCard({
   const onSuccess = async (reference: any) => {
     try {
       if (tier) {
-        try {
-          const result = await updateSubscription(
-            reference.reference,
-            session?.user?.id as string,
-          );
-          if (!result.success) {
-            throw new Error("Subscription update failed");
-          }
-        } catch (error) {
-          console.error("Failed to update subscription:", error);
-          toast.error(
-            "Payment was successful, but we encountered an error updating your account. Please contact support.",
-            {
-              duration: 5000,
-            },
-          );
-          return;
-        } finally {
-          setIsPaymentPending(false);
-          setIsLoading(false);
+        const result = await updateSubscription(
+          reference.reference,
+          session?.user?.id as string,
+        );
+        if (!result.success) {
+          throw new Error("Subscription update failed");
         }
         toast.success(
           `Payment successful! Your subscription has been updated to ${title}.`,
@@ -118,25 +104,26 @@ export default function PricingCard({
         await update();
       }
     } catch (error) {
-      console.error("Failed to update subscription:", error);
-      setIsPaymentPending(false);
-      setIsLoading(false);
+      console.error("Failed to verify/update subscription synchronously:", error);
 
-      // Log the failure in the database
+      // Log the pending verification in the database for webhook to pick up
       await recordTransaction({
         reference: reference.reference,
         amount: amount || 0,
-        status: "FAILED_TO_UPDATE_USER",
+        status: "PENDING_VERIFICATION",
         planCode: planCode,
         paystackTransactionId: reference.transaction,
       });
 
-      toast.error(
-        "Payment was successful, but we encountered an error updating your account. Please contact support.",
+      toast.success(
+        "Payment was successful! We are finalizing the verification. Your account will be updated shortly.",
         {
-          duration: 5000,
+          duration: 6000,
         },
       );
+    } finally {
+      setIsPaymentPending(false);
+      setIsLoading(false);
     }
   };
 
