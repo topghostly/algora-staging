@@ -8,6 +8,7 @@ import {
   CheckCircle2,
   XCircle,
   ShieldAlert,
+  ShieldOff,
 } from "lucide-react";
 import { ConfirmationDialog } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
@@ -31,8 +32,9 @@ interface UserTableProps {
   users: User[];
 }
 
-export default function UserTable({ users }: UserTableProps) {
+export default function UserTable({ users: initialUsers }: UserTableProps) {
   const router = useRouter();
+  const [users, setUsers] = useState(initialUsers);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogConfig, setDialogConfig] = useState<{
     title: string;
@@ -93,10 +95,14 @@ export default function UserTable({ users }: UserTableProps) {
 
       if (!res.ok) throw new Error(`Failed to ${action} user`);
 
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.id === userId ? { ...u, suspended: !isSuspended } : u,
+        ),
+      );
       toast.success(
         `User ${isSuspended ? "unsuspended" : "suspended"} successfully`,
       );
-      router.refresh();
     } catch (error) {
       toast.error(`Error ${isSuspended ? "unsuspending" : "suspending"} user`);
     }
@@ -328,7 +334,7 @@ export default function UserTable({ users }: UserTableProps) {
                       title={user.suspended ? "Unsuspend User" : "Suspend User"}
                       disabled={user.disabled || user.role === "ADMIN"}
                     >
-                      <Ban size={16} />
+                      {user.suspended ? <ShieldOff size={16} /> : <Ban size={16} />}
                     </Button>
                     <Button
                       variant={"outline"}

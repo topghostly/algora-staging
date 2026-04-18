@@ -1,47 +1,44 @@
-import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { redirect } from "next/navigation";
+"use client";
+
+import { useEffect, useState } from "react";
+import { Loader } from "lucide-react";
 import { ErrorState } from "@/components/ErrorState";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 import TutorTable from "./TutorTable";
 
-export const dynamic = "force-dynamic";
-
-async function getTutors() {
-  return await prisma.user.findMany({
-    where: { role: "TUTOR" },
-    orderBy: [
-      // PENDING first, then APPROVED, then REJECTED
-      { tutorStatus: "asc" },
-      { createdAt: "desc" },
-    ],
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      specialties: true,
-      tutorStatus: true,
-      calendarConnected: true,
-      resumeLink: true,
-      createdAt: true,
-      disabled: true,
-    },
-  });
+interface TutorRow {
+  id: string;
+  name: string | null;
+  email: string;
+  specialties: string[];
+  tutorStatus: string | null;
+  calendarConnected: boolean;
+  resumeLink: string | null;
+  createdAt: Date;
+  disabled: boolean;
 }
 
-export default async function AdminTutorsPage() {
-  const session = await getServerSession(authOptions);
+export default function AdminTutorsPage() {
+  const [tutors, setTutors] = useState<TutorRow[] | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!session || session.user.role !== "ADMIN") {
-    redirect("/auth/signin");
-  }
+  useEffect(() => {
+    fetch("/api/admin/tutors")
+      .then((res) => res.json())
+      .then((data) => setTutors(data))
+      .catch(() => setTutors(null))
+      .finally(() => setLoading(false));
+  }, []);
 
-  let tutors = null;
-  try {
-    tutors = await getTutors();
-  } catch (error) {
-    console.error("Error fetching tutors:", error);
+  if (loading) {
+    return (
+      <div className="px-page min-h-[60vh] flex flex-col justify-center items-center gap-6">
+        <p className="text-muted flex items-center gap-2">
+          <Loader size={16} className="animate-spin" style={{ marginRight: "0.4rem" }} />
+          Loading tutors…
+        </p>
+      </div>
+    );
   }
 
   return (

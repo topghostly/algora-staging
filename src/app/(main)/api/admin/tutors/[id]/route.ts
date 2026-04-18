@@ -14,6 +14,7 @@ const bodySchema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("approve") }),
   z.object({ action: z.literal("reject") }),
   z.object({ action: z.literal("disable") }),
+  z.object({ action: z.literal("enable") }),
 ]);
 
 export async function PATCH(
@@ -121,6 +122,23 @@ export async function PATCH(
       });
 
       return NextResponse.json({ success: true, disabled: true });
+    }
+
+    if (action === "enable") {
+      await prisma.user.update({
+        where: { id },
+        data: { disabled: false },
+      });
+
+      await logActivity({
+        userId: session.user.id,
+        action: "USER_ENABLED",
+        entityType: "USER",
+        entityId: id,
+        metadata: { tutorEmail: tutor.email },
+      });
+
+      return NextResponse.json({ success: true, disabled: false });
     }
   } catch (error) {
     console.error("Admin tutor action error:", error);

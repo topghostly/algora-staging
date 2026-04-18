@@ -98,6 +98,10 @@ export const authOptions: NextAuthOptions = {
           throw new Error("AccountDisabled");
         }
 
+        if (user.suspended) {
+          throw new Error("AccountSuspended");
+        }
+
         const isValid = await bcrypt.compare(
           credentials.password,
           user.passwordHash,

@@ -1,42 +1,60 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import { getCachedTutorSessions } from "@/lib/tutor-cache";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { Loader } from "lucide-react";
 import TutorDashboardClient from "./TutorDashboardClient";
 import { ErrorState } from "@/components/ErrorState";
 
-export default async function TutorDashboardPage() {
-  const session = await getServerSession(authOptions);
+export default function TutorDashboardPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [sessions, setSessions] = useState<any[] | null>(null);
+  const [fetchLoading, setFetchLoading] = useState(true);
 
-  if (!session || !session.user) {
-    redirect("/auth/signin");
-  }
+  useEffect(() => {
+    if (status === "loading") return;
 
-  if (session.user.role !== "TUTOR") {
-    redirect("/auth/redirect");
-  }
+    if (!session?.user) {
+      router.replace("/auth/signin");
+      return;
+    }
 
-  if (!session.user.hasCompletedOnboarding) {
-    redirect("/tutor/onboarding");
-  }
+    if (session.user.role !== "TUTOR") {
+      router.replace("/auth/redirect");
+      return;
+    }
 
-  let sessions = null;
-  try {
-    const rawSessions = await getCachedTutorSessions(session.user.id);
-    sessions = rawSessions.map((s) => ({
-      id: s.id,
-      title: s.title,
-      // @ts-ignore
-      type: s.type,
-      // @ts-ignore
-      status: s.status,
-      startTime: new Date(s.startTime as any).toISOString(),
-      endTime: new Date(s.endTime as any).toISOString(),
-      meetingLink: s.meetingLink,
-      _count: { bookings: s.bookings.length },
-    }));
-  } catch (error) {
-    console.error("Error fetching tutor sessions:", error);
+    if (!session.user.hasCompletedOnboarding) {
+      router.replace("/tutor/onboarding");
+      return;
+    }
+
+    fetch("/api/tutor/sessions")
+      .then((res) => res.json())
+      .then((data) =>
+        setSessions(
+          data.map((s: any) => ({
+            ...s,
+            startTime: new Date(s.startTime).toISOString(),
+            endTime: new Date(s.endTime).toISOString(),
+          })),
+        ),
+      )
+      .catch(() => setSessions(null))
+      .finally(() => setFetchLoading(false));
+  }, [status, session, router]);
+
+  if (status === "loading" || (status === "authenticated" && fetchLoading)) {
+    return (
+      <div className="px-page min-h-[60vh] flex flex-col justify-center items-center gap-6">
+        <p className="text-muted flex items-center gap-2">
+          <Loader size={16} className="animate-spin" style={{ marginRight: "0.4rem" }} />
+          Loading dashboard…
+        </p>
+      </div>
+    );
   }
 
   if (!sessions) {
@@ -49,7 +67,7 @@ export default async function TutorDashboardPage() {
 
   return (
     <div className="px-page">
-      <TutorDashboardClient initialSessions={sessions} user={session.user} />
+      <TutorDashboardClient initialSessions={sessions} user={session!.user} />
     </div>
   );
 }

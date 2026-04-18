@@ -34,6 +34,12 @@ function SignInForm() {
           "Your account has been disabled and marked for deletion. Please contact support@joinalgora.com.",
         duration: 8000,
       });
+    } else if (errorParam === "AccountSuspended") {
+      toast.error("Account suspended", {
+        description:
+          "Your account has been temporarily suspended. Please contact support@joinalgora.com.",
+        duration: 8000,
+      });
     }
   }, [searchParams]);
 
@@ -83,6 +89,13 @@ function SignInForm() {
       toast.error("Account disabled", {
         description:
           "Your account has been disabled and marked for deletion. Please contact support@joinalgora.com.",
+        duration: 8000,
+      });
+      setLoading(false);
+    } else if (res?.error === "AccountSuspended") {
+      toast.error("Account suspended", {
+        description:
+          "Your account has been temporarily suspended. Please contact support@joinalgora.com.",
         duration: 8000,
       });
       setLoading(false);

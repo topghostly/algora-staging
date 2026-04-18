@@ -145,6 +145,7 @@ button {
 
 .px-page {
   padding-inline: clamp(1rem, 5vw, 2rem);
+  padding-bottom: 20px;
 }
 
 .btn {

@@ -1,29 +1,33 @@
-import { prisma } from "@/lib/prisma";
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Plus, Loader } from "lucide-react";
 import { ErrorState } from "@/components/ErrorState";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
-import TracksTable from "./TracksTable";
+import TracksTable, { type TrackRow } from "./TracksTable";
 
-export const dynamic = "force-dynamic";
+export default function AdminTracksPage() {
+  const [tracks, setTracks] = useState<TrackRow[] | null>(null);
+  const [loading, setLoading] = useState(true);
 
-async function getTracks() {
-  return await prisma.track.findMany({
-    orderBy: { createdAt: "desc" },
-    include: {
-      _count: {
-        select: { modules: true, enrollments: true },
-      },
-    },
-  });
-}
+  useEffect(() => {
+    fetch("/api/admin/tracks")
+      .then((res) => res.json())
+      .then((data) => setTracks(data))
+      .catch(() => setTracks(null))
+      .finally(() => setLoading(false));
+  }, []);
 
-export default async function AdminTracksPage() {
-  let tracks = null;
-  try {
-    tracks = await getTracks();
-  } catch (error) {
-    console.error("Error fetching tracks:", error);
+  if (loading) {
+    return (
+      <div className="px-page min-h-[60vh] flex flex-col justify-center items-center gap-6">
+        <p className="text-muted flex items-center gap-2">
+          <Loader size={16} className="animate-spin" style={{ marginRight: "0.4rem" }} />
+          Loading tracks…
+        </p>
+      </div>
+    );
   }
 
   return (

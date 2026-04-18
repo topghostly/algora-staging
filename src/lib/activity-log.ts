@@ -7,6 +7,7 @@ export type ActivityAction =
   | "ROLE_UPDATED"
   | "ROLE_SELECTED"
   | "USER_DISABLED"
+  | "USER_ENABLED"
   | "USER_SUSPENDED"
   | "USER_UNSUSPENDED"
   | "TRACK_CREATED"

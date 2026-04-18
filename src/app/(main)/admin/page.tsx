@@ -1,48 +1,58 @@
-import { prisma } from "@/lib/prisma";
-import { Users, BookOpen, PlayCircle } from "lucide-react";
+"use client";
+
+import { useEffect, useState } from "react";
+import { Loader } from "lucide-react";
 import { ErrorState } from "@/components/ErrorState";
 import ActivityTable, { type ActivityRow } from "./ActivityTable";
 
-export const dynamic = "force-dynamic";
-
-async function getAdminStats() {
-  const [userCount, trackCount, lessonCount, recentActivities] =
-    await Promise.all([
-      prisma.user.count(),
-      prisma.track.count(),
-      prisma.lesson.count(),
-      prisma.activityLog.findMany({
-        take: 100,
-        orderBy: { createdAt: "desc" },
-        include: {
-          user: { select: { name: true, email: true } },
-        },
-      }),
-    ]);
-
-  return { userCount, trackCount, lessonCount, recentActivities };
+interface Stats {
+  userCount: number;
+  trackCount: number;
+  lessonCount: number;
+  recentActivities: {
+    id: string;
+    action: string;
+    entityType: string | null;
+    entityId: string | null;
+    metadata: Record<string, unknown> | null;
+    createdAt: string;
+    user: { name: string | null; email: string } | null;
+  }[];
 }
 
-export default async function AdminDashboardPage() {
-  let stats = null;
-  try {
-    stats = await getAdminStats();
-  } catch (error) {
-    console.error("Error fetching admin stats:", error);
+export default function AdminDashboardPage() {
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/admin/stats")
+      .then((res) => res.json())
+      .then((data) => setStats(data))
+      .catch(() => setStats(null))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="px-page min-h-[60vh] flex flex-col justify-center items-center gap-6">
+        <p className="text-muted flex items-center gap-2">
+          <Loader size={16} className="animate-spin" style={{ marginRight: "0.4rem" }} />
+          Loading dashboard…
+        </p>
+      </div>
+    );
   }
 
-  const activityRows: ActivityRow[] = (stats?.recentActivities ?? []).map(
-    (a) => ({
-      id: a.id,
-      action: a.action,
-      userName: a.user?.name ?? null,
-      userEmail: a.user?.email ?? null,
-      entityType: a.entityType ?? null,
-      entityId: a.entityId ?? null,
-      metadata: (a.metadata as Record<string, unknown>) ?? null,
-      createdAt: a.createdAt,
-    }),
-  );
+  const activityRows: ActivityRow[] = (stats?.recentActivities ?? []).map((a) => ({
+    id: a.id,
+    action: a.action,
+    userName: a.user?.name ?? null,
+    userEmail: a.user?.email ?? null,
+    entityType: a.entityType ?? null,
+    entityId: a.entityId ?? null,
+    metadata: a.metadata ?? null,
+    createdAt: new Date(a.createdAt),
+  }));
 
   return (
     <div className="px-page flex flex-col gap-10">

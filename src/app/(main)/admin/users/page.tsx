@@ -1,44 +1,49 @@
-import { prisma } from "@/lib/prisma";
+"use client";
+
+import { useEffect, useState } from "react";
 import UserTable from "./UserTable";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import { ErrorState } from "@/components/ErrorState";
 import { BreadcrumbNav } from "@/components/BreadcrumbNav";
+import { Loader } from "lucide-react";
 
-export const dynamic = "force-dynamic";
-
-async function getUsers() {
-  return await prisma.user.findMany({
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      role: true,
-      emailVerified: true,
-      subscriptionTier: true,
-      createdAt: true,
-      disabled: true,
-      suspended: true,
-      image: true,
-      // passwordHash, googleRefreshToken, etc. are NOT selected
-    },
-  });
+interface User {
+  id: string;
+  email: string;
+  name: string | null;
+  role: string;
+  emailVerified: Date | null;
+  subscriptionTier: string;
+  createdAt: Date;
+  disabled: boolean;
+  suspended: boolean;
+  image: string | null;
 }
 
-export default async function AdminUsersPage() {
-  const session = await getServerSession(authOptions);
+export default function AdminUsersPage() {
+  const [users, setUsers] = useState<User[] | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!session || session.user.role !== "ADMIN") {
-    redirect("/auth/signin");
-  }
+  useEffect(() => {
+    fetch("/api/admin/users")
+      .then((res) => res.json())
+      .then((data) => setUsers(data))
+      .catch(() => setUsers(null))
+      .finally(() => setLoading(false));
+  }, []);
 
-  let users = null;
-  try {
-    users = await getUsers();
-  } catch (error) {
-    console.error("Error fetching users:", error);
+  if (loading) {
+    return (
+      <div className="px-page min-h-[60vh] flex flex-col justify-center items-center gap-6">
+        <p className="text-muted flex items-center gap-2">
+          <Loader
+            size={16}
+            className="animate-spin"
+            style={{ marginRight: "0.4rem" }}
+          />
+          Loading users…
+        </p>
+      </div>
+    );
   }
 
   return (

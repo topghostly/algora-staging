@@ -223,7 +223,7 @@ export function QuickSearch() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-black/60 z-[100] backdrop-blur-sm"
+            className="fixed inset-0 bg-black/60 z-100 backdrop-blur-sm"
             aria-hidden="true"
           />
         )}
@@ -233,7 +233,7 @@ export function QuickSearch() {
         ref={containerRef}
         className={cn(
           "relative w-full max-w-2xl transition-all duration-300",
-          open ? "z-[101]" : "z-50",
+          open ? "z-101" : "z-50",
         )}
       >
         <Command className="rounded-lg border-gray-300 border-2 bg-background overflow-visible">

@@ -58,7 +58,9 @@ export default function TutorDetailClient({
   } | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const runAction = async (action: "approve" | "reject" | "disable") => {
+  const runAction = async (
+    action: "approve" | "reject" | "disable" | "enable",
+  ) => {
     setLoading(action);
     try {
       const res = await fetch(`/api/admin/tutors/${tutor.id}`, {
@@ -83,6 +85,9 @@ export default function TutorDetailClient({
       } else if (action === "disable") {
         setTutor((prev) => ({ ...prev, disabled: true }));
         toast.success("Account disabled — email sent.");
+      } else if (action === "enable") {
+        setTutor((prev) => ({ ...prev, disabled: false }));
+        toast.success("Account re-enabled.");
       }
 
       router.refresh();
@@ -358,17 +363,27 @@ export default function TutorDetailClient({
         )}
 
         {tutor.disabled && (
-          <span
-            style={{
-              fontSize: "0.85rem",
-              color: "#dc2626",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.4rem",
-            }}
-          >
-            <Ban size={15} /> Account is disabled
-          </span>
+          <div className="flex flex-col gap-2">
+            <Button
+              variant="outline"
+              onClick={() =>
+                confirm({
+                  title: "Re-enable Account",
+                  description: `Re-enable ${tutor.name ?? tutor.email}'s account? They will regain access immediately.`,
+                  confirmText: "Re-enable",
+                  onConfirm: () => runAction("enable"),
+                  variant: "default",
+                })
+              }
+              disabled={!!loading}
+            >
+              <CheckCircle2 size={16} />
+              Re-enable Account
+            </Button>
+            <span className="text-xs text-orange-500">
+              This account has been disabled
+            </span>
+          </div>
         )}
       </div>
 
