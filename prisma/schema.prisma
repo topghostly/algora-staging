@@ -107,17 +107,27 @@ model User {
 }
 
 model PaymentTransaction {
-  id                    String   @id @default(cuid())
+  id                    String    @id @default(cuid())
   userId                String
-  user                  User     @relation(fields: [userId], references: [id])
-  reference             String   @unique
+  user                  User      @relation(fields: [userId], references: [id])
+  reference             String    @unique
   paystackTransactionId String?
   amount                Float
-  currency              String   @default("NGN")
+  currency              String    @default("NGN")
   status                String
   reason                String?
   planCode              String?
-  createdAt             DateTime @default(now())
+  // Payment method details
+  channel               String?   // "card" | "bank_transfer" | "ussd" | "mobile_money" etc.
+  authorizationCode     String?   // Paystack AUTH_xxx — reusable for future charges
+  cardType              String?   // "visa" | "mastercard" | "verve"
+  last4                 String?   // last 4 digits of card
+  expMonth              String?
+  expYear               String?
+  bank                  String?   // issuing bank name
+  customerCode          String?   // Paystack CUS_xxx
+  paidAt                DateTime? // actual payment timestamp from Paystack
+  createdAt             DateTime  @default(now())
 }
 
 model Track {

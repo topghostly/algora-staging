@@ -7,6 +7,7 @@ import {
 } from "@/lib/paystack-handlers";
 
 export async function POST(req: Request) {
+  console.log("This is the webhook");
   const bodyText = await req.text();
   const signature = req.headers.get("x-paystack-signature");
 
@@ -16,14 +17,19 @@ export async function POST(req: Request) {
 
   const { event, data } = JSON.parse(bodyText);
 
-  console.log(`Paystack webhook received: ${event} for reference: ${data?.reference}`);
+  console.log(
+    `Paystack webhook received: ${event} for reference: ${data?.reference}`,
+  );
 
   try {
     switch (event) {
       case "charge.success": {
         const result = await handleChargeSuccess(data);
         if (result?.alreadyProcessed) {
-          return NextResponse.json({ message: "Transaction already processed" }, { status: 200 });
+          return NextResponse.json(
+            { message: "Transaction already processed" },
+            { status: 200 },
+          );
         }
         break;
       }

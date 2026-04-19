@@ -104,7 +104,10 @@ export default function PricingCard({
         await update();
       }
     } catch (error) {
-      console.error("Failed to verify/update subscription synchronously:", error);
+      console.error(
+        "Failed to verify/update subscription synchronously:",
+        error,
+      );
 
       // Log the pending verification in the database for webhook to pick up
       await recordTransaction({

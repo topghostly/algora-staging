@@ -82,6 +82,18 @@ export async function updateSubscription(reference: string, userId: string) {
   const planCode = verification.data.plan;
   const amount = verification.data.amount / 100;
   const paystackTransactionId = verification.data.id.toString();
+  const channel = verification.data.channel ?? null;
+  const auth = verification.data.authorization ?? {};
+  const authorizationCode = auth.authorization_code ?? null;
+  const cardType = auth.card_type ?? null;
+  const last4 = auth.last4 ?? null;
+  const expMonth = auth.exp_month ?? null;
+  const expYear = auth.exp_year ?? null;
+  const bank = auth.bank ?? null;
+  const customerCode = verification.data.customer?.customer_code ?? null;
+  const paidAt = verification.data.paid_at
+    ? new Date(verification.data.paid_at)
+    : null;
 
   // 2. Map plan to tier and credits
   const plan = ALLOWED_PLANS[planCode];
@@ -117,6 +129,15 @@ export async function updateSubscription(reference: string, userId: string) {
         amount: amount,
         status: verification.data.status,
         planCode: planCode,
+        channel,
+        authorizationCode,
+        cardType,
+        last4,
+        expMonth,
+        expYear,
+        bank,
+        customerCode,
+        paidAt,
       },
     });
 

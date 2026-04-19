@@ -6,12 +6,17 @@ import SubscriptionPaymentFailedEmail from "@/components/emails/SubscriptionPaym
 import SubscriptionCancelledEmail from "@/components/emails/SubscriptionCancelledEmail";
 import { updateSubscription } from "@/app/(main)/actions/subscription";
 
-export async function handleChargeSuccess(data: any): Promise<{ alreadyProcessed: boolean } | void> {
+export async function handleChargeSuccess(
+  data: any,
+): Promise<{ alreadyProcessed: boolean } | void> {
   const reference = data.reference as string;
   const email = data.customer?.email as string | undefined;
 
   if (!reference || !email) {
-    console.error("charge.success: missing reference or customer email", { reference, email });
+    console.error("charge.success: missing reference or customer email", {
+      reference,
+      email,
+    });
     return;
   }
 
@@ -36,7 +41,10 @@ export async function handleChargeSuccess(data: any): Promise<{ alreadyProcessed
     return;
   }
 
-  const { updated, tier, subscriptionPeriodEnd } = await updateSubscription(reference, user.id);
+  const { updated, tier, subscriptionPeriodEnd } = await updateSubscription(
+    reference,
+    user.id,
+  );
 
   if (!updated) {
     // Already processed by the frontend's onSuccess — no email needed.
@@ -46,7 +54,8 @@ export async function handleChargeSuccess(data: any): Promise<{ alreadyProcessed
   // No `data.metadata` means Paystack initiated the charge (automated renewal),
   // not the user via the frontend popup.
   const isAutomatedRenewal = !data.metadata;
-  const periodEnd = subscriptionPeriodEnd ?? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+  const periodEnd =
+    subscriptionPeriodEnd ?? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
   if (isAutomatedRenewal) {
     await sendEmail({
@@ -98,6 +107,8 @@ export async function handleChargeFailed(data: any) {
         amount: (data.amount || 0) / 100,
         status: "failed",
         reason: data.gateway_response || data.message || "Payment failed via webhook",
+        channel: data.channel ?? null,
+        customerCode: data.customer?.customer_code ?? null,
       },
     });
   }
@@ -110,7 +121,8 @@ export async function handleChargeFailed(data: any) {
       entityId: reference || "unknown",
       metadata: {
         amount: (data.amount || 0) / 100,
-        reason: data.gateway_response || data.message || "Payment failed via webhook",
+        reason:
+          data.gateway_response || data.message || "Payment failed via webhook",
       },
     },
   });
