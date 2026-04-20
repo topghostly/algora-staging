@@ -71,23 +71,11 @@ export default function PricingCard({
   const onSuccess = async (reference: any) => {
     try {
       if (tier) {
-        const result = await updateSubscription(
+        await updateSubscription(
           reference.reference,
           session?.user?.id as string,
         );
-        if (!result.success) {
-          throw new Error("Subscription update failed");
-        }
-        toast.success(
-          `Payment successful! Your subscription has been updated to ${title}.`,
-          {
-            duration: 5000,
-          },
-        );
-        await update();
-        // router.push("/dashboard");
       } else {
-        // Record non-tier transaction (if any)
         await recordTransaction({
           reference: reference.reference,
           paystackTransactionId: reference.transaction,
@@ -95,36 +83,30 @@ export default function PricingCard({
           status: reference.status,
           planCode: planCode,
         });
-        toast.success(
-          "Payment successful! Your subscription has been updated.",
-          {
-            duration: 5000,
-          },
-        );
-        await update();
       }
     } catch (error) {
-      console.error(
-        "Failed to verify/update subscription synchronously:",
-        error,
-      );
-
-      // Log the pending verification in the database for webhook to pick up
-      await recordTransaction({
-        reference: reference.reference,
-        amount: amount || 0,
-        status: "PENDING_VERIFICATION",
-        planCode: planCode,
-        paystackTransactionId: reference.transaction,
-      });
-
-      toast.success(
-        "Payment was successful! We are finalizing the verification. Your account will be updated shortly.",
-        {
-          duration: 6000,
-        },
-      );
+      console.error("Failed to sync subscription after payment:", error);
+      // Best-effort fallback — webhook will reconcile. Don't surface this to the user
+      // since Paystack confirmed the charge succeeded.
+      try {
+        await recordTransaction({
+          reference: reference.reference,
+          amount: amount || 0,
+          status: "PENDING_VERIFICATION",
+          planCode: planCode,
+          paystackTransactionId: reference.transaction,
+        });
+      } catch {
+        // Already recorded (e.g. by the webhook) — safe to ignore
+      }
     } finally {
+      // Payment is confirmed by Paystack regardless of backend sync status.
+      // Always show success and refresh the session so the UI reflects the new tier.
+      toast.success(
+        `Payment successful! Your ${title} subscription is now active.`,
+        { duration: 5000 },
+      );
+      await update();
       setIsPaymentPending(false);
       setIsLoading(false);
     }

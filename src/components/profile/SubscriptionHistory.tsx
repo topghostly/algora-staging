@@ -74,7 +74,13 @@ function PaymentMethod({ row }: { row: Transaction }) {
     <span>
       {channelLabels[row.channel] ?? row.channel}
       {row.bank && (
-        <span style={{ fontSize: "0.75rem", color: "var(--muted)", display: "block" }}>
+        <span
+          style={{
+            fontSize: "0.75rem",
+            color: "var(--muted)",
+            display: "block",
+          }}
+        >
           {row.bank}
         </span>
       )}
@@ -146,25 +152,95 @@ const columns = [
         bg: "var(--muted-light)",
         color: "var(--muted)",
       };
+
+      const isPendingVerification = val === "pending_verification";
+
       return (
-        <span
-          style={{
-            backgroundColor: style.bg,
-            color: style.color,
-            padding: "0.2rem 0.6rem",
-            borderRadius: "99px",
-            fontSize: "0.78rem",
-            fontWeight: 500,
-            textTransform: "capitalize",
-            whiteSpace: "nowrap",
-          }}
-        >
-          {val.replace(/_/g, " ")}
-        </span>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <span
+            style={{
+              backgroundColor: style.bg,
+              color: style.color,
+              padding: "0.2rem 0.6rem",
+              borderRadius: "99px",
+              fontSize: "0.78rem",
+              fontWeight: 500,
+              textTransform: "capitalize",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {val.replace(/_/g, " ")}
+          </span>
+          {isPendingVerification && (
+            <VerifyPaymentButton reference={info.row.original.reference} />
+          )}
+        </div>
       );
     },
   }),
 ];
+
+import { toast } from "sonner";
+import { Loader2, RefreshCw } from "lucide-react";
+import { manualVerifyTransaction } from "@/app/(main)/actions/subscription";
+import { useRouter } from "next/navigation";
+
+function VerifyPaymentButton({ reference }: { reference: string }) {
+  const [isVerifying, setIsVerifying] = useState(false);
+  const router = useRouter();
+
+  const handleVerify = async () => {
+    setIsVerifying(true);
+    const toastId = toast.loading("Verifying your payment...");
+
+    try {
+      const result = await manualVerifyTransaction(reference);
+
+      if (result.success) {
+        toast.success("Payment verified successfully!", { id: toastId });
+        router.refresh();
+      } else {
+        toast.error(
+          "Payment could not be verified yet. Please try again in 5 minutes.",
+          { id: toastId },
+        );
+      }
+    } catch (error: any) {
+      console.error("Verification error:", error);
+      toast.error(
+        error?.message || "Verification failed. Please contact support.",
+        { id: toastId },
+      );
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  return (
+    <Button
+      variant="outline"
+      // size="sm"
+      disabled={isVerifying}
+      onClick={handleVerify}
+      style={{
+        height: "1.5rem",
+        padding: "0 0.5rem",
+        fontSize: "0.7rem",
+        display: "flex",
+        alignItems: "center",
+        gap: "0.25rem",
+        color: "var(--primary)",
+      }}
+    >
+      {isVerifying ? (
+        <Loader2 className="w-3 h-3 animate-spin" />
+      ) : (
+        <RefreshCw className="w-3 h-3" />
+      )}
+      {/* Verify */}
+    </Button>
+  );
+}
 
 interface Props {
   transactions: Transaction[];
@@ -220,7 +296,9 @@ export default function SubscriptionHistory({ transactions }: Props) {
                         fontWeight: 500,
                         color: "var(--muted)",
                         whiteSpace: "nowrap",
-                        cursor: header.column.getCanSort() ? "pointer" : "default",
+                        cursor: header.column.getCanSort()
+                          ? "pointer"
+                          : "default",
                         userSelect: "none",
                       }}
                     >
@@ -231,7 +309,10 @@ export default function SubscriptionHistory({ transactions }: Props) {
                           gap: "0.35rem",
                         }}
                       >
-                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
                         {header.column.getCanSort() && (
                           <ArrowUpDown size={13} style={{ opacity: 0.4 }} />
                         )}
@@ -264,9 +345,15 @@ export default function SubscriptionHistory({ transactions }: Props) {
                     {row.getVisibleCells().map((cell) => (
                       <td
                         key={cell.id}
-                        style={{ padding: "0.875rem 1.5rem", whiteSpace: "nowrap" }}
+                        style={{
+                          padding: "0.875rem 1.5rem",
+                          whiteSpace: "nowrap",
+                        }}
                       >
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
                       </td>
                     ))}
                   </tr>

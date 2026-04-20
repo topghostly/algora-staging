@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { SubscriptionTier } from "@prisma/client";
+import { withRetry } from "@/lib/db-utils";
 
 import {
   verifyTransaction,
@@ -35,12 +36,16 @@ export async function updateSubscription(reference: string, userId: string) {
   //   throw new Error("Unauthorized");
   // }
 
-  const existing = await prisma.paymentTransaction.findUnique({
-    where: { reference },
-    select: { planCode: true },
-  });
+  const existing = await withRetry(() =>
+    prisma.paymentTransaction.findUnique({
+      where: { reference },
+      select: { status: true, planCode: true },
+    })
+  );
 
-  if (existing) {
+  // Only short-circuit if the transaction is already fully successful.
+  // If it's "PENDING_VERIFICATION" or other intermediate states, we proceed to verify.
+  if (existing?.status === "success" || existing?.status === "SUCCESS") {
     const plan = ALLOWED_PLANS[existing.planCode!];
     return {
       success: true,
@@ -60,10 +65,12 @@ export async function updateSubscription(reference: string, userId: string) {
   // Security check: Ensure the transaction email matches the user we are updating
   // This prevents Insecure Direct Object Reference (IDOR) attacks
   const paystackEmail = verification.data.customer.email;
-  const targetUser = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { email: true },
-  });
+  const targetUser = await withRetry(() =>
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: { email: true },
+    })
+  );
 
   if (
     !targetUser ||
@@ -109,60 +116,94 @@ export async function updateSubscription(reference: string, userId: string) {
     : null;
 
   // Use a transaction to ensure both user update and transaction logging succeed
-  const result = await prisma.$transaction(async (tx) => {
-    const user = await tx.user.update({
-      where: { id: userId },
-      data: {
-        subscriptionTier: tier,
-        subscriptionId: verification.data.subscription_code || null,
-        subscriptionPeriodEnd: subscriptionPeriodEnd,
-        cancelAtPeriodEnd: false, // Reset cancellation flag on new payment/update
-        credits1on1: creditsToAdd,
-      },
-    });
+  try {
+    await withRetry(() => 
+      prisma.$transaction(async (tx) => {
+        await tx.user.update({
+          where: { id: userId },
+          data: {
+            subscriptionTier: tier,
+            subscriptionId: verification.data.subscription_code || null,
+            subscriptionPeriodEnd: subscriptionPeriodEnd,
+            cancelAtPeriodEnd: false,
+            credits1on1: creditsToAdd,
+          },
+        });
 
-    await tx.paymentTransaction.create({
-      data: {
-        userId: userId,
-        reference: reference,
-        paystackTransactionId: paystackTransactionId,
-        amount: amount,
-        status: verification.data.status,
-        planCode: planCode,
-        channel,
-        authorizationCode,
-        cardType,
-        last4,
-        expMonth,
-        expYear,
-        bank,
-        customerCode,
-        paidAt,
-      },
-    });
+        await tx.paymentTransaction.upsert({
+          where: { reference: reference },
+          update: {
+            status: verification.data.status,
+            paystackTransactionId: paystackTransactionId,
+            paidAt,
+            channel,
+            authorizationCode,
+            cardType,
+            last4,
+            expMonth,
+            expYear,
+            bank,
+            customerCode,
+          },
+          create: {
+            userId: userId,
+            reference: reference,
+            paystackTransactionId: paystackTransactionId,
+            amount: amount,
+            status: verification.data.status,
+            planCode: planCode,
+            channel,
+            authorizationCode,
+            cardType,
+            last4,
+            expMonth,
+            expYear,
+            bank,
+            customerCode,
+            paidAt,
+          },
+        });
 
-    await tx.activityLog.create({
-      data: {
-        userId: userId,
-        action: "PAYMENT_SUCCESS",
-        entityType: "TRANSACTION",
-        entityId: paystackTransactionId,
-        metadata: {
-          amount,
-          tier,
-          planCode,
-        },
-      },
-    });
-
-    return user;
-  });
+        await tx.activityLog.create({
+          data: {
+            userId: userId,
+            action: "PAYMENT_SUCCESS",
+            entityType: "TRANSACTION",
+            entityId: paystackTransactionId,
+            metadata: { amount, tier, planCode },
+          },
+        });
+      })
+    );
+  } catch (error: any) {
+    // P2002 = unique constraint on `reference` — the webhook beat the frontend to it
+    // (or vice versa). The record exists and the user is already upgraded; treat as success.
+    if (error?.code === "P2002") {
+      revalidatePath("/pricing");
+      revalidatePath("/dashboard");
+      return { success: true, updated: false, tier, subscriptionPeriodEnd };
+    }
+    throw error;
+  }
 
   revalidatePath("/pricing");
   revalidatePath("/dashboard");
 
   return { success: true, updated: true, tier, subscriptionPeriodEnd };
-  // return { success: true, user: result };
+}
+
+/**
+ * Manually trigger verification for a transaction.
+ * Usually called from the UI when a transaction is stuck in "PENDING_VERIFICATION".
+ */
+export async function manualVerifyTransaction(reference: string) {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  return await updateSubscription(reference, session.user.id);
 }
 
 export async function recordTransaction(details: {

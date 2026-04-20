@@ -7,7 +7,6 @@ import {
 } from "@/lib/paystack-handlers";
 
 export async function POST(req: Request) {
-  console.log("This is the webhook");
   const bodyText = await req.text();
   const signature = req.headers.get("x-paystack-signature");
 
@@ -42,9 +41,23 @@ export async function POST(req: Request) {
         await handleSubscriptionDisable(data, event);
         break;
     }
-  } catch (error) {
-    // Log but return 200 — Paystack retries on non-2xx, which would cause duplicate processing.
-    // Monitor this in CloudWatch and alert on repeated failures.
+  } catch (error: any) {
+    // If it's a transient database connection error, return 503 Service Unavailable.
+    // This tells Paystack to retry the webhook later.
+    const transientErrorCodes = ["P1001", "P1002", "P1008", "P1011"];
+    if (transientErrorCodes.includes(error?.code)) {
+      console.error(
+        `Transient database error for event "${event}". Returning 503 for retry.`,
+        error,
+      );
+      return NextResponse.json(
+        { message: "Database temporarily unavailable" },
+        { status: 503 },
+      );
+    }
+
+    // For other errors, log but return 200 — Paystack retries on non-2xx, 
+    // which would cause duplicate processing if it's a logical bug.
     console.error(`Webhook handler error for event "${event}":`, error);
   }
 

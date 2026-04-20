@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { withRetry } from "@/lib/db-utils";
 import { sendEmail } from "@/lib/email";
 import { SubscriptionSuccessEmail } from "@/components/emails/SubscriptionSuccessEmail";
 import SubscriptionRenewedEmail from "@/components/emails/SubscriptionRenewedEmail";
@@ -21,20 +22,27 @@ export async function handleChargeSuccess(
   }
 
   // Short-circuit before hitting Paystack's API or doing a user lookup.
-  const existingTransaction = await prisma.paymentTransaction.findUnique({
-    where: { reference },
-    select: { id: true },
-  });
+  const existingTransaction = await withRetry(() =>
+    prisma.paymentTransaction.findUnique({
+      where: { reference },
+      select: { id: true, status: true },
+    }),
+  );
 
-  if (existingTransaction) {
+  if (
+    existingTransaction?.status === "success" ||
+    existingTransaction?.status === "SUCCESS"
+  ) {
     console.log(`charge.success: transaction ${reference} already processed`);
     return { alreadyProcessed: true };
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email },
-    select: { id: true, name: true, email: true },
-  });
+  const user = await withRetry(() =>
+    prisma.user.findUnique({
+      where: { email },
+      select: { id: true, name: true, email: true },
+    }),
+  );
 
   if (!user) {
     console.error(`charge.success: no user found for email ${email}`);
@@ -93,10 +101,12 @@ export async function handleChargeFailed(data: any) {
   if (!user || user.subscriptionTier === "FREE") return;
 
   if (reference) {
-    const existingFailure = await prisma.paymentTransaction.findUnique({
-      where: { reference },
-      select: { id: true },
-    });
+    const existingFailure = await withRetry(() =>
+      prisma.paymentTransaction.findUnique({
+        where: { reference },
+        select: { id: true },
+      }),
+    );
     if (existingFailure) return;
 
     await prisma.paymentTransaction.create({
@@ -106,7 +116,8 @@ export async function handleChargeFailed(data: any) {
         paystackTransactionId: data.id?.toString(),
         amount: (data.amount || 0) / 100,
         status: "failed",
-        reason: data.gateway_response || data.message || "Payment failed via webhook",
+        reason:
+          data.gateway_response || data.message || "Payment failed via webhook",
         channel: data.channel ?? null,
         customerCode: data.customer?.customer_code ?? null,
       },
