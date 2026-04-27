@@ -88,6 +88,40 @@ export const getSubscription = async (subscriptionCode: string) => {
   return data;
 };
 
+export const listSubscriptions = async (customerEmail: string) => {
+  const secret = process.env.PAYSTACK_SECRET_KEY;
+  if (!secret) {
+    throw new Error("PAYSTACK_SECRET_KEY is not defined");
+  }
+
+  const url = new URL("https://api.paystack.co/subscription");
+  url.searchParams.set("customer", customerEmail);
+  url.searchParams.set("perPage", "5");
+
+  const response = await fetch(url.toString(), {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${secret}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to list subscriptions: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data as {
+    status: boolean;
+    data: Array<{
+      subscription_code: string;
+      email_token: string;
+      status: string;
+      plan: { plan_code: string };
+    }>;
+  };
+};
+
 export const disableSubscription = async (code: string, token: string) => {
   const secret = process.env.PAYSTACK_SECRET_KEY;
   if (!secret) {

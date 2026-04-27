@@ -16,6 +16,7 @@ declare module "next-auth" {
       resumeLink: string | null;
       subscriptionPeriodEnd?: Date | string | null;
       cancelAtPeriodEnd?: boolean | null;
+      paymentChannel?: string | null;
     } & DefaultSession["user"];
   }
 
@@ -33,6 +34,7 @@ declare module "next-auth" {
     resumeLink: string | null;
     subscriptionPeriodEnd?: Date | string | null;
     cancelAtPeriodEnd?: boolean | null;
+    paymentChannel?: string | null;
   }
 }
 
@@ -50,5 +52,6 @@ declare module "next-auth/jwt" {
     resumeLink: string | null;
     subscriptionPeriodEnd?: Date | string | null;
     cancelAtPeriodEnd?: boolean | null;
+    paymentChannel?: string | null;
   }
 }

@@ -10,6 +10,7 @@ import {
   verifyTransaction,
   getSubscription,
   disableSubscription,
+  listSubscriptions,
 } from "@/lib/paystack";
 import { revalidatePath } from "next/cache";
 
@@ -28,19 +29,18 @@ const ALLOWED_PLANS: Record<
   },
 };
 
-export async function updateSubscription(reference: string, userId: string) {
+export async function updateSubscription(
+  reference: string,
+  userId: string,
+  subscriptionCodeOverride?: string,
+) {
   console.log("Updating subscription for user", userId);
-  // const session = await getServerSession(authOptions);
-
-  // if (!session?.user?.id) {
-  //   throw new Error("Unauthorized");
-  // }
 
   const existing = await withRetry(() =>
     prisma.paymentTransaction.findUnique({
       where: { reference },
       select: { status: true, planCode: true },
-    })
+    }),
   );
 
   // Only short-circuit if the transaction is already fully successful.
@@ -69,7 +69,7 @@ export async function updateSubscription(reference: string, userId: string) {
     prisma.user.findUnique({
       where: { id: userId },
       select: { email: true },
-    })
+    }),
   );
 
   if (
@@ -117,13 +117,16 @@ export async function updateSubscription(reference: string, userId: string) {
 
   // Use a transaction to ensure both user update and transaction logging succeed
   try {
-    await withRetry(() => 
+    await withRetry(() =>
       prisma.$transaction(async (tx) => {
         await tx.user.update({
           where: { id: userId },
           data: {
             subscriptionTier: tier,
-            subscriptionId: verification.data.subscription_code || null,
+            subscriptionId:
+              subscriptionCodeOverride ||
+              verification.data.subscription_code ||
+              null,
             subscriptionPeriodEnd: subscriptionPeriodEnd,
             cancelAtPeriodEnd: false,
             credits1on1: creditsToAdd,
@@ -173,7 +176,7 @@ export async function updateSubscription(reference: string, userId: string) {
             metadata: { amount, tier, planCode },
           },
         });
-      })
+      }),
     );
   } catch (error: any) {
     // P2002 = unique constraint on `reference` — the webhook beat the frontend to it
@@ -242,22 +245,37 @@ export async function cancelSubscription() {
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { subscriptionId: true },
+    select: { subscriptionId: true, email: true },
   });
 
-  if (!user?.subscriptionId) {
-    throw new Error("No active subscription found");
+  let subscriptionId = user?.subscriptionId ?? null;
+
+  // If subscriptionId is missing from DB, check Paystack directly before failing
+  if (!subscriptionId) {
+    if (!user?.email) throw new Error("No active subscription found");
+
+    const paystackSubs = await listSubscriptions(user.email);
+    const active = paystackSubs.data?.find((s) => s.status === "active");
+
+    if (!active) {
+      throw new Error("No active subscription found");
+    }
+
+    subscriptionId = active.subscription_code;
+
+    // Persist it so future cancellations don't need to re-query
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { subscriptionId },
+    });
   }
 
   // 1. Fetch subscription to get the email token
-  const subscription = await getSubscription(user.subscriptionId);
+  const subscription = await getSubscription(subscriptionId);
 
   if (subscription.status && subscription.data?.email_token) {
     // 2. Disable subscription in Paystack
-    await disableSubscription(
-      user.subscriptionId,
-      subscription.data.email_token,
-    );
+    await disableSubscription(subscriptionId, subscription.data.email_token);
   } else {
     console.warn(
       "Could not retrieve email_token for subscription, might already be disabled or invalid.",

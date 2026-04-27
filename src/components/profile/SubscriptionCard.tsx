@@ -5,11 +5,13 @@ import { Button } from "../ui/button";
 interface SubscriptionCardProps {
   subscriptionTier: string;
   credits1on1: number;
+  paymentChannel?: string | null;
 }
 
 export default function SubscriptionCard({
   subscriptionTier,
   credits1on1,
+  paymentChannel,
 }: SubscriptionCardProps) {
   return (
     <div className="py-6">
@@ -22,6 +24,12 @@ export default function SubscriptionCard({
         <div>
           <p className="text-sm text-muted-foreground">Current Plan</p>
           <p className="text-lg font-semibold">{subscriptionTier}</p>
+          {paymentChannel === "bank_transfer" &&
+            subscriptionTier !== "FREE" && (
+              <p className="text-xs text-muted-foreground mt-1 inline-block px-2 py-1 bg-muted rounded-md">
+                via Bank Transfer (One-time)
+              </p>
+            )}
         </div>
 
         <div>

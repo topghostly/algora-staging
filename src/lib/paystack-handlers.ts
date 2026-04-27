@@ -49,9 +49,12 @@ export async function handleChargeSuccess(
     return;
   }
 
+  const webhookSubscriptionCode = data.subscription_code as string | undefined;
+
   const { updated, tier, subscriptionPeriodEnd } = await updateSubscription(
     reference,
     user.id,
+    webhookSubscriptionCode,
   );
 
   if (!updated) {

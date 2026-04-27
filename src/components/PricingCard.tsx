@@ -316,11 +316,16 @@ export default function PricingCard({
 
       {title !== "Free" ? (
         <button
-          onClick={isCurrentPlan ? handleCancelClick : handleClick}
+          onClick={
+            isCurrentPlan && session?.user?.paymentChannel !== "bank_transfer"
+              ? handleCancelClick
+              : handleClick
+          }
           disabled={
             isCancelling ||
             isPaymentPending ||
-            (session?.user?.cancelAtPeriodEnd === true && isCurrentPlan)
+            (session?.user?.cancelAtPeriodEnd === true && isCurrentPlan) ||
+            (isCurrentPlan && session?.user?.paymentChannel === "bank_transfer")
           }
           className={`btn rounded-lg ${variant === "primary" ? "btn-primary" : "btn-outline"} `}
           style={{
@@ -332,13 +337,17 @@ export default function PricingCard({
             opacity:
               isCancelling ||
               isPaymentPending ||
-              (session?.user?.cancelAtPeriodEnd && isCurrentPlan)
+              (session?.user?.cancelAtPeriodEnd && isCurrentPlan) ||
+              (isCurrentPlan &&
+                session?.user?.paymentChannel === "bank_transfer")
                 ? 0.7
                 : 1,
             cursor:
               isCancelling ||
               isPaymentPending ||
-              (session?.user?.cancelAtPeriodEnd && isCurrentPlan)
+              (session?.user?.cancelAtPeriodEnd && isCurrentPlan) ||
+              (isCurrentPlan &&
+                session?.user?.paymentChannel === "bank_transfer")
                 ? "not-allowed"
                 : "pointer",
             display: "flex",
@@ -367,6 +376,8 @@ export default function PricingCard({
                     </span>
                   )}
                 </>
+              ) : session?.user?.paymentChannel === "bank_transfer" ? (
+                "1-Time Payment (Bank Transfer)"
               ) : (
                 "Cancel Subscription"
               )}

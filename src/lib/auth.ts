@@ -270,6 +270,13 @@ export const authOptions: NextAuthOptions = {
           }
 
           if (freshUser) {
+            // Fetch the latest transaction to check the channel
+            const latestTx = await prisma.paymentTransaction.findFirst({
+              where: { userId: userId, status: { in: ["success", "SUCCESS"] } },
+              orderBy: { createdAt: "desc" },
+            });
+            token.paymentChannel = latestTx?.channel;
+
             // Lazy Downgrade Logic
             if (
               freshUser.cancelAtPeriodEnd &&
@@ -329,6 +336,7 @@ export const authOptions: NextAuthOptions = {
         session.user.cancelAtPeriodEnd = token.cancelAtPeriodEnd as
           | boolean
           | null;
+        session.user.paymentChannel = token.paymentChannel as string | null | undefined;
         (session.user as any).provider = token.provider;
       }
 

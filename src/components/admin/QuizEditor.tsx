@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Plus, Trash2, X, Loader } from "lucide-react";
 import { toast } from "sonner";
+import { Button } from "../ui/button";
 
 interface Option {
   text: string;
@@ -123,7 +124,13 @@ export default function QuizEditor({ lessonId }: QuizEditorProps) {
     setQuestions(newQuestions);
   }
 
-  if (isLoading) return <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}><Loader size={18} className="animate-spin" />Loading quiz...</div>;
+  if (isLoading)
+    return (
+      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <Loader size={18} className="animate-spin" />
+        Loading quiz...
+      </div>
+    );
 
   return (
     <div
@@ -142,14 +149,20 @@ export default function QuizEditor({ lessonId }: QuizEditorProps) {
         }}
       >
         <h4>Quiz Questions</h4>
-        <button
+        <Button
           onClick={handleSave}
           disabled={isSaving}
-          className="btn btn-primary rounded-full"
+          className="rounded-full"
         >
-          {isSaving && <Loader size={16} className="animate-spin" style={{ marginRight: "0.25rem" }} />}
+          {isSaving && (
+            <Loader
+              size={16}
+              className="animate-spin"
+              style={{ marginRight: "0.25rem" }}
+            />
+          )}
           {isSaving ? "Saving..." : "Save Quiz"}
-        </button>
+        </Button>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
@@ -178,9 +191,9 @@ export default function QuizEditor({ lessonId }: QuizEditorProps) {
                 />
               </div>
               <div className="w-15 h-full">
-                <button
+                <Button
                   onClick={() => removeQuestion(qIndex)}
-                  className="btn btn-outline rounded-lg"
+                  variant={"outline"}
                   style={{
                     color: "var(--error)",
                     marginLeft: "1rem",
@@ -188,7 +201,7 @@ export default function QuizEditor({ lessonId }: QuizEditorProps) {
                   }}
                 >
                   <Trash2 size={18} />
-                </button>
+                </Button>
               </div>
             </div>
 
@@ -232,37 +245,32 @@ export default function QuizEditor({ lessonId }: QuizEditorProps) {
                       }
                       className="w-full h-10 px-3 py-2 bg-background rounded-lg text-sm ring-offset-background file:border-0 border-2 border-gray-300 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     />
-                    <button
+                    <Button
                       onClick={() => removeOption(qIndex, oIndex)}
-                      className="btn btn-outline rounded-lg"
+                      variant={"outline"}
                       style={{ color: "var(--muted)" }}
                     >
                       <X size={16} />
-                    </button>
+                    </Button>
                   </div>
                 ))}
-                <button
+                <Button
                   onClick={() => addOption(qIndex)}
-                  className="btn btn-sm btn-outline rounded-full"
+                  variant={"outline"}
+                  size={"sm"}
                   style={{ width: "fit-content", marginTop: "0.5rem" }}
                 >
                   <Plus size={14} style={{ marginRight: "0.25rem" }} /> Add
                   Option
-                </button>
+                </Button>
               </div>
             </div>
           </div>
         ))}
 
-        <button
-          onClick={addQuestion}
-          className="btn btn-outline rounded-full"
-          style={{
-            padding: "1rem",
-          }}
-        >
-          <Plus size={18} style={{ marginRight: "0.5rem" }} /> Add Question
-        </button>
+        <Button onClick={addQuestion} variant={"outline"}>
+          <Plus size={18} /> Add Question
+        </Button>
       </div>
     </div>
   );

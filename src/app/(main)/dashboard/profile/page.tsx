@@ -36,6 +36,16 @@ async function ProfileSections({ userId }: { userId: string }) {
     return <ErrorState message="Failed to load profile data." />;
   }
 
+  let latestTransaction;
+  try {
+    latestTransaction = await prisma.paymentTransaction.findFirst({
+      where: { userId, status: { in: ["success", "SUCCESS"] } },
+      orderBy: { createdAt: "desc" },
+    });
+  } catch {
+    console.error("Failed to fetch latest transaction");
+  }
+
   if (!user) return <ErrorState message="User not found." />;
 
   return (
@@ -45,6 +55,7 @@ async function ProfileSections({ userId }: { userId: string }) {
         <SubscriptionCard
           subscriptionTier={user.subscriptionTier}
           credits1on1={user.credits1on1}
+          paymentChannel={latestTransaction?.channel}
         />
         <BookingHistory bookings={[]} />
       </div>

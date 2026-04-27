@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import {
   CheckCircle,
@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
+import { LottieAnimation } from "./NotFoundAnimation";
 
 interface Option {
   id: string;
@@ -47,6 +48,7 @@ export default function QuizViewer({
   const [score, setScore] = useState(0);
   const [passed, setPassed] = useState(initialCompleted);
   const [submitting, setSubmitting] = useState(false);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   // Find current lesson index to check prerequisites
   const currentIndex = allLessons.findIndex((l) => l.id === lessonId);
@@ -122,11 +124,21 @@ export default function QuizViewer({
     setSubmitted(false);
     setScore(0);
     setPassed(false);
+    setCurrentQuestionIndex(0);
   }
 
   if (loading)
     return (
-      <div style={{ padding: "2rem", textAlign: "center", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
+      <div
+        style={{
+          padding: "2rem",
+          textAlign: "center",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "0.5rem",
+        }}
+      >
         <Loader size={18} className="animate-spin" />
         Loading quiz...
       </div>
@@ -134,48 +146,28 @@ export default function QuizViewer({
 
   if (firstIncompleteLesson) {
     return (
-      <div
-        className="card"
-        style={{
-          padding: "3rem",
-          textAlign: "center",
-          backgroundColor: "var(--muted-light)",
-        }}
-      >
-        <Lock
-          size={48}
-          color="var(--muted)"
-          style={{ margin: "0 auto", marginBottom: "1.5rem" }}
-        />
-        <h2
-          style={{
-            fontSize: "1.5rem",
-            fontWeight: 500,
-            marginBottom: "1rem",
-          }}
-        >
-          Prerequisites Not Met
-        </h2>
+      <div className="h-[60vh] w-full flex flex-col items-center justify-center text-center">
+        <div className="flex mx-auto h-60 w-60 md:h-72 md:w-72 items-center justify-center overflow-hidden mb-6 scale-120">
+          <LottieAnimation
+            jsonPath="/json/coming_soon.json"
+            fallbackWebm="/videos/empty.webm"
+          />
+        </div>
+        <h3>Prerequisites Not Met</h3>
         <p
           style={{
             color: "var(--muted)",
-            marginBottom: "2rem",
+            marginBottom: "1.5rem",
             maxWidth: "400px",
             margin: "0 auto 2rem",
           }}
         >
           You must complete all previous lessons before you can take this quiz.
         </p>
-        <Link
-          href={`/tracks/${trackId}/lessons/${firstIncompleteLesson.id}`}
-          className="btn btn-primary"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "0.5rem",
-          }}
-        >
-          Complete: {firstIncompleteLesson.title} <ArrowRight size={18} />
+        <Link href={`/tracks/${trackId}/lessons/${firstIncompleteLesson.id}`}>
+          <Button variant={"outline"}>
+            Complete: {firstIncompleteLesson.title} <ArrowRight size={18} />
+          </Button>
         </Link>
       </div>
     );
@@ -193,18 +185,27 @@ export default function QuizViewer({
   return (
     <div className="max-w-[800px] mx-auto flex justify-center items-center h-full">
       {!submitted ? (
-        <div className="flex flex-col gap-8 mt-10">
-          {questions.map((q, index) => (
-            <div key={q.id} className="" style={{ padding: "1.5rem" }}>
+        <div className="flex flex-col gap-8 mt-10 w-full max-w-[600px] mx-auto overflow-hidden">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={questions[currentQuestionIndex].id}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.2 }}
+              className="w-full"
+            >
               <div className="grid grid-cols-[30px_1fr]">
                 <h4>
                   <span
                     style={{ color: "var(--muted)", marginRight: "0.5rem" }}
                   >
-                    {index + 1}.
+                    {currentQuestionIndex + 1}.
                   </span>
                 </h4>
-                <h4 className="mb-4 leading-tight">{q.text}</h4>
+                <h4 className="mb-4 leading-tight">
+                  {questions[currentQuestionIndex].text}
+                </h4>
               </div>
               <div
                 style={{
@@ -213,7 +214,7 @@ export default function QuizViewer({
                   gap: "0.75rem",
                 }}
               >
-                {q.options.map((option) => (
+                {questions[currentQuestionIndex].options.map((option) => (
                   <label
                     key={option.id}
                     style={{
@@ -222,12 +223,14 @@ export default function QuizViewer({
                       gap: "0.75rem",
                       padding: "0.75rem 1rem",
                       border:
-                        answers[q.id] === option.id
+                        answers[questions[currentQuestionIndex].id] ===
+                        option.id
                           ? "1px solid var(--primary)"
                           : "1px solid var(--border)",
                       borderRadius: "var(--radius)",
                       backgroundColor:
-                        answers[q.id] === option.id
+                        answers[questions[currentQuestionIndex].id] ===
+                        option.id
                           ? "rgba(var(--primary-rgb), 0.05)"
                           : "transparent",
                       cursor: "pointer",
@@ -236,9 +239,17 @@ export default function QuizViewer({
                   >
                     <input
                       type="radio"
-                      name={q.id}
-                      checked={answers[q.id] === option.id}
-                      onChange={() => handleSelectOption(q.id, option.id)}
+                      name={questions[currentQuestionIndex].id}
+                      checked={
+                        answers[questions[currentQuestionIndex].id] ===
+                        option.id
+                      }
+                      onChange={() =>
+                        handleSelectOption(
+                          questions[currentQuestionIndex].id,
+                          option.id,
+                        )
+                      }
                       style={{
                         width: "1.1rem",
                         height: "1.1rem",
@@ -249,20 +260,46 @@ export default function QuizViewer({
                   </label>
                 ))}
               </div>
-            </div>
-          ))}
+            </motion.div>
+          </AnimatePresence>
 
-          <Button
-            onClick={handleSubmit}
-            variant={"outline"}
-            className="w-fit"
-            disabled={
-              Object.keys(answers).length < questions.length || submitting
-            }
-          >
-            {submitting && <RefreshCw size={18} className="animate-spin" />}
-            Submit Quiz
-          </Button>
+          <div className="flex justify-between items-center px-6 mt-4">
+            <Button
+              variant="outline"
+              onClick={() =>
+                setCurrentQuestionIndex((prev) => Math.max(0, prev - 1))
+              }
+              disabled={currentQuestionIndex === 0}
+            >
+              Previous
+            </Button>
+
+            {currentQuestionIndex < questions.length - 1 ? (
+              <Button
+                variant="outline"
+                onClick={() =>
+                  setCurrentQuestionIndex((prev) =>
+                    Math.min(questions.length - 1, prev + 1),
+                  )
+                }
+              >
+                Next
+              </Button>
+            ) : (
+              <Button
+                onClick={handleSubmit}
+                variant="outline"
+                disabled={
+                  Object.keys(answers).length < questions.length || submitting
+                }
+              >
+                {submitting && (
+                  <RefreshCw size={18} className="animate-spin mr-2" />
+                )}
+                Submit Quiz
+              </Button>
+            )}
+          </div>
         </div>
       ) : (
         <QuizResultsView
@@ -289,9 +326,9 @@ function QuizResultsView({
   const maxDash = circumference * 0.75;
 
   return (
-    <div className="w-full flex w-full flex-col pt-8">
+    <div className="w-full flex flex-col pt-8">
       <div className="w-full max-w-3xl mx-auto mb-16 px-8">
-        <h2 className="text-gray-500 font-sans tracking-tight">Quiz Results</h2>
+        {/* <h3 className="text-gray-500 font-sans tracking-tight">Quiz Results</h3> */}
       </div>
 
       <div className="relative flex justify-center items-center w-full max-w-[600px] mx-auto min-h-[400px]">
@@ -323,7 +360,7 @@ function QuizResultsView({
             r="140"
             fill="transparent"
             stroke="url(#diagonalHatch)"
-            strokeWidth="1.5"
+            strokeWidth="2"
             strokeDasharray={`${maxDash} ${circumference}`}
             transform="rotate(135 225 175)"
             strokeLinecap="round"
@@ -336,12 +373,12 @@ function QuizResultsView({
             r="140"
             fill="transparent"
             stroke="#263238"
-            strokeWidth="3.5"
+            strokeWidth="2"
             strokeLinecap="round"
             strokeDasharray={`${maxDash} ${circumference}`}
             initial={{ strokeDashoffset: maxDash }}
             animate={{ strokeDashoffset: maxDash - (score / 100) * maxDash }}
-            transition={{ duration: 2, ease: "easeOut", delay: 1 }}
+            transition={{ duration: 1, ease: "easeOut", delay: 0.5 }}
             transform="rotate(135 225 175)"
           />
 
@@ -357,7 +394,7 @@ function QuizResultsView({
             strokeDasharray={`0 ${circumference * 2}`}
             initial={{ strokeDashoffset: 0 }}
             animate={{ strokeDashoffset: -((score / 100) * maxDash) }}
-            transition={{ duration: 2, ease: "easeOut", delay: 1 }}
+            transition={{ duration: 1, ease: "easeOut", delay: 0.5 }}
             transform="rotate(135 225 175)"
           />
 
@@ -376,9 +413,9 @@ function QuizResultsView({
             fontWeight="bold"
             fill="#111827"
           >
-            PASSING
+            PASS
           </text>
-          <text x="395" y="85" fontSize="10" fill="#9ca3af">
+          <text x="395" y="82" fontSize="10" fill="#9ca3af">
             70%
           </text>
         </svg>
@@ -386,10 +423,10 @@ function QuizResultsView({
         {/* Center Text and Checkmark */}
         <div className="absolute inset-0 flex flex-col items-center justify-center top-[-25px]">
           <motion.div
-            className="text-[13px] font-bold text-[#263238] mb-2"
+            className="text-[13px]  text-[#263238] mb-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.5 }}
+            transition={{ delay: 0.3, duration: 0.4 }}
           >
             Your score {score}%
           </motion.div>
@@ -401,8 +438,8 @@ function QuizResultsView({
               initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{
-                delay: 1.2,
-                duration: 0.5,
+                delay: 0.8,
+                duration: 0.4,
                 type: "spring",
                 stiffness: 200,
               }}
@@ -411,11 +448,11 @@ function QuizResultsView({
                 d="M4 12 l5 5 l11 -11"
                 fill="transparent"
                 stroke="#263238"
-                strokeWidth="3.5"
+                strokeWidth="2.5"
                 strokeLinecap="square"
                 initial={{ pathLength: 0 }}
                 animate={{ pathLength: 1 }}
-                transition={{ duration: 0.7, delay: 0.8 }}
+                transition={{ duration: 0.5, delay: 0.6 }}
               />
             </motion.svg>
           ) : (
@@ -426,8 +463,8 @@ function QuizResultsView({
               initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{
-                delay: 1.2,
-                duration: 0.5,
+                delay: 0.8,
+                duration: 0.4,
                 type: "spring",
                 stiffness: 200,
               }}
@@ -436,11 +473,11 @@ function QuizResultsView({
                 d="M6 6 l12 12 M6 18 l12 -12"
                 fill="transparent"
                 stroke="#ef4444"
-                strokeWidth="3.5"
+                strokeWidth="2.5"
                 strokeLinecap="square"
                 initial={{ pathLength: 0 }}
                 animate={{ pathLength: 1 }}
-                transition={{ duration: 0.7, delay: 0.8 }}
+                transition={{ duration: 0.5, delay: 0.6 }}
               />
             </motion.svg>
           )}
@@ -448,7 +485,7 @@ function QuizResultsView({
       </div>
 
       <div className="flex flex-col items-center mt-[-10px] pb-10">
-        <div className="w-20 h-[1px] bg-gray-200 mb-6"></div>
+        <div className="w-20 h-px bg-gray-200 mb-6"></div>
         <button
           onClick={handleRetry}
           className="flex flex-col items-center group cursor-pointer focus:outline-none"
